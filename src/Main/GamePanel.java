@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
     public ColisionChecker cChecker =new ColisionChecker(this);
     Sonido sound=new Sonido();
     public UI ui= new UI(this);
-    public AccionesJugador ac=new AccionesJugador(this);
+
 
 
     //ENTIIDAD Y OBJETO
@@ -40,8 +40,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     //ESTADO DEL JUEGO
     public int gameState;
+    public int titleState=0;
     public int playState=1;
     public int pauseState=2;
+
+
 
 
 
@@ -59,9 +62,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame(){
 
 
-        playMusic(0);
 
-        gameState = playState;
+        gameState = titleState;
 
     }
 
@@ -133,25 +135,21 @@ public class GamePanel extends JPanel implements Runnable {
         //cambiamos los graphics g a graphics2D
         Graphics2D g2d = (Graphics2D) g;
 
-        //extiende la clase grafica para dar un control mas sofisticado en la geometria, coordinacion,
-        // etc.
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_SPEED);
-
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_OFF);
-
-
+        //Titulo Screen
+        if(gameState == titleState){
+            ui.draw(g2d);
+        }
+        //Otros
+        else{
+            fondoM.draw(g2d); //dibuja el fondo pedido
+            //Jugador
+            jugador.draw(g2d); // dibuja el jugador
+            //UI
+            ui.draw(g2d);
+            g2d.dispose();
+        }
         //Fondo
-        fondoM.draw(g2d); //dibuja el fondo pedido
-        //Jugador
-        jugador.draw(g2d); // dibuja el jugador
-        //UI
-        ui.draw(g2d);
-        g2d.dispose(); //sirve como para borrar y tirar lo viejo antes de seguir con algo nuevo
+        //sirve como para borrar y tirar lo viejo antes de seguir con algo nuevo
     }
 
     public void playMusic(int i){
@@ -171,16 +169,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
 
-    public boolean ejecutarAccion(int opcion){
-    boolean turnOn=ac.ejecutarAccion(opcion);
 
-    return turnOn;
-    }
-
-
-    public boolean abrirInventario(){
-       boolean turnOn=ac.abrirInventario();
-       return turnOn;
-    }
 
 }

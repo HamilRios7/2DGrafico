@@ -14,7 +14,7 @@ public class ColisionChecker {
 
     public int checkTile(Entidad entity){
         int x=entity.getX();
-        x = clamp(x, 0, gp.pantallaAnchura - gp.tamañoMosaico);
+        x = clamp(-4, 0, gp.pantallaAnchura - gp.tamañoMosaico);
         return x;
     }
 

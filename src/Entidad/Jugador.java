@@ -14,6 +14,7 @@ import static java.lang.Math.clamp;
 public class Jugador  extends Entidad{
     GamePanel gp;
     KeyHandler keyH;
+    int playerWidth = 70;
 
     public Jugador(GamePanel gp,KeyHandler keyH) {
         this.gp = gp;
@@ -73,8 +74,9 @@ public class Jugador  extends Entidad{
                 x=x - speed;
             }
 
-
-            x=gp.cChecker.checkTile(this);// para poner los bordes de colision
+            System.out.println("ANTES: " + x);
+            x = clamp(x, -24, gp.pantallaAnchura -gp.tamañoMosaico);
+            System.out.println("DESPUES: " + x);
 
             spriteCounter++;
             if(spriteCounter>10){
@@ -158,6 +160,6 @@ public class Jugador  extends Entidad{
                 }
                 break;
         }
-        gd2.drawImage(Image,x,y,70,70,null);
+        gd2.drawImage(Image,x,y,playerWidth,playerWidth,null);
     }
 }

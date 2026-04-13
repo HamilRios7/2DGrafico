@@ -70,7 +70,7 @@ public class TileManager {
         g.drawImage(fondos[10].imagen,0,-210,gp.pantallaAnchura,700,null);
         g.drawImage(fondos[11].imagen,0,-210,gp.pantallaAnchura,700,null);
         g.drawImage(fondos[12].imagen,780,180,360,275,null);
-        g.drawImage(fondos[13].imagen,0,490, gp.pantallaAnchura,130,null);
+        g.drawImage(fondos[13].imagen,-350,490, 1800,140,null);
     }
 
 }

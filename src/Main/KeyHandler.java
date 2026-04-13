@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 public class KeyHandler implements KeyListener {
     public boolean leftPressed,rightPressed;
     GamePanel gp;
-
+    public boolean iniciarTexto;
 
 
     public KeyHandler(GamePanel gp){
@@ -21,17 +21,61 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int code = e.getKeyCode();
-        int opcionSeleccionada=0;
-        boolean turnOn=false;
-        //devuelve el numero de tecla que fue presionada
+        int code = e.getKeyCode();//devuelve el numero de tecla que fue presionada
 
+        //ESTADO JUGANDO
         if(code == KeyEvent.VK_D){
             rightPressed = true;
         }
         if(code == KeyEvent.VK_A){
             leftPressed = true;
         }
+
+        //ESTADO TITULO
+
+        if(gp.gameState==gp.titleState){
+
+            if(gp.ui.titleScreenState==0){
+
+                if(code == KeyEvent.VK_W){
+                    gp.ui.comandoNum--;
+                    if(gp.ui.comandoNum<0) {
+                        gp.ui.comandoNum=2;
+                    }
+                }
+                if(code == KeyEvent.VK_S){
+                    gp.ui.comandoNum++;
+                    if(gp.ui.comandoNum>2) {
+                        gp.ui.comandoNum=0;
+                    }
+                }
+                if(code == KeyEvent.VK_ENTER){
+                    if(gp.ui.comandoNum==0){
+                        gp.ui.titleScreenState=1;
+
+                    }
+                    if(gp.ui.comandoNum==1){
+                        //cargar partida luego
+                    }
+                    if(gp.ui.comandoNum==2){
+                        System.exit(0);
+                    }
+                }
+            }
+            else if(gp.ui.titleScreenState==1){
+
+                if(code == KeyEvent.VK_ENTER){
+                    if(gp.ui.comandoNum==0){
+                        gp.gameState=gp.playState;
+                        gp.playMusic(0);
+                    }
+
+                }
+            }
+        }
+
+
+        //ESTADO PAUSE Y JUGAR
         if(code == KeyEvent.VK_P){
             if(gp.gameState == gp.playState){
                 gp.gameState = gp.pauseState;
@@ -42,21 +86,7 @@ public class KeyHandler implements KeyListener {
                 gp.playMusic(0);
             }
         }
-        while(turnOn) {
-            if (code == KeyEvent.VK_1) {
-                opcionSeleccionada = 1;
-                gp.ejecutarAccion(opcionSeleccionada);
-            }
-            if (code == KeyEvent.VK_2) {
-                opcionSeleccionada = 2;
-                gp.ejecutarAccion(opcionSeleccionada);
-            }
-            if (code == KeyEvent.VK_3) {
-                opcionSeleccionada = 3;
-                gp.ejecutarAccion(opcionSeleccionada);
 
-            }
-        }
 
 
 
