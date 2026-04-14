@@ -1,6 +1,10 @@
 package Main;
 
+import Objetos.Obj_Vida;
+import Objetos.SuperObject;
+
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
 public class UI {
@@ -9,6 +13,8 @@ public class UI {
     Graphics2D g2;
 
     Font arial_40,arial_80B;
+
+    BufferedImage corazon;
 
     //BufferedImage keyImage;
     public boolean messageOn=false;
@@ -28,6 +34,14 @@ public class UI {
 
         arial_40=new Font("Arial",Font.BOLD,20);
         arial_80B=new Font("Arial",Font.BOLD,80);
+
+
+
+        //CREAR HUD DE OBJETOS
+        SuperObject vida=new Obj_Vida(gp);
+        corazon=vida.imagen;
+
+
 
     }
 
@@ -50,16 +64,63 @@ public class UI {
                 drawTitleScreen();
             }
             //ESTADO JUGANDO
-            if(gp.gameState == gp.playState){
+            if(gp.gameState == gp.escenaState1){
+                drawJugadorVida();
                 //Do playstate stuff
 
             }
-            //ESTADO PAUSADO
-            if(gp.gameState == gp.pauseState){
-                drawPauseScreen();
 
+            //ESTADO PAUSADO
+            if(gp.gameState == gp.pauseState1){
+                drawJugadorVida();
+                drawPauseScreen();
+            }else if(gp.gameState == gp.pauseState2){
+                drawJugadorVida();
+                drawPauseScreen();
+            }else if(gp.gameState == gp.pauseState3){
+                drawJugadorVida();
+                drawPauseScreen();
+            }
+
+            //SI ESTA CERCA DE PUERTA
+            if(gp.jugador.cercaPuerta){
+                drawTextoGuia();
             }
     }
+
+
+    public void drawJugadorVida(){
+        // Cada punto de vida equivale a 16 píxeles en la barra
+        int baseUnit=2;
+
+        //Las posicion de la barra de vida
+        int barraX=60;
+        int barraY=525;
+
+        //La posicion de la imagen de corazon
+        int corazonX=28;
+        int corazonY=518;
+
+        //Maxima Vida Dibujar
+            // Ancho actual de la vida , lo que le quede si le baja
+        double hpBarValue = gp.jugador.life * baseUnit;
+            // Ancho total de la barra de vida segun el nivel de vida
+        double maxHpBarValue = gp.jugador.barraVida * baseUnit;
+
+        //FONDO_BARRA MAXIMA
+        g2.setColor(Color.DARK_GRAY);
+        g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
+
+        //VIDA ACTUAL
+        g2.setColor(Color.RED);
+        g2.fillRect(barraX, barraY, (int) hpBarValue, 15);
+
+        //BORDE DE BARRA
+        g2.setColor(Color.WHITE);
+        g2.drawRect(barraX, barraY, (int) maxHpBarValue, 15);
+
+        g2.drawImage(corazon,corazonX,corazonY,40,25,null);
+        }
 
     public void drawPauseScreen(){
         String text="PAUSADO";
@@ -177,6 +238,27 @@ public class UI {
         return x;
     }
 
+    public void drawTextoGuia(){
+        if (gp.jugador.cercaPuerta) {
+
+            int x = 250;
+            int y = 150;
+            int ancho = 400;
+            int alto = 100;
+
+            // Fondo negro
+            g2.setColor(new Color(0, 0, 0, 200)); // transparente
+            g2.fillRect(x, y, ancho, alto);
+
+            // Borde blanco
+            g2.setColor(Color.white);
+            g2.drawRect(x, y, ancho, alto);
+
+            // Texto
+            g2.setFont(g2.getFont().deriveFont(20F));
+            g2.drawString("Pulsa E para entrar al castillo", x + 20, y + 55);
+        }
+    }
 
 
 }

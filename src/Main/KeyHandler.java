@@ -7,6 +7,7 @@ public class KeyHandler implements KeyListener {
     public boolean leftPressed,rightPressed;
     GamePanel gp;
     public boolean iniciarTexto;
+    public boolean ePressed;
 
 
     public KeyHandler(GamePanel gp){
@@ -66,28 +67,54 @@ public class KeyHandler implements KeyListener {
 
                 if(code == KeyEvent.VK_ENTER){
                     if(gp.ui.comandoNum==0){
-                        gp.gameState=gp.playState;
+                        gp.gameState=gp.escenaState1;
                         gp.playMusic(0);
                     }
 
                 }
             }
+
         }
 
 
         //ESTADO PAUSE Y JUGAR
         if(code == KeyEvent.VK_P){
-            if(gp.gameState == gp.playState){
-                gp.gameState = gp.pauseState;
+            if(gp.gameState == gp.pauseState1)
+            {
+                gp.gameState =gp.escenaState1;
+                gp.playMusic(0);
+            }else  if(gp.gameState == gp.escenaState1)
+            {
+                gp.gameState = gp.pauseState1;
                 gp.stopMusic();
             }
-            else if(gp.gameState == gp.pauseState){
-                gp.gameState =gp.playState;
-                gp.playMusic(0);
+
+            if(gp.gameState == gp.pauseState2)
+            {
+                gp.gameState =gp.escenaState2;
+
+            }else  if( gp.gameState == gp.escenaState2)
+            {
+                gp.gameState = gp.pauseState2;
             }
+
+            if(gp.gameState == gp.pauseState3)
+            {
+                gp.gameState =gp.escenaState3;
+
+            } else  if(gp.gameState == gp.escenaState3){
+                gp.gameState = gp.pauseState3;
+
+            }
+
+
         }
 
+        //TELEPORT ZONAS
+        if (e.getKeyCode() == KeyEvent.VK_E) {
+            ePressed = true;
 
+        }
 
 
     }
@@ -102,5 +129,9 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_A){
             leftPressed = false;
         }
+        if (e.getKeyCode() == KeyEvent.VK_E) {
+            ePressed = false;
+        }
+
     }
 }

@@ -1,7 +1,8 @@
 package Main;
 
-
+import Entidad.Jugador;
 import Entidad.Entidad;
+import Entidad.campoPuerta;
 
 import static java.lang.Math.clamp;
 
@@ -18,5 +19,11 @@ public class ColisionChecker {
         return x;
     }
 
-
+    public boolean checkerCambioEscena(Jugador jugador, campoPuerta escena){
+       if( jugador.getBorde().intersects(escena.getBorde())){
+           return true;
+       }else {
+           return false;
+       }
+    }
 }

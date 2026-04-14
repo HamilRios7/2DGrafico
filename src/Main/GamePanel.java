@@ -1,11 +1,12 @@
 package Main;
 
 import Entidad.Jugador;
+import Entidad.campoPuerta;
 import Fondo.TileManager;
+import Objetos.SuperObject;
 
 import javax.swing.JPanel;
 import java.awt.*;
-import java.awt.event.KeyListener;
 
 //extends hace que heredes los metodos y atributos sin obligarte a usarlo , a diferencia implements te obliga a usarlos
 public class GamePanel extends JPanel implements Runnable {
@@ -31,6 +32,8 @@ public class GamePanel extends JPanel implements Runnable {
     public ColisionChecker cChecker =new ColisionChecker(this);
     Sonido sound=new Sonido();
     public UI ui= new UI(this);
+    public SuperObject obj[]=new SuperObject[10];
+    public UtilityTool uTool=new UtilityTool();
 
 
 
@@ -41,9 +44,12 @@ public class GamePanel extends JPanel implements Runnable {
     //ESTADO DEL JUEGO
     public int gameState;
     public int titleState=0;
-    public int playState=1;
-    public int pauseState=2;
-
+    public int escenaState1 =1;
+    public int pauseState1 =4;
+    public int pauseState2 =5;
+    public int pauseState3 =6;
+    public int escenaState2=2;
+    public int escenaState3=3;
 
 
 
@@ -116,16 +122,33 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update(){
 
-        if(gameState == playState){
+        if(gameState == escenaState1){
+            jugador.update();
+            if (cChecker.checkerCambioEscena(jugador,new campoPuerta(this))) {
+                jugador.cercaPuerta = true;
+
+                if (jugador.cercaPuerta && keyH.ePressed) {
+                    gameState = escenaState2;
+                    jugador.cercaPuerta = false;
+                }
+            } else {
+                jugador.cercaPuerta = false;
+            }
+        }else if(gameState == escenaState2){
+            jugador.update();
+        }else if(gameState == escenaState3){
             jugador.update();
         }
-        if(gameState == pauseState){
+
+        if(gameState == pauseState1 ){
             //nada
+
         }
 
 
 
-//esto actualizara la posicion del personaje
+
+
 
     }
 
@@ -139,17 +162,32 @@ public class GamePanel extends JPanel implements Runnable {
         if(gameState == titleState){
             ui.draw(g2d);
         }
-        //Otros
-        else{
-            fondoM.draw(g2d); //dibuja el fondo pedido
+        //escena1
+        else if(gameState == escenaState1){
+            fondoM.draw1(g2d); //dibuja el fondo pedido
             //Jugador
             jugador.draw(g2d); // dibuja el jugador
             //UI
             ui.draw(g2d);
             g2d.dispose();
+        }else if(gameState == escenaState2){
+
+            fondoM.draw1(g2d);
+            jugador.draw(g2d);
+            ui.draw(g2d);
+
         }
-        //Fondo
-        //sirve como para borrar y tirar lo viejo antes de seguir con algo nuevo
+        if(jugador.cercaPuerta){
+            ui.draw(g2d);
+        }
+
+        if(gameState == pauseState1 ){
+            fondoM.draw1(g2d);
+            jugador.draw(g2d);
+
+            ui.draw(g2d);
+        }
+
     }
 
     public void playMusic(int i){

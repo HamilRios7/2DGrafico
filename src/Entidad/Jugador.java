@@ -15,6 +15,7 @@ public class Jugador  extends Entidad{
     GamePanel gp;
     KeyHandler keyH;
     int playerWidth = 70;
+    public boolean cercaPuerta = false;
 
     public Jugador(GamePanel gp,KeyHandler keyH) {
         this.gp = gp;
@@ -32,7 +33,24 @@ public class Jugador  extends Entidad{
         y=380;
         speed=4;
         direction="right";
+        System.out.println("Se ejecuta setDefaultValues");
+
+        //JUGADOR ATRIBUTOS
+
+        level =1;
+        strenght=1;
+        defense=1;
+        exp=0;
+        nextLevelExp=100;
+        coin=0;
+        maxLife=3;
+        barraVida=maxLife*10;
+        life=barraVida;
+
     }
+
+
+
 
     public void getPlayerImage(){
         try{
@@ -161,5 +179,9 @@ public class Jugador  extends Entidad{
                 break;
         }
         gd2.drawImage(Image,x,y,playerWidth,playerWidth,null);
+    }
+
+    public Rectangle getBorde() {
+        return new Rectangle(x,y,playerWidth,playerWidth);
     }
 }
