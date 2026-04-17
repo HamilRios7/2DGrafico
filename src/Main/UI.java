@@ -23,7 +23,8 @@ public class UI {
     public boolean gameFinished=false;
     public int comandoNum=0;
     public int titleScreenState=0; // 0: la primera pantalla 1: segunda pantalla
-
+    public int comandoNum1=0;// Índice de la opción seleccionada
+    public int subState = 0;   // 0: Selección principal (Inventario), 1: Selección de Ataques
 
     double playTime;
     DecimalFormat dFormat=new DecimalFormat("0.00");
@@ -64,7 +65,7 @@ public class UI {
                 drawTitleScreen();
             }
             //ESTADO JUGANDO
-            if(gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 ||  gp.gameState == gp.escenaState3 || gp.gameState==gp.statePelea){
+            if(gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 ||  gp.gameState == gp.escenaState3 ){
                 drawJugadorVida();
                 //Do playstate stuff
 
@@ -80,6 +81,11 @@ public class UI {
             //SI ESTA CERCA DE PUERTA
             if(gp.jugador.cercaPuerta || gp.jugador.cercaPelea && !keyH.ePressed){
                 drawTextoGuia();
+            }
+
+            if(gp.gameState == gp.statePelea){
+                drawJugadorVida();
+                drawCombatMenu();
             }
     }
 
@@ -272,6 +278,41 @@ public class UI {
             g2.drawString("Pulsa E para empezar la lucha", x + 20, y + 55);
         }
     }
+    public void drawCombatMenu() {
+        // Dibujamos el marco principal de fondo
+        int x = 220;
+        int y = 502;
+        int width = 800;
+        int height = 115;
+        g2.setColor(new Color(0, 0, 0, 200));
+        g2.fillRect(x, y, width, height); // Tu método para hacer rectángulos
+        g2.setColor(Color.white);
+        g2.drawRect(x, y, width, height);
 
+        if (subState == 0) {
+            // --- MENÚ PRINCIPAL DEL COMBATE ---
+            g2.drawString("ATACAR", x + 60, y + 40);
+            if (comandoNum1 == 0) g2.drawString(">", x + 30, y + 40);
 
+            g2.drawString("INVENTARIO", x + 60, y + 90);
+            if (comandoNum1 == 1) g2.drawString(">", x + 30, y + 90);
+
+        } else if (subState == 1) {
+            // --- MENÚ DE TIPOS DE ATAQUE ---
+            g2.drawString("DEBIL", x + 50, y + 40);
+            if (comandoNum1 == 0) g2.drawString(">", x + 30, y + 40);
+
+            g2.drawString("EQUILIBRADO", x + 50, y + 80);
+            if (comandoNum1 == 1) g2.drawString(">", x + 30, y + 80);
+
+            g2.drawString("FUERTE", x + 50, y + 120);
+            if (comandoNum1 == 2) g2.drawString(">", x + 30, y + 120);
+
+            g2.setFont(g2.getFont().deriveFont(15F));
+            g2.drawString("Presiona ESC para volver", x + 250, y + 130);
+        }
+    }
+    public void abrirInventario() {
+
+    }
 }

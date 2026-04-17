@@ -7,7 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Entidad  {
-
+// de este campo heredan los enemigos y jugador
+// dejamos las estadisticas ya dichas y sin añadir armas como variedad, el calculo se volveria mas facil
     public GamePanel gp;
     public int x1Jugador, y1Jugador, x2Jugador, y2Jugador;
     public int speed;
@@ -34,7 +35,7 @@ public class Entidad  {
 
 
 
-    //ATRIBUTOS ITEMS
+    //ATRIBUTOS DEL LO SUPUESTOS ATAQUES SIN EL CALCULO CON LA FUERZA
     public int debilAtaque;
     public int medianoAtaque;
     public int fuerteAtaque;
@@ -45,13 +46,13 @@ public class Entidad  {
     }
     public Entidad(){}
 
-    public void setAction(){}
-    public void damageReaction(){}
-    public void speal(){}
 
+    //ESTO NOS SIRVE PARA LA ANIMACION AL CAMINAR DE NUESTRO PERSONAJE
     public int spriteCounter=0;
     public int spriteNum=1;
 
+
+    //
     public Rectangle solidArea;
     public boolean colisionOn=false;
 

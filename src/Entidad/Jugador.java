@@ -297,6 +297,9 @@ public class Jugador  extends Entidad{
         }
     }
 
+    public void ejecutarAtaque(int comando){
+
+    }
     public Rectangle getBorde1() {
         return new Rectangle(x1Jugador, y1Jugador,playerWidth,playerWidth);
     }

@@ -5,6 +5,7 @@ import Main.GamePanel;
 import java.awt.*;
 
 public class campoPeleaInteraccion extends Entidad {
+    //clase que genera el area con el que puedes interactuar y entrar en combate
     public int spawnX = 200;
     public int spawnY = 300;
     GamePanel gp;

@@ -29,7 +29,7 @@ public class GamePanel extends JPanel implements Runnable {
 
    //SISTEMA
     TileManager fondoM = new TileManager(this);
-    KeyHandler keyH =new KeyHandler(this);;
+    KeyHandler keyH =new KeyHandler(this);
     Thread gameThread; //esto hara que el juego este como un bucle , funcionando el codigo sin parar hasta que se cierre el juego
     public ColisionChecker cChecker =new ColisionChecker(this);
     Sonido sound=new Sonido();

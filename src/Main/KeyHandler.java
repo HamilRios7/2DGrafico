@@ -1,5 +1,5 @@
 package Main;
-
+import Main.UI;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 //el que recibe las eventos en el teclado
@@ -8,7 +8,7 @@ public class KeyHandler implements KeyListener {
     GamePanel gp;
     public boolean iniciarTexto;
     public boolean ePressed;
-
+    ;
 
     public KeyHandler(GamePanel gp){
         this.gp=gp;
@@ -75,7 +75,31 @@ public class KeyHandler implements KeyListener {
             }
 
         }
+        //ESTADO PELEA
+        if (gp.gameState == gp.statePelea) {
+            if (code == KeyEvent.VK_ENTER) {
+                if (gp.ui.subState == 0) {
+                    // Lógica Menú Principal
+                    if (gp.ui.comandoNum1 == 0) gp.ui.subState = 1; // Vamos a elegir ataque
+                    if (gp.ui.comandoNum1 == 1) gp.ui.abrirInventario();
+                    gp.ui.comandoNum1 = 0; // Reset del cursor para el siguiente menú
+                }
+                else if (gp.ui.subState == 1) {
+                    // Lógica de Ejecución de Ataque
+                    gp.jugador.ejecutarAtaque(gp.ui.comandoNum1);
+                    gp.ui.subState = 0; // Volvemos al principal tras atacar
+                }
+            }
 
+            if (code == KeyEvent.VK_ESCAPE && gp.ui.subState == 1) {
+                gp.ui.subState = 0; // Volver atrás
+            }
+
+            // Movimiento del cursor
+            int maxCommand = (gp.ui.subState == 0) ? 1 : 2;
+            if (code == KeyEvent.VK_W && gp.ui.comandoNum1 > 0) gp.ui.comandoNum1--;
+            if (code == KeyEvent.VK_S && gp.ui.comandoNum1 < maxCommand) gp.ui.comandoNum1++;
+        }
 
         //ESTADO PAUSE Y JUGAR
         if(code == KeyEvent.VK_P){
