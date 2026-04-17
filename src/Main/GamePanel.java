@@ -1,12 +1,14 @@
 package Main;
 
 import Entidad.Jugador;
+import Entidad.campoPeleaInteraccion;
 import Entidad.campoPuerta;
 import Fondo.TileManager;
 import Objetos.SuperObject;
 
 import javax.swing.JPanel;
 import java.awt.*;
+import java.sql.SQLOutput;
 
 //extends hace que heredes los metodos y atributos sin obligarte a usarlo , a diferencia implements te obliga a usarlos
 public class GamePanel extends JPanel implements Runnable {
@@ -31,7 +33,7 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread; //esto hara que el juego este como un bucle , funcionando el codigo sin parar hasta que se cierre el juego
     public ColisionChecker cChecker =new ColisionChecker(this);
     Sonido sound=new Sonido();
-    public UI ui= new UI(this);
+    public UI ui= new UI(this,keyH);
     public SuperObject obj[]=new SuperObject[10];
     public UtilityTool uTool=new UtilityTool();
 
@@ -50,7 +52,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int pauseState3 =6;
     public int escenaState2=2;
     public int escenaState3=3;
-
+    public int statePelea=10;
 
 
 
@@ -123,7 +125,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void update(){
 
         if(gameState == escenaState1){
-            jugador.update();
+            jugador.update1();
             if (cChecker.checkerCambioEscena(jugador,new campoPuerta(this))) {
                 jugador.cercaPuerta = true;
 
@@ -135,15 +137,28 @@ public class GamePanel extends JPanel implements Runnable {
                 jugador.cercaPuerta = false;
             }
         }else if(gameState == escenaState2){
-            jugador.update();
+            jugador.update2();
+            if(cChecker.checkerEstadoPelea(jugador,new campoPeleaInteraccion(this))){
+                jugador.cercaPelea = true;
+                if (jugador.cercaPelea && keyH.ePressed) {
+                    jugador.cercaPelea = false;
+                    jugador.moverPelea();
+
+                }
+            }else {
+                jugador.cercaPelea = false;
+            }
         }else if(gameState == escenaState3){
-            jugador.update();
+            jugador.update2();
         }
 
-        if(gameState == pauseState1 ){
+        if(gameState == statePelea){
+                //aqui se haria el update de la pelea
+        }
+        if(gameState == pauseState1 || gameState == pauseState2 || gameState == pauseState3){
             //nada
-
         }
+
 
 
 
@@ -166,27 +181,30 @@ public class GamePanel extends JPanel implements Runnable {
         else if(gameState == escenaState1){
             fondoM.draw1(g2d); //dibuja el fondo pedido
             //Jugador
-            jugador.draw(g2d); // dibuja el jugador
+            jugador.draw1(g2d); // dibuja el jugador
             //UI
             ui.draw(g2d);
             g2d.dispose();
-        }else if(gameState == escenaState2){
-
-            fondoM.draw1(g2d);
-            jugador.draw(g2d);
+        }else if(gameState == escenaState2 || gameState== statePelea){
+            fondoM.draw2(g2d);
+            jugador.draw2(g2d);
             ui.draw(g2d);
-
-        }
-        if(jugador.cercaPuerta){
-            ui.draw(g2d);
+            g2d.dispose();
         }
 
         if(gameState == pauseState1 ){
             fondoM.draw1(g2d);
-            jugador.draw(g2d);
-
+            jugador.draw1(g2d);
             ui.draw(g2d);
+            g2d.dispose();
+        }else if(gameState == pauseState2){
+            fondoM.draw2(g2d);
+            jugador.draw2(g2d);
+            ui.draw(g2d);
+            g2d.dispose();
         }
+
+
 
     }
 

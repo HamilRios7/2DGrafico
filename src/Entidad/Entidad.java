@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public class Entidad  {
 
     public GamePanel gp;
-    public int x,y;
+    public int x1Jugador, y1Jugador, x2Jugador, y2Jugador;
     public int speed;
 
 //lo usamos para guardar nuestras imagenes
@@ -56,7 +56,7 @@ public class Entidad  {
     public boolean colisionOn=false;
 
 
-    public int getX() {
-        return x;
+    public int getX1Jugador() {
+        return x1Jugador;
     }
 }

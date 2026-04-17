@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 
 public class UI {
     GamePanel gp;
-
+    KeyHandler keyH;
     Graphics2D g2;
 
     Font arial_40,arial_80B;
@@ -29,9 +29,9 @@ public class UI {
     DecimalFormat dFormat=new DecimalFormat("0.00");
 
 
-    public UI (GamePanel gp){
+    public UI (GamePanel gp, KeyHandler keyH){
         this.gp=gp;
-
+        this.keyH=keyH;
         arial_40=new Font("Arial",Font.BOLD,20);
         arial_80B=new Font("Arial",Font.BOLD,80);
 
@@ -64,26 +64,21 @@ public class UI {
                 drawTitleScreen();
             }
             //ESTADO JUGANDO
-            if(gp.gameState == gp.escenaState1){
+            if(gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 ||  gp.gameState == gp.escenaState3 || gp.gameState==gp.statePelea){
                 drawJugadorVida();
                 //Do playstate stuff
 
             }
 
             //ESTADO PAUSADO
-            if(gp.gameState == gp.pauseState1){
-                drawJugadorVida();
-                drawPauseScreen();
-            }else if(gp.gameState == gp.pauseState2){
-                drawJugadorVida();
-                drawPauseScreen();
-            }else if(gp.gameState == gp.pauseState3){
+            if(gp.gameState == gp.pauseState1 ||  gp.gameState == gp.pauseState2 ||  gp.gameState == gp.pauseState3){
                 drawJugadorVida();
                 drawPauseScreen();
             }
 
+
             //SI ESTA CERCA DE PUERTA
-            if(gp.jugador.cercaPuerta){
+            if(gp.jugador.cercaPuerta || gp.jugador.cercaPelea && !keyH.ePressed){
                 drawTextoGuia();
             }
     }
@@ -238,7 +233,7 @@ public class UI {
         return x;
     }
 
-    public void drawTextoGuia(){
+    public void drawTextoGuia() {
         if (gp.jugador.cercaPuerta) {
 
             int x = 250;
@@ -257,6 +252,24 @@ public class UI {
             // Texto
             g2.setFont(g2.getFont().deriveFont(20F));
             g2.drawString("Pulsa E para entrar al castillo", x + 20, y + 55);
+        }
+        if (gp.jugador.cercaPelea) {
+
+            int x = 250;
+            int y = 150;
+            int ancho = 400;
+            int alto = 100;
+            // Fondo negro
+            g2.setColor(new Color(0, 0, 0, 200)); // transparente
+            g2.fillRect(x, y, ancho, alto);
+
+            // Borde blanco
+            g2.setColor(Color.white);
+            g2.drawRect(x, y, ancho, alto);
+
+            // Texto
+            g2.setFont(g2.getFont().deriveFont(20F));
+            g2.drawString("Pulsa E para empezar la lucha", x + 20, y + 55);
         }
     }
 
