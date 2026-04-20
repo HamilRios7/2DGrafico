@@ -1,14 +1,11 @@
 package Main;
 
-import Entidad.Jugador;
-import Entidad.campoPeleaInteraccion;
-import Entidad.campoPuerta;
+import Entidad.*;
 import Fondo.TileManager;
 import Objetos.SuperObject;
 
 import javax.swing.JPanel;
 import java.awt.*;
-import java.sql.SQLOutput;
 
 //extends hace que heredes los metodos y atributos sin obligarte a usarlo , a diferencia implements te obliga a usarlos
 public class GamePanel extends JPanel implements Runnable {
@@ -39,9 +36,9 @@ public class GamePanel extends JPanel implements Runnable {
 
 
 
-    //ENTIIDAD Y OBJETO
-    Jugador jugador=new Jugador(this,keyH);
-
+    //ENTIDADES (JUGADOR , ENEMIGOS) Y OBJETOS
+    public Jugador jugador=new Jugador(this,keyH);
+    public samuraiErrante samuraiErrante =new samuraiErrante(this);
 
     //ESTADO DEL JUEGO
     public int gameState;
@@ -54,7 +51,8 @@ public class GamePanel extends JPanel implements Runnable {
     public int escenaState3=3;
     public int statePelea=10;
 
-
+    //Turno jugador
+    public boolean jugadorTurno = true;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(pantallaAnchura, pantallaAltura));// este constructor sera el que ajusta el tamaño
@@ -138,11 +136,15 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }else if(gameState == escenaState2){
             jugador.update2();
+            samuraiErrante.updateSamurai();
+
+
             if(cChecker.checkerEstadoPelea(jugador,new campoPeleaInteraccion(this))){
                 jugador.cercaPelea = true;
                 if (jugador.cercaPelea && keyH.ePressed) {
                     jugador.cercaPelea = false;
                     jugador.moverPelea();
+                    samuraiErrante.updateSamurai();
 
                 }
             }else {
@@ -153,6 +155,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         if(gameState == statePelea){
+               samuraiErrante.updateSamurai();
                 //aqui se haria el update de la pelea
         }
         if(gameState == pauseState1 || gameState == pauseState2 || gameState == pauseState3){
@@ -188,6 +191,7 @@ public class GamePanel extends JPanel implements Runnable {
         }else if(gameState == escenaState2 || gameState== statePelea){
             fondoM.draw2(g2d);
             jugador.draw2(g2d);
+            samuraiErrante.drawSamurai(g2d);
             ui.draw(g2d);
             g2d.dispose();
         }
@@ -199,6 +203,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.dispose();
         }else if(gameState == pauseState2){
             fondoM.draw2(g2d);
+            samuraiErrante.drawSamurai(g2d);
             jugador.draw2(g2d);
             ui.draw(g2d);
             g2d.dispose();

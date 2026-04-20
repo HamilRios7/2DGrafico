@@ -14,7 +14,14 @@ public class Entidad  {
     public int speed;
 
 //lo usamos para guardar nuestras imagenes
-    public BufferedImage lft1,lft2,lft3,lft4,lft5,lft6,lft7,lft8,rgt1,rgt2,rgt3,rgt4,rgt5,rgt6,rgt7,rgt8;
+        //jugador
+    public BufferedImage lft1,lft2,lft3,lft4,lft5,lft6,lft7,lft8,
+                        rgt1,rgt2,rgt3,rgt4,rgt5,rgt6,rgt7,rgt8,
+                        ataJuga1,ataJuga2,ataJuga3,ataJuga4,ataJuga5,ataJuga6,ataJuga7,ataJuga8;
+
+    //Enemigo1=BerserkerCarmesi
+    public BufferedImage quieto_1,quieto_2,ata1,ata2,ata3,ata4,ata5;
+
     public String direction;
 
 
@@ -26,10 +33,10 @@ public class Entidad  {
     public int life;
     public int level;
     public int strenght;
-    public int attack;
-    public int defense;
-    public int coin;
-    public Entity currentWeapon;
+    public double fuerzaPorcentaje;
+    public double precision;
+    public double precisionPorcentaje;
+    public int oro;
     public int exp;
     public int nextLevelExp;
 
@@ -57,7 +64,5 @@ public class Entidad  {
     public boolean colisionOn=false;
 
 
-    public int getX1Jugador() {
-        return x1Jugador;
-    }
+
 }

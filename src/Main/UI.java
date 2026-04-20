@@ -25,6 +25,7 @@ public class UI {
     public int titleScreenState=0; // 0: la primera pantalla 1: segunda pantalla
     public int comandoNum1=0;// Índice de la opción seleccionada
     public int subState = 0;   // 0: Selección principal (Inventario), 1: Selección de Ataques
+    public int tipoAtaque=0; // 0: Débil, 1: Equilibrado, 2: Fuerte , de esta podemos moverlo a la clase jugador
 
     double playTime;
     DecimalFormat dFormat=new DecimalFormat("0.00");
@@ -285,34 +286,49 @@ public class UI {
         int width = 800;
         int height = 115;
         g2.setColor(new Color(0, 0, 0, 200));
-        g2.fillRect(x, y, width, height); // Tu método para hacer rectángulos
+        g2.fillRect(x, y, width, height);
         g2.setColor(Color.white);
         g2.drawRect(x, y, width, height);
 
+        //Creamos el menu de eleccion
         if (subState == 0) {
             // --- MENÚ PRINCIPAL DEL COMBATE ---
             g2.drawString("ATACAR", x + 60, y + 40);
-            if (comandoNum1 == 0) g2.drawString(">", x + 30, y + 40);
-
+            if (comandoNum1 == 0) {
+                g2.drawString(">", x + 30, y + 40);
+            }
             g2.drawString("INVENTARIO", x + 60, y + 90);
-            if (comandoNum1 == 1) g2.drawString(">", x + 30, y + 90);
+            if (comandoNum1 == 1) {
+                g2.drawString(">", x + 30, y + 90);
+            }
 
         } else if (subState == 1) {
             // --- MENÚ DE TIPOS DE ATAQUE ---
             g2.drawString("DEBIL", x + 50, y + 40);
-            if (comandoNum1 == 0) g2.drawString(">", x + 30, y + 40);
+            if (comandoNum1 == 0) {
+                g2.drawString(">", x + 30, y + 40);
 
+            }
             g2.drawString("EQUILIBRADO", x + 50, y + 80);
-            if (comandoNum1 == 1) g2.drawString(">", x + 30, y + 80);
-
+            if (comandoNum1 == 1) {
+                g2.drawString(">", x + 30, y + 80);
+                gp.jugador.ataqueSeguro();
+            }
             g2.drawString("FUERTE", x + 50, y + 120);
-            if (comandoNum1 == 2) g2.drawString(">", x + 30, y + 120);
-
-            g2.setFont(g2.getFont().deriveFont(15F));
+            if (comandoNum1 == 2) {
+                g2.drawString(">", x + 30, y + 120);
+            }
+            g2.setFont(g2.getFont().deriveFont(12F));
             g2.drawString("Presiona ESC para volver", x + 250, y + 130);
         }
     }
     public void abrirInventario() {
+        gp.jugadorTurno=false;
+
+    }
+
+    public void drawInformacionBatalla(){
+
 
     }
 }

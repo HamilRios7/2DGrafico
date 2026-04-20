@@ -78,16 +78,22 @@ public class KeyHandler implements KeyListener {
         //ESTADO PELEA
         if (gp.gameState == gp.statePelea) {
             if (code == KeyEvent.VK_ENTER) {
-                if (gp.ui.subState == 0) {
-                    // Lógica Menú Principal
-                    if (gp.ui.comandoNum1 == 0) gp.ui.subState = 1; // Vamos a elegir ataque
-                    if (gp.ui.comandoNum1 == 1) gp.ui.abrirInventario();
-                    gp.ui.comandoNum1 = 0; // Reset del cursor para el siguiente menú
-                }
-                else if (gp.ui.subState == 1) {
-                    // Lógica de Ejecución de Ataque
-                    gp.jugador.ejecutarAtaque(gp.ui.comandoNum1);
-                    gp.ui.subState = 0; // Volvemos al principal tras atacar
+                if(gp.jugadorTurno) {
+                    if (gp.ui.subState == 0) {
+                        // Lógica Menú Principal
+                        if (gp.ui.comandoNum1 == 0) {
+                            gp.ui.subState = 1; // Vamos a elegir ataque
+                        }
+                        if (gp.ui.comandoNum1 == 1) {
+                            gp.ui.abrirInventario();
+                        }
+                        gp.ui.comandoNum1 = 0; // Reset del cursor para el siguiente menú
+                    } else if (gp.ui.subState == 1) {
+                        // Lógica de Ejecución de Ataque
+                        gp.jugador.ejecutarAtaque(gp.ui.comandoNum1);
+                        gp.jugadorTurno=false;
+                        gp.ui.subState = 0; // Volvemos al principal tras atacar
+                    }
                 }
             }
 
