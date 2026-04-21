@@ -2,7 +2,6 @@ package Entidad;
 
 import Main.GamePanel;
 
-import javax.swing.text.html.parser.Entity;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -17,6 +16,8 @@ public class Entidad  {
         //jugador
     public BufferedImage lft1,lft2,lft3,lft4,lft5,lft6,lft7,lft8,
                         rgt1,rgt2,rgt3,rgt4,rgt5,rgt6,rgt7,rgt8,
+        quieto1JugaRight, quieto2JugaRight, quieto3JugaRight, quieto4JugaRight, quieto5JugaRight,
+        quieto1JugaLeft,quieto2JugaLeft,quieto3JugaLeft,quieto4JugaLeft,quieto5JugaLeft,
                         ataJuga1,ataJuga2,ataJuga3,ataJuga4,ataJuga5,ataJuga6,ataJuga7,ataJuga8;
 
     //Enemigo1=BerserkerCarmesi
