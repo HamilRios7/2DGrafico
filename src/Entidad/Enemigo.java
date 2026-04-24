@@ -51,6 +51,12 @@ public class Enemigo extends Entidad {
 // return oro;
 // }
 
+        //método para dropear una poción (NO es random)
+       /* public void dropPocino(Heroe heroe,Item pocion){
+            heroe.obtenerPocion(pocion);
+        }*/
+
+
 // public void mostrarDatos(){
 //      System.out.println("Nombre: "+nombre);
 //     super.mostrarDatos();
