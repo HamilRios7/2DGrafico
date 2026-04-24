@@ -188,7 +188,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             if(samuraiErrante.heMuertoEnemigo){
                 samuraiErrante.animacionMuerte();
-                if(samuraiErrante.animacionMuerteTerminada()){
+                if(samuraiErrante.animacionMuerteTerminadaErrante()){
                     ispeleaFinalizada=true;
                     jugador.isAnimacionMuerteTerminada=true;
                     gameState = escenaState2;

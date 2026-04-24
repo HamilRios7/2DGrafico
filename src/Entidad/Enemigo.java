@@ -23,8 +23,8 @@ public class Enemigo extends Entidad {
     //Samurai
     public BufferedImage quieto_1,quieto_2,quieto_3,quieto_4,quieto_5,quieto_6,quieto_7,quieto_8,quieto_9,quieto_10,
             ata1,ata2,ata3,ata4,ata5,ata6,ata7,
-            recibirDaño1,recibirDaño2,recibirDaño3,
-            morir1,morir2,morir3 ,morir4,morir5,morir6,morir7,morir8,morir9,morir10;
+
+            morir1,morir2,morir3;
 
 
 

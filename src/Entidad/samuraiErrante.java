@@ -74,8 +74,9 @@ public class samuraiErrante extends Enemigo{
 
 
             //Muriendo animacion
-
-
+           morir1= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_1.png"));
+            morir2=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_2.png"));
+            morir3=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_3.png"));
 
 
             //Recibiendo daño animacion
@@ -122,8 +123,7 @@ public class samuraiErrante extends Enemigo{
     public void animacionAtacar(){
         atacarCounter++;
         if(atacarCounter > 3){
-            System.out.println("contador atacar: "+atacarCounter);
-            System.out.println("contador contadorMaxFramesEnemigo: "+contadorMaxFramesEnemigo);
+
             atacarNum++;
             atacarCounter = 0;
             if(atacarNum > 7) {
@@ -134,7 +134,14 @@ public class samuraiErrante extends Enemigo{
     }
 
     public void animacionMuerte(){
-
+        atacarCounter++;
+        if(atacarCounter > 12){
+            atacarNum++;
+            atacarCounter = 0;
+            if(atacarNum > 3) {
+                atacarNum = 3;
+            }
+        }
     }
 
     public void animacionRecibirDaño(){
@@ -160,6 +167,10 @@ public class samuraiErrante extends Enemigo{
 
     public Image dibujarMuerte(){
         BufferedImage Image= null;
+
+        if (muerteNum == 1) { Image= morir1; }
+        if (muerteNum == 2) { Image= morir2; }
+        if (muerteNum == 3) { Image= morir3; }
         return Image;
     }
 
@@ -216,9 +227,9 @@ public class samuraiErrante extends Enemigo{
         return contadorMaxFramesEnemigo >=1;
     }
 
-    public boolean animacionMuerteTerminada(){
+    public boolean animacionMuerteTerminadaErrante(){
 
-        if (muerteNum   ==5) {return true;}
+        if (muerteNum   ==3) {return true;}
         else {return false;}
     }
 
