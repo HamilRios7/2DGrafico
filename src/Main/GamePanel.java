@@ -2,7 +2,6 @@ package Main;
 
 import Entidad.*;
 import Fondo.TileManager;
-import Objetos.SuperObject;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -13,26 +12,25 @@ public class GamePanel extends JPanel implements Runnable {
     //AJUSTES DE PANTALLLA
     int originalTamañoMosaico=16; //16x16 del mosaico
     int escala=3;
- // para ajustar a la resolucion de pantalla
-  public  int tamañoMosaico=originalTamañoMosaico * escala; //48x48 del mosaico
-  int maxPantallaCol=23;
-  int maxPantallaRow=13;
-  public int pantallaAnchura=tamañoMosaico*maxPantallaCol; //1104 pixeles
-  public int pantallaAltura=tamañoMosaico*maxPantallaRow; //912 pixeles
+    // para ajustar a la resolucion de pantalla
+    public  int tamañoMosaico=originalTamañoMosaico * escala; //48x48 del mosaico
+    int maxPantallaCol=23;
+    int maxPantallaRow=13;
+    public int pantallaAnchura=tamañoMosaico*maxPantallaCol; //1104 pixeles
+    public int pantallaAltura=tamañoMosaico*maxPantallaRow; //912 pixeles
 
     //FPS
-   int  fps =60;
+    int  fps =60;
 
 
-   //SISTEMA
+    //SISTEMA
     TileManager fondoM = new TileManager(this);
     KeyHandler keyH =new KeyHandler(this);
     Thread gameThread; //esto hara que el juego este como un bucle , funcionando el codigo sin parar hasta que se cierre el juego
     public ColisionChecker cChecker =new ColisionChecker(this);
     Sonido sound=new Sonido();
     public UI ui= new UI(this,keyH);
-    public SuperObject obj[]=new SuperObject[10];
-    public UtilityTool uTool=new UtilityTool();
+
 
 
 
@@ -50,14 +48,19 @@ public class GamePanel extends JPanel implements Runnable {
     public int escenaState2=2;
     public int escenaState3=3;
     public int statePelea=10;
+    public int congratulationsState=11;
+
+    //Pelea Finalizada
+    public boolean ispeleaFinalizada=true;
 
     //Turno jugador
     public boolean jugadorTurno = true;
 
+    //ajustamos la dimension de nuestra ventana, el color de fondo si no generara imagen,
     public GamePanel() {
         this.setPreferredSize(new Dimension(pantallaAnchura, pantallaAltura));// este constructor sera el que ajusta el tamaño
-                                                                              // de la clase o diriamos pantalla al crear el objeto
-        this.setBackground(Color.black);//hacemos que el fondo de la ventana sea blanco
+        // de la clase o diriamos pantalla al crear el objeto
+        this.setBackground(Color.black);//hacemos que el fondo de la ventana sea negro
         this.setDoubleBuffered(true); //en verdadero,el dibujar se hara en un buffer pintador que no aparecera en pantalla
         // el double buffered hara que mejore el renderizado de del juego al usar jpanel
 
@@ -65,9 +68,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);//esta clase se "concentrara" en recibir la entrada de una tecla
     }
 
+
+    //Como comenzara y que aparecera segun comencemos el juego
     public void setupGame(){
-
-
 
         gameState = titleState;
 
@@ -124,6 +127,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         if(gameState == escenaState1){
             jugador.update1();
+
+            //COMPRUEBA CUANDO ESTE EN LA ZONA PARA INTERACTUAR PARA IR A LA ESCENA 2
             if (cChecker.checkerCambioEscena(jugador,new campoPuerta(this))) {
                 jugador.cercaPuerta = true;
 
@@ -138,33 +143,93 @@ public class GamePanel extends JPanel implements Runnable {
             jugador.update2();
             samuraiErrante.updateSamurai();
 
-
+            //COMPRUEBA CUANDO ESTE EN LA ZONA PARA INTERACTUAR PARA EMPEZAR LA LUCHA EN LA ESCENA 2
             if(cChecker.checkerEstadoPelea(jugador,new campoPeleaInteraccion(this))){
                 jugador.cercaPelea = true;
                 if (jugador.cercaPelea && keyH.ePressed) {
                     jugador.cercaPelea = false;
                     jugador.moverPelea();
                     samuraiErrante.updateSamurai();
-
                 }
+
             }else {
                 jugador.cercaPelea = false;
+            }
+
+            //COMPRUEBA CUANDO ESTE EN LA ZONA PARA INTERACTUAR PARA MOSTRAR LA ENHORABUENA EN LA ESCENA 2
+            if(cChecker.checkerCambioPantallaEnhorabuena(jugador,new campoEnhorabuenaInteraccion(this))){
+                jugador.cercaIrPiso3 = true;
+                if (jugador.cercaIrPiso3 && keyH.ePressed) {
+                    jugador.cercaIrPiso3 = false;
+                    gameState=congratulationsState;
+                }
             }
         }else if(gameState == escenaState3){
             jugador.update2();
         }
-
+        //CONTROLA ANIMACIONES DE PELEA Y SUS TURNOS
         if(gameState == statePelea){
-               samuraiErrante.updateSamurai();
-                //aqui se haria el update de la pelea
+            samuraiErrante.updateSamurai();
+            jugador.update2();
+            if(jugador.getLife() <= 0){
+                jugador.heMuerto = true;
+            }
+            if(jugador.heMuerto){
+                jugador.animacionMuerte();
+                if(jugador.animacionMuerteTerminada()){
+                    jugador.isAnimacionMuerteTerminada=true;
+
+                    gameState = titleState;
+                }
+            }
+
+            if(samuraiErrante.getLifeEnemigo() <= 0){
+                samuraiErrante.heMuertoEnemigo=true;
+            }
+            if(samuraiErrante.heMuertoEnemigo){
+                samuraiErrante.animacionMuerte();
+                if(samuraiErrante.animacionMuerteTerminada()){
+                    ispeleaFinalizada=true;
+                    jugador.isAnimacionMuerteTerminada=true;
+                    gameState = escenaState2;
+                }
+            }
+
+            if(jugadorTurno) {
+                if (jugador.estoyAtacando) {
+                    jugador.animacionAtaque();
+                    if (jugador.animacionAtaqueTerminada()) {
+                        jugadorTurno = false;
+                        jugador.estoyAtacando = false;
+
+                    }
+                }
+            }
+            if (!jugadorTurno) {
+
+                if(!samuraiErrante.enemigoYaAtaco){
+                    samuraiErrante.actuarSamurai();
+                    samuraiErrante.enemigoYaAtaco = true;
+                }
+                if (samuraiErrante.estoyAtacandoErrante) {
+                    samuraiErrante.animacionAtacar();
+                    if (samuraiErrante.animacionAtaqueTerminadaErrante()) {
+                        jugadorTurno = true;
+                        samuraiErrante.estoyAtacandoErrante = false;
+                        samuraiErrante.enemigoYaAtaco = false;
+                    }
+                }
+
+
+            }
+
+
+
+            //aqui se haria el update de la pelea
         }
         if(gameState == pauseState1 || gameState == pauseState2 || gameState == pauseState3){
             //nada
         }
-
-
-
-
 
 
 
