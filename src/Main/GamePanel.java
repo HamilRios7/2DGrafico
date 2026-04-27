@@ -51,7 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int congratulationsState=11;
 
     //Pelea Finalizada
-    public boolean ispeleaFinalizada=true;
+    public boolean ispeleaFinalizada=false;
 
     //Turno jugador
     public boolean jugadorTurno = true;
@@ -146,7 +146,7 @@ public class GamePanel extends JPanel implements Runnable {
             //COMPRUEBA CUANDO ESTE EN LA ZONA PARA INTERACTUAR PARA EMPEZAR LA LUCHA EN LA ESCENA 2
             if(cChecker.checkerEstadoPelea(jugador,new campoPeleaInteraccion(this))){
                 jugador.cercaPelea = true;
-                if (jugador.cercaPelea && keyH.ePressed) {
+                if (jugador.cercaPelea && keyH.ePressed && !ispeleaFinalizada) {
                     jugador.cercaPelea = false;
                     jugador.moverPelea();
                     samuraiErrante.updateSamurai();
@@ -159,10 +159,12 @@ public class GamePanel extends JPanel implements Runnable {
             //COMPRUEBA CUANDO ESTE EN LA ZONA PARA INTERACTUAR PARA MOSTRAR LA ENHORABUENA EN LA ESCENA 2
             if(cChecker.checkerCambioPantallaEnhorabuena(jugador,new campoEnhorabuenaInteraccion(this))){
                 jugador.cercaIrPiso3 = true;
-                if (jugador.cercaIrPiso3 && keyH.ePressed) {
+                if (jugador.cercaIrPiso3 && keyH.ePressed && ispeleaFinalizada) {
                     jugador.cercaIrPiso3 = false;
                     gameState=congratulationsState;
                 }
+            }else {
+                jugador.cercaIrPiso3 = false;
             }
         }else if(gameState == escenaState3){
             jugador.update2();
@@ -185,19 +187,25 @@ public class GamePanel extends JPanel implements Runnable {
 
             if(samuraiErrante.getLifeEnemigo() <= 0){
                 samuraiErrante.heMuertoEnemigo=true;
+                jugadorTurno=false;
             }
             if(samuraiErrante.heMuertoEnemigo){
+                samuraiErrante.estoyAtacandoErrante = false;
+                samuraiErrante.enemigoYaAtaco = false;
                 samuraiErrante.animacionMuerte();
                 if(samuraiErrante.animacionMuerteTerminadaErrante()){
                     ispeleaFinalizada=true;
-                    jugador.isAnimacionMuerteTerminada=true;
+                    samuraiErrante.isAnimacionMuerteTerminadaEnemigo=true;
                     gameState = escenaState2;
                 }
             }
 
-            if(jugadorTurno) {
+            if(jugadorTurno && !jugador.heMuerto) {
                 if (jugador.estoyAtacando) {
                     jugador.animacionAtaque();
+                    if(jugador.haFallado){
+                        samuraiErrante.contratacar();
+                    }
                     if (jugador.animacionAtaqueTerminada()) {
                         jugadorTurno = false;
                         jugador.estoyAtacando = false;
@@ -205,7 +213,7 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                 }
             }
-            if (!jugadorTurno) {
+            if (!jugadorTurno && !samuraiErrante.heMuertoEnemigo) {
 
                 if(!samuraiErrante.enemigoYaAtaco){
                     samuraiErrante.actuarSamurai();
@@ -259,6 +267,10 @@ public class GamePanel extends JPanel implements Runnable {
             samuraiErrante.drawSamurai(g2d);
             ui.draw(g2d);
             g2d.dispose();
+        }
+
+        else if(gameState==congratulationsState){
+            ui.draw(g2d);
         }
 
         if(gameState == pauseState1 ){

@@ -28,16 +28,16 @@ public class Entidad  {
     public String nombre;
 
     //PERSONAJE ATRIBUTOS
-    public int maxLife;
+    protected int maxLife;
     public int barraVida;
     public int life;
     public int level;
-    public int strenght;
+    protected int strenght;
     public double fuerzaPorcentaje;
-    public double precision;
+    protected double precision;
     public double precisionPorcentaje;
-    public int oro;
-    public int exp;
+    protected int oro;
+    protected int exp;
     public int nextLevelExp;
 
 
@@ -62,5 +62,27 @@ public class Entidad  {
     public boolean colisionOn=false;
 
 
+    public String getNombre() {
+        return nombre;
+    }
 
+    public int getMaxLife() {
+        return maxLife;
+    }
+
+    public int getBarraVida() {
+        return barraVida;
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getStrenght() {
+        return strenght;
+    }
 }

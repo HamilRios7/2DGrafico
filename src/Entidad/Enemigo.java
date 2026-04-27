@@ -39,6 +39,9 @@ public class Enemigo extends Entidad {
     public int atacarNum=1;
     int contadorMaxFramesEnemigo=0;
 
+
+
+
 }
 //Antes de poner esto en marcha, necesitaos ser capaces de general a nuestro enemigo
 //Piensa que la clase madre completa es Entidad , entonces de esa tienen que heredar las demas

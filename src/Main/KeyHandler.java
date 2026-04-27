@@ -55,7 +55,7 @@ public class KeyHandler implements KeyListener {
                         gp.ui.titleScreenState=1;
                     }
                     if(gp.ui.comandoNum==1){
-                        //cargar partida luego
+
                     }
                     if(gp.ui.comandoNum==2){
                         System.exit(0);
@@ -166,7 +166,12 @@ public class KeyHandler implements KeyListener {
 
         //Enhorabuna estado
         if(gp.gameState==gp.congratulationsState){
-
+            if (code == KeyEvent.VK_ENTER) {
+                if (gp.ui.comandoNum == 0) {
+                    System.exit(0);
+                    //gp.playMusic(0);
+                }
+            }
         }
 
     }

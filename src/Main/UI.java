@@ -12,6 +12,7 @@ public class UI {
     KeyHandler keyH;
     Graphics2D g2;
 
+
     Font arial_40, arial_80B;
 
     BufferedImage corazon;
@@ -22,11 +23,11 @@ public class UI {
 
     public int comandoNum1 = 0;// Índice de la opción seleccionada
     public int subState = 0;   // 0: Selección principal (Inventario), 1: Selección de Ataques
-    public int tipoAtaque = 0; // 0: Débil, 1: Equilibrado, 2: Fuerte , de esta podemos moverlo a la clase jugador
 
-    double playTime;
-    DecimalFormat dFormat = new DecimalFormat("0.00");
 
+//movimiento personaje en pantalla
+  int idleCounter=0;
+  int idleNum=1;
 
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -52,6 +53,9 @@ public class UI {
         //TITULO JUGANDO
         if (gp.gameState == gp.titleState && !gp.jugador.isAnimacionMuerteTerminada) {
             drawTitleScreen();
+            if(comandoNum==1){
+                drawCreditos();
+            }
         }
         //ESTADO JUGANDO
         if (gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3) {
@@ -69,7 +73,7 @@ public class UI {
 
 
         //SI ESTA CERCA DE PUERTA
-        if (gp.jugador.cercaPuerta || gp.jugador.cercaPelea && !keyH.ePressed) {
+        if (gp.jugador.cercaPuerta || gp.jugador.cercaPelea || gp.jugador.cercaIrPiso3 && !keyH.ePressed) {
             drawTextoGuia();
         }
 
@@ -187,10 +191,13 @@ public class UI {
             g2.drawString(text, x, y);
 
 
-            //GUERRERO IMAGEN
+            //GUERRERO IMAGEN MOVIENDOSE IDLE
             x = (gp.pantallaAnchura / 2) - 90;
             y = y + gp.tamañoMosaico * 2;
-            g2.drawImage(gp.jugador.rgt1, x, y, gp.tamañoMosaico * 4, gp.tamañoMosaico * 4, null);
+            BufferedImage Image= null;
+            gp.jugador.animacionQuieto();
+            Image=(BufferedImage) gp.jugador.dibujarQuieto();
+            g2.drawImage(Image, x-20, y-50, gp.tamañoMosaico * 5, gp.tamañoMosaico * 5, null);
 
 
             //MENU
@@ -205,7 +212,7 @@ public class UI {
             }
 
 
-            text = "CARGAR PARTIDA";
+            text = "CREDITOS";
             x = getXforCenteredText(text);
             y = y + gp.tamañoMosaico;
             g2.drawString(text, x, y);
@@ -324,7 +331,7 @@ public class UI {
             g2.drawString("Pulsa E para empezar la lucha", x + 20, y + 55);
         }if(gp.jugador.cercaIrPiso3 && gp.ispeleaFinalizada){
 
-            int x = 250;
+            int x = 450;
             int y = 150;
             int ancho = 400;
             int alto = 100;
@@ -368,21 +375,21 @@ public class UI {
 
         } else if (subState == 1) {
             // --- MENÚ DE TIPOS DE ATAQUE ---
-            g2.drawString("DEBIL", x + 50, y + 40);
+            g2.drawString("DEBIL", x + 50, y + 30);
             if (comandoNum1 == 0) {
-                g2.drawString(">", x + 30, y + 40);
+                g2.drawString(">", x + 30, y + 30);
 
             }
-            g2.drawString("EQUILIBRADO", x + 50, y + 80);
+            g2.drawString("EQUILIBRADO", x + 50, y + 60);
             if (comandoNum1 == 1) {
-                g2.drawString(">", x + 30, y + 80);
+                g2.drawString(">", x + 30, y + 60);
             }
-            g2.drawString("FUERTE", x + 50, y + 120);
+            g2.drawString("FUERTE", x + 50, y +90);
             if (comandoNum1 == 2) {
-                g2.drawString(">", x + 30, y + 120);
+                g2.drawString(">", x + 30, y + 90);
             }
-            g2.setFont(g2.getFont().deriveFont(12F));
-            g2.drawString("Presiona ESC para volver", x + 250, y + 130);
+            g2.setFont(g2.getFont().deriveFont(10F));
+            g2.drawString("Presiona ESC para volver", x + 270, y + 110);
         }
     }
 
@@ -400,6 +407,30 @@ public class UI {
             g2.drawString(">",  getXforCenteredText(salirJuego)- 30, (gp.pantallaAltura / 2) + 70);
         }
 
+
+    }
+
+    public void drawCreditos(){
+
+        int x = 330;
+        int y = 180;
+        int ancho = 450;
+        int alto = 160;
+
+        // Fondo negro
+        g2.setColor(new Color(0, 0, 0, 200)); // transparente
+        g2.fillRect(x, y, ancho, alto);
+
+        // Borde blanco
+        g2.setColor(Color.white);
+        g2.drawRect(x, y, ancho, alto);
+
+        // Texto
+        g2.setFont(g2.getFont().deriveFont(20F));
+        g2.drawString("CREADO POR HAMIL Y JOSUE", x + 80, y + 55);
+
+        g2.setFont(g2.getFont().deriveFont(12F));
+        g2.drawString("", x + 160, y + 90);
 
     }
 

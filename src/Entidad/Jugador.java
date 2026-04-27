@@ -27,7 +27,7 @@ public class Jugador  extends Entidad{
     public boolean heMuerto=false;
     public boolean isAnimacionMuerteTerminada=false;
 
-
+    public boolean haFallado=false;
 
     public Jugador(GamePanel gp,KeyHandler keyH) {
         this.gp = gp;
@@ -220,7 +220,7 @@ public class Jugador  extends Entidad{
                 }
 
                 System.out.println("x: " + x2Jugador);
-                System.out.println("y: " + y2Jugador);
+
                 x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura -195);
 
 
@@ -398,6 +398,7 @@ public class Jugador  extends Entidad{
             int enemigoVidaRestante=gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
             gp.samuraiErrante.setLifeEnemigo(enemigoVidaRestante); // acierto
         } else {
+            haFallado=true;
             gp.ui.drawInformacionBatalla(); //fallo
         }
 
@@ -418,6 +419,7 @@ public class Jugador  extends Entidad{
             int enemigoVidaRestante = gp.samuraiErrante.getLifeEnemigo() - dañoFinal;
             gp.samuraiErrante.setLifeEnemigo(enemigoVidaRestante); // acierto
         } else {
+            haFallado=true;
             gp.ui.drawInformacionBatalla(); //fallo
         }
 
@@ -438,6 +440,7 @@ public class Jugador  extends Entidad{
             int enemigoVidaRestante = gp.samuraiErrante.getLifeEnemigo() - dañoFinal;
             gp.samuraiErrante.setLifeEnemigo(enemigoVidaRestante); // acierto
         } else {
+            haFallado=true;
             gp.ui.drawInformacionBatalla(); //fallo
         }
 

@@ -13,8 +13,9 @@ public class samuraiErrante extends Enemigo{
     public boolean estoyAtacandoErrante=false;
     public boolean enemigoYaAtaco = false;
     public boolean heMuertoEnemigo=false;
+    public boolean isAnimacionMuerteTerminadaEnemigo=false;
 
-
+    boolean isHabilidadActivada=false;
 
     public samuraiErrante(GamePanel gp) {
         this.gp = gp;
@@ -90,23 +91,31 @@ public class samuraiErrante extends Enemigo{
 
     }
     public void updateSamurai(){
-        if(!estoyAtacandoErrante){
+        if(!estoyAtacandoErrante && !heMuertoEnemigo){
             animacionQuieto();
         }
     }
     public void drawSamurai(Graphics2D gd2){
-        BufferedImage Image=null;
-        if(estoyAtacandoErrante ){
-            Image=(BufferedImage) dibujarAtacar();
-        }else if(!estoyAtacandoErrante && !heMuertoEnemigo){
-            Image=(BufferedImage) dibujarQuieto();
-        }else if(heMuertoEnemigo){
-            dibujarMuerte();
+
+        BufferedImage image = null;
+
+        if(heMuertoEnemigo){
+            image = (BufferedImage) dibujarMuerte();
+        }
+        else if(estoyAtacandoErrante){
+            image = (BufferedImage) dibujarAtacar();
+        }
+        else{
+            image = (BufferedImage) dibujarQuieto();
         }
 
-
-        gd2.drawImage(Image, x1Enemigo, y1Enemigo, enemyWidht, enemyWidht, null);
+        if(image != null){
+            gd2.drawImage(image, x1Enemigo, y1Enemigo, enemyWidht, enemyWidht, null);
+        }
     }
+
+
+
 
 
 
@@ -122,7 +131,7 @@ public class samuraiErrante extends Enemigo{
 
     public void animacionAtacar(){
         atacarCounter++;
-        if(atacarCounter > 3){
+        if(atacarCounter > 5){
 
             atacarNum++;
             atacarCounter = 0;
@@ -134,19 +143,19 @@ public class samuraiErrante extends Enemigo{
     }
 
     public void animacionMuerte(){
-        atacarCounter++;
-        if(atacarCounter > 12){
-            atacarNum++;
-            atacarCounter = 0;
-            if(atacarNum > 3) {
-                atacarNum = 3;
+
+        muerteCounter++;
+        if(muerteCounter > 20){
+            muerteNum++;
+            muerteCounter = 0;
+            if(muerteNum > 3) {
+                muerteNum = 3;
+                contadorMaxFramesEnemigo++;
             }
         }
     }
 
-    public void animacionRecibirDaño(){
 
-    }
 
 
 
@@ -167,7 +176,6 @@ public class samuraiErrante extends Enemigo{
 
     public Image dibujarMuerte(){
         BufferedImage Image= null;
-
         if (muerteNum == 1) { Image= morir1; }
         if (muerteNum == 2) { Image= morir2; }
         if (muerteNum == 3) { Image= morir3; }
@@ -188,19 +196,28 @@ public class samuraiErrante extends Enemigo{
         return Image;
     }
 
-    public Image dibujarRecibirDaño(){
-        BufferedImage Image= null;
-        return Image;
-    }
+
 
 
     public void actuarSamurai(){
+
         contadorMaxFramesEnemigo=0;
+        if(!isHabilidadActivada && getLifeEnemigo()<=(getBarraVidaEnemigo()/2)){
+            activarHabilidadUnica();
+        }
         ataqueEquilibradoSamurai();
         estoyAtacandoErrante=true;
+
     }
+
+
+    public void ataqueSeguroSamurai(){
+
+
+    }
+
     public void ataqueEquilibradoSamurai(){
-        int ataque=20;
+        int ataque=7;
         int porcentaje=10;
         int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
         int aciertoFinal = (int) ((porcentaje + gp.jugador.precision * gp.jugador.precisionPorcentaje) * 100);
@@ -223,16 +240,41 @@ public class samuraiErrante extends Enemigo{
         }
     }
 
+    public void ataqueArriesgado(){
+
+    }
+
+    public void activarHabilidadUnica(){
+        System.out.println("Ha activado su habilidad");
+        isHabilidadActivada=true;
+        strenght=strenght+2;
+    }
+
+
+    public void contratacar(){
+        gp.jugador.haFallado=false;
+        int daño=5;
+        int vidaRestanteJugador=gp.jugador.getLife()-daño;
+        gp.jugador.setLife(vidaRestanteJugador);
+    }
+
+
     public boolean animacionAtaqueTerminadaErrante(){
         return contadorMaxFramesEnemigo >=1;
     }
 
     public boolean animacionMuerteTerminadaErrante(){
 
-        if (muerteNum   ==3) {return true;}
+        if (muerteNum  ==3) {return true;}
         else {return false;}
     }
 
+    public int getBarraVidaEnemigo(){
+        return barraVidaEnemigo;
+    }
+    public void setBarraVidaEnemigo(int barraVidaEnemigo){
+        this.barraVidaEnemigo = barraVidaEnemigo;
+    }
 
     public void setLifeEnemigo(int lifeEnemigo){
         this.lifeEnemigo = lifeEnemigo;
@@ -241,4 +283,8 @@ public class samuraiErrante extends Enemigo{
     public int getLifeEnemigo(){
         return lifeEnemigo;
     }
+
+
+
+
 }
