@@ -198,51 +198,108 @@ public class samuraiErrante extends Enemigo{
 
 
 
-
     public void actuarSamurai(){
-
         contadorMaxFramesEnemigo=0;
+
+        //ACTIVA LA HABILIDAD SI BAJA LA VIDA A LA MITAD
         if(!isHabilidadActivada && getLifeEnemigo()<=(getBarraVidaEnemigo()/2)){
             activarHabilidadUnica();
         }
-        ataqueEquilibradoSamurai();
+
+        //SACAMOS EL TIPO DE ATAQUE QUE HARA EL SAMURAI
+        Random rand = new Random();
+        int numero = rand.nextInt(3) + 1;
+        if(numero==1){
+            ataqueSeguroSamurai();
+        }else if(numero==2){
+            ataqueEquilibradoSamurai();
+        }else{
+            ataqueArriesgadoSamurai();
+        }
+
+
         estoyAtacandoErrante=true;
+
 
     }
 
 
     public void ataqueSeguroSamurai(){
+        int ataque=5;
+        int probabilidadAcierto=90;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
+        Random rand = new Random();
+
+
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
+            if(jugadorVidaRestante<0){
+                jugadorVidaRestante=0;
+            }
+
+
+            gp.jugador.setLife(jugadorVidaRestante);
+
+        }else{
+
+        }
 
 
     }
 
+
+
+
     public void ataqueEquilibradoSamurai(){
-        int ataque=7;
-        int porcentaje=10;
+        int ataque=8;
+        int probabilidadAcierto=70;
         int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
-        int aciertoFinal = (int) ((porcentaje + gp.jugador.precision * gp.jugador.precisionPorcentaje) * 100);
+
+
         Random rand = new Random();
 
 
-        boolean acierta = rand.nextInt(100) < aciertoFinal;
 
 
-        if(acierta){
+        if(rand.nextInt(100) < probabilidadAcierto){
             int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
             if(jugadorVidaRestante<0){
                 jugadorVidaRestante=0;
             }
             gp.jugador.setLife(jugadorVidaRestante);
-            gp.ui.drawInformacionBatalla();
 
-        }else if(!acierta){
-            gp.ui.drawInformacionBatalla();
+        }else{
+
         }
     }
 
-    public void ataqueArriesgado(){
 
+
+    public void ataqueArriesgadoSamurai(){
+        int ataque=12;
+        int probabilidadAcierto=45;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
+        Random rand = new Random();
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
+            if(jugadorVidaRestante<0){
+                jugadorVidaRestante=0;
+            }
+            gp.jugador.setLife(jugadorVidaRestante);
+
+        }else{
+
+        }
     }
+
 
     public void activarHabilidadUnica(){
         System.out.println("Ha activado su habilidad");

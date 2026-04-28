@@ -386,65 +386,85 @@ public class Jugador  extends Entidad{
 
     public void ataqueSeguro(){
 
-        int ataque=10;
-        double porcentaje=0.40;
-        int dañoFinal=(int)(ataque+(gp.jugador.strenght*gp.jugador.fuerzaPorcentaje));
-        int aciertoFinal=(int)((porcentaje+gp.jugador.precision*gp.jugador.precisionPorcentaje)*100);
+
+        int ataque=6;
+        int probabilidadAcierto=90;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
         Random rand = new Random();
 
-        boolean acierta = rand.nextInt(100) < aciertoFinal;
 
-        if (acierta) {
-            int enemigoVidaRestante=gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
-            gp.samuraiErrante.setLifeEnemigo(enemigoVidaRestante); // acierto
-        } else {
-            haFallado=true;
-            gp.ui.drawInformacionBatalla(); //fallo
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int samuraiVidaRestante =gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
+            if(samuraiVidaRestante <0){
+                samuraiVidaRestante =0;
+            }
+            gp.samuraiErrante.setLifeEnemigo(samuraiVidaRestante);
+
+        }else{
+
         }
 
 
     }
     public void ataqueEquilibrado() {
-        int ataque = 10;
-        double porcentaje = 0.40;
-        int dañoFinal = (int) (ataque + (gp.jugador.strenght * gp.jugador.fuerzaPorcentaje));
-        int aciertoFinal = (int) ((porcentaje + gp.jugador.precision * gp.jugador.precisionPorcentaje) * 100);
+
+
+        int ataque=10;
+        int probabilidadAcierto=68;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
         Random rand = new Random();
 
 
-        boolean acierta = rand.nextInt(100) < aciertoFinal;
 
 
-        if (acierta) {
-            int enemigoVidaRestante = gp.samuraiErrante.getLifeEnemigo() - dañoFinal;
-            gp.samuraiErrante.setLifeEnemigo(enemigoVidaRestante); // acierto
-        } else {
-            haFallado=true;
-            gp.ui.drawInformacionBatalla(); //fallo
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int samuraiVidaRestante =gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
+            if(samuraiVidaRestante <0){
+                samuraiVidaRestante =0;
+            }
+            gp.samuraiErrante.setLifeEnemigo(samuraiVidaRestante);
+
+        }else{
+
         }
 
+
     }
+
 
     public void ataqueArriesgado() {
-        int ataque = 10;
-        double porcentaje = 0;
-        int dañoFinal = (int) (ataque + (gp.jugador.strenght * gp.jugador.fuerzaPorcentaje));
-        int aciertoFinal = (int) ((porcentaje + gp.jugador.precision * gp.jugador.precisionPorcentaje) * 100);
+        int ataque=14;
+        int probabilidadAcierto=48;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
         Random rand = new Random();
 
 
-        boolean acierta = rand.nextInt(100) < aciertoFinal;
 
 
-        if (acierta) {
-            int enemigoVidaRestante = gp.samuraiErrante.getLifeEnemigo() - dañoFinal;
-            gp.samuraiErrante.setLifeEnemigo(enemigoVidaRestante); // acierto
-        } else {
-            haFallado=true;
-            gp.ui.drawInformacionBatalla(); //fallo
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int samuraiVidaRestante =gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
+            if(samuraiVidaRestante <0){
+                samuraiVidaRestante =0;
+            }
+            gp.samuraiErrante.setLifeEnemigo(samuraiVidaRestante);
+
+        }else{
+
         }
 
+
     }
+
+
+
 
     public boolean animacionAtaqueTerminada(){
 
