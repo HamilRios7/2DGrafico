@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Random;
+
 
 import static java.lang.Math.clamp;
 
@@ -28,6 +28,10 @@ public class Jugador  extends Entidad{
     public boolean isAnimacionMuerteTerminada=false;
 
     public boolean haFallado=false;
+
+
+
+
 
     public Jugador(GamePanel gp,KeyHandler keyH) {
         this.gp = gp;
@@ -52,13 +56,12 @@ public class Jugador  extends Entidad{
         //JUGADOR ATRIBUTOS
 
         level =1;
+
+        //FUERZA
         strenght=3;
         fuerzaPorcentaje=0.4;
-        precision=1;
-        precisionPorcentaje=0.3;
-        exp=0;
-        nextLevelExp=100;
-        oro=0;
+
+        //VIDA
         maxLife=3;
         barraVida=maxLife*10;
         life=barraVida;
@@ -219,10 +222,7 @@ public class Jugador  extends Entidad{
                     x2Jugador = x2Jugador - 6;
                 }
 
-                System.out.println("x: " + x2Jugador);
-
                 x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura -195);
-
 
                 animacionMoviendome();
             } else if(!moviendo ) {
@@ -385,84 +385,16 @@ public class Jugador  extends Entidad{
 
 
     public void ataqueSeguro(){
-
-
-        int ataque=6;
-        int probabilidadAcierto=90;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
-
-
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int samuraiVidaRestante =gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
-            if(samuraiVidaRestante <0){
-                samuraiVidaRestante =0;
-            }
-            gp.samuraiErrante.setLifeEnemigo(samuraiVidaRestante);
-
-        }else{
-
-        }
-
-
+        super.ataqueSeguro(gp.enemigoActual);
     }
+
     public void ataqueEquilibrado() {
-
-
-        int ataque=10;
-        int probabilidadAcierto=68;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
-
-
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int samuraiVidaRestante =gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
-            if(samuraiVidaRestante <0){
-                samuraiVidaRestante =0;
-            }
-            gp.samuraiErrante.setLifeEnemigo(samuraiVidaRestante);
-
-        }else{
-
-        }
-
-
+        super.ataqueEquilibrado(gp.enemigoActual);
     }
-
 
     public void ataqueArriesgado() {
-        int ataque=14;
-        int probabilidadAcierto=48;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
-
-
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int samuraiVidaRestante =gp.samuraiErrante.getLifeEnemigo()-dañoFinal;
-            if(samuraiVidaRestante <0){
-                samuraiVidaRestante =0;
-            }
-            gp.samuraiErrante.setLifeEnemigo(samuraiVidaRestante);
-
-        }else{
-
-        }
-
-
+        super.ataqueArriesgado(gp.enemigoActual);
     }
-
 
 
 
@@ -478,9 +410,6 @@ public class Jugador  extends Entidad{
         else {return false;}
     }
 
-    public void obtenerOro(int oroDrop){//se le suma el oro que ha dropeado el enemigo
-        oro=oro+oroDrop;
-    }
 
     public Rectangle getBorde1() {
         return new Rectangle(x1Jugador, y1Jugador,75,1);
@@ -491,20 +420,15 @@ public class Jugador  extends Entidad{
         return new Rectangle(x2Jugador, y2Jugador,64,1);
     }
 
+
+
     public void setLife(int life){
-        this.life =life;
+       super.setLife(life);
     }
 
     public int getLife(){
-        return life;
+        return super.getLife();
     }
 
 
-    public int getOro() {
-        return oro;
-    }
-
-    public void setOro(int oro) {
-        this.oro = oro;
-    }
 }

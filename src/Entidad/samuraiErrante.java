@@ -36,14 +36,15 @@ public class samuraiErrante extends Enemigo{
 
         //JUGADOR ATRIBUTOS
 
-        nombreEnemigo ="Berserker  Carmesi";
+        nombreEnemigo ="Samurai Errante";
+
         maxLifeEnemigo=4;
         barraVidaEnemigo=maxLifeEnemigo*10;
         lifeEnemigo=barraVidaEnemigo;
+
         strenght=2;
         fuerzaPorcentaje=0.4;
-        precision=1;
-        precisionPorcentaje=0.3;
+
 
     }
 
@@ -120,23 +121,23 @@ public class samuraiErrante extends Enemigo{
 
 
     public void animacionQuieto(){
-        idleCounter++;
+        idleCounterEnemigo++;
 
-        if(idleCounter > 10){
-            idleNum++;
-            idleCounter = 0;
-            if(idleNum > 10) idleNum= 1;
+        if(idleCounterEnemigo > 10){
+            idleNumEnemigo++;
+            idleCounterEnemigo = 0;
+            if(idleNumEnemigo > 10) idleNumEnemigo = 1;
         }
     }
 
     public void animacionAtacar(){
-        atacarCounter++;
-        if(atacarCounter > 5){
+        atacarCounterEnemigo++;
+        if(atacarCounterEnemigo > 5){
 
-            atacarNum++;
-            atacarCounter = 0;
-            if(atacarNum > 7) {
-                atacarNum = 1;
+            atacarNumEnemigo++;
+            atacarCounterEnemigo = 0;
+            if(atacarNumEnemigo > 7) {
+                atacarNumEnemigo = 1;
                 contadorMaxFramesEnemigo++;
             }
         }
@@ -161,16 +162,16 @@ public class samuraiErrante extends Enemigo{
 
     public Image dibujarQuieto(){
         BufferedImage Image= null;
-        if (idleNum == 1) { Image= quieto_1; }
-        if (idleNum == 2) { Image= quieto_2; }
-        if (idleNum == 3) { Image= quieto_3; }
-        if (idleNum == 4) { Image= quieto_4; }
-        if (idleNum == 5) { Image= quieto_5;}
-        if (idleNum == 6) { Image= quieto_6; }
-        if (idleNum == 7) { Image= quieto_7; }
-        if (idleNum == 8) { Image= quieto_8; }
-        if (idleNum == 9) { Image= quieto_9; }
-        if (idleNum == 10) { Image= quieto_10; }
+        if (idleNumEnemigo == 1) { Image= quieto_1; }
+        if (idleNumEnemigo == 2) { Image= quieto_2; }
+        if (idleNumEnemigo == 3) { Image= quieto_3; }
+        if (idleNumEnemigo == 4) { Image= quieto_4; }
+        if (idleNumEnemigo == 5) { Image= quieto_5;}
+        if (idleNumEnemigo == 6) { Image= quieto_6; }
+        if (idleNumEnemigo == 7) { Image= quieto_7; }
+        if (idleNumEnemigo == 8) { Image= quieto_8; }
+        if (idleNumEnemigo == 9) { Image= quieto_9; }
+        if (idleNumEnemigo == 10) { Image= quieto_10; }
         return Image;
     }
 
@@ -185,13 +186,13 @@ public class samuraiErrante extends Enemigo{
     public Image dibujarAtacar(){
         BufferedImage Image= null;
 
-        if (atacarNum == 1) { Image= ata1; }
-        if (atacarNum == 2) { Image= ata2; }
-        if (atacarNum == 3) { Image= ata3; }
-        if (atacarNum == 4) { Image= ata4; }
-        if (atacarNum == 5) { Image= ata5;}
-        if (atacarNum == 6) { Image= ata6; }
-        if (atacarNum == 7) { Image= ata7; }
+        if (atacarNumEnemigo == 1) { Image= ata1; }
+        if (atacarNumEnemigo == 2) { Image= ata2; }
+        if (atacarNumEnemigo == 3) { Image= ata3; }
+        if (atacarNumEnemigo == 4) { Image= ata4; }
+        if (atacarNumEnemigo == 5) { Image= ata5;}
+        if (atacarNumEnemigo == 6) { Image= ata6; }
+        if (atacarNumEnemigo == 7) { Image= ata7; }
 
         return Image;
     }
@@ -224,81 +225,11 @@ public class samuraiErrante extends Enemigo{
     }
 
 
-    public void ataqueSeguroSamurai(){
-        int ataque=5;
-        int probabilidadAcierto=90;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+    public void ataqueSeguroSamurai(){super.ataqueSeguroSamurai();}
 
+    public void ataqueEquilibradoSamurai(){super.ataqueEquilibradoSamurai();}
 
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
-            if(jugadorVidaRestante<0){
-                jugadorVidaRestante=0;
-            }
-
-
-            gp.jugador.setLife(jugadorVidaRestante);
-
-        }else{
-
-        }
-
-
-    }
-
-
-
-
-    public void ataqueEquilibradoSamurai(){
-        int ataque=8;
-        int probabilidadAcierto=70;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
-
-
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
-            if(jugadorVidaRestante<0){
-                jugadorVidaRestante=0;
-            }
-            gp.jugador.setLife(jugadorVidaRestante);
-
-        }else{
-
-        }
-    }
-
-
-
-    public void ataqueArriesgadoSamurai(){
-        int ataque=12;
-        int probabilidadAcierto=45;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
-
-
-        Random rand = new Random();
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
-            if(jugadorVidaRestante<0){
-                jugadorVidaRestante=0;
-            }
-            gp.jugador.setLife(jugadorVidaRestante);
-
-        }else{
-
-        }
-    }
+    public void ataqueArriesgadoSamurai(){super.ataqueArriesgadoSamurai();}
 
 
     public void activarHabilidadUnica(){
@@ -321,27 +252,25 @@ public class samuraiErrante extends Enemigo{
     }
 
     public boolean animacionMuerteTerminadaErrante(){
-
         if (muerteNum  ==3) {return true;}
         else {return false;}
     }
 
     public int getBarraVidaEnemigo(){
-        return barraVidaEnemigo;
+        return super.getBarraVidaEnemigo();
     }
+
     public void setBarraVidaEnemigo(int barraVidaEnemigo){
         this.barraVidaEnemigo = barraVidaEnemigo;
     }
 
     public void setLifeEnemigo(int lifeEnemigo){
-        this.lifeEnemigo = lifeEnemigo;
+        super.setLifeEnemigo(lifeEnemigo);
     }
 
     public int getLifeEnemigo(){
-        return lifeEnemigo;
+        return super.getLifeEnemigo();
     }
-
-
 
 
 }

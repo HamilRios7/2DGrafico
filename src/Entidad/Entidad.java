@@ -4,6 +4,7 @@ import Main.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Entidad  {
     // de este campo heredan los enemigos y jugador
@@ -28,17 +29,18 @@ public class Entidad  {
     public String nombre;
 
     //PERSONAJE ATRIBUTOS
+
     protected int maxLife;
     public int barraVida;
     public int life;
+
     public int level;
+
     protected int strenght;
     public double fuerzaPorcentaje;
-    protected double precision;
-    public double precisionPorcentaje;
-    protected int oro;
-    protected int exp;
-    public int nextLevelExp;
+
+
+
 
 
 
@@ -59,30 +61,87 @@ public class Entidad  {
 
     //
     public Rectangle solidArea;
-    public boolean colisionOn=false;
+
+
+
+
+
+    public void ataqueSeguro(Enemigo enemigo){
+
+        int ataque=6;
+        int probabilidadAcierto=90;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+        Random rand = new Random();
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int vida = enemigo.getLifeEnemigo() - dañoFinal;
+            if(vida < 0) vida = 0;
+            enemigo.setLifeEnemigo(vida);
+        }
+    }
+
+    public void ataqueEquilibrado(Enemigo enemigo) {
+
+
+        int ataque=10;
+        int probabilidadAcierto=68;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
+        Random rand = new Random();
+
+
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int vida = enemigo.getLifeEnemigo() - dañoFinal;
+            if(vida < 0) vida = 0;
+            enemigo.setLifeEnemigo(vida);
+
+        }else{
+
+        }
+
+
+    }
+
+
+    public void ataqueArriesgado(Enemigo enemigo) {
+        int ataque=14;
+        int probabilidadAcierto=40;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
+        Random rand = new Random();
+
+
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int vida = enemigo.getLifeEnemigo() - dañoFinal;
+            if(vida < 0) vida = 0;
+            enemigo.setLifeEnemigo(vida);
+        }else{
+
+        }
+
+
+    }
+
 
 
     public String getNombre() {
         return nombre;
     }
-
-    public int getMaxLife() {
-        return maxLife;
-    }
-
-    public int getBarraVida() {
-        return barraVida;
-    }
-
     public int getLife() {
         return life;
     }
-
-    public int getLevel() {
-        return level;
+    public void setLife(int life){
+        this.life =life;
     }
 
-    public int getStrenght() {
-        return strenght;
-    }
+
+
+
 }

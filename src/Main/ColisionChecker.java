@@ -11,7 +11,7 @@ import static java.lang.Math.clamp;
 
 public class ColisionChecker {
     GamePanel gp;
-    ;
+
     public ColisionChecker(GamePanel gp){
         this.gp=gp;
     }

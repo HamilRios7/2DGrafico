@@ -1,10 +1,7 @@
 package Entidad;
 
-import Main.GamePanel;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.util.Random;
 
 //modificada para que se extienda de la clase Personaje
 public class Enemigo extends Entidad {
@@ -31,18 +28,115 @@ public class Enemigo extends Entidad {
 
 
     //DE ENEMIGOS
-    public int moveCounter =0;
-    public int moveNum =1;
-    public int idleCounter=0;
-    public int idleNum=1;
-    public int atacarCounter=0;
-    public int atacarNum=1;
+    public int idleCounterEnemigo =0;
+    public int idleNumEnemigo =1;
+    public int atacarCounterEnemigo =0;
+    public int atacarNumEnemigo =1;
     int contadorMaxFramesEnemigo=0;
 
+    public void ataqueSeguroSamurai(){
+        int ataque=5;
+        int probabilidadAcierto=90;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
 
+
+        Random rand = new Random();
+
+
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
+            if(jugadorVidaRestante<0){
+                jugadorVidaRestante=0;
+            }
+
+
+            gp.jugador.setLife(jugadorVidaRestante);
+
+        }else{
+
+        }
+
+
+    }
+
+
+
+
+    public void ataqueEquilibradoSamurai(){
+        int ataque=8;
+        int probabilidadAcierto=68;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
+        Random rand = new Random();
+
+
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
+            if(jugadorVidaRestante<0){
+                jugadorVidaRestante=0;
+            }
+            gp.jugador.setLife(jugadorVidaRestante);
+
+        }else{
+
+        }
+    }
+
+
+
+    public void ataqueArriesgadoSamurai(){
+        int ataque=12;
+        int probabilidadAcierto=44;
+        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+
+
+        Random rand = new Random();
+
+
+        if(rand.nextInt(100) < probabilidadAcierto){
+            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
+            if(jugadorVidaRestante<0){
+                jugadorVidaRestante=0;
+            }
+            gp.jugador.setLife(jugadorVidaRestante);
+
+        }else{
+
+        }
+    }
+
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getMaxLifeEnemigo() {
+        return maxLifeEnemigo;
+    }
+
+    public int getBarraVidaEnemigo() {
+        return barraVidaEnemigo;
+    }
+
+    public int getLifeEnemigo() {
+        return lifeEnemigo;
+    }
+
+    public void setLifeEnemigo(int lifeEnemigo) {
+        this.lifeEnemigo=lifeEnemigo;
+    }
 
 
 }
+
+
+
+
 //Antes de poner esto en marcha, necesitaos ser capaces de general a nuestro enemigo
 //Piensa que la clase madre completa es Entidad , entonces de esa tienen que heredar las demas
 
