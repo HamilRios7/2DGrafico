@@ -1,275 +1,311 @@
 package Entidad;
 
 import Main.GamePanel;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
 
-public class samuraiErrante extends Enemigo{
+/**
+ * Primer enemigo del juego: el Samurai Errante.
+ * Extiende  Enemigo y añade su comportamiento específico:
+ * una habilidad única que se activa al bajar de la mitad de vida,
+ * y un contrataque cuando el jugador falla.
+ *
+ * Flujo de su turno en combate:
+ *   Actualizacion detecta que es turno del enemigo
+ *   Comprueba si debe activar la habilidad (sin animación)
+ *   Si no, arranca la animación de ataque
+ *   Al terminar la animación, llama a actuarSamurai() para calcular el daño
+ */
+public class samuraiErrante extends Enemigo {
 
-    public boolean estoyAtacandoErrante=false;
+    /** true mientras el samurai está reproduciendo su animación de ataque */
+    public boolean estoyAtacandoErrante = false;
+
+    /**
+     * true cuando el samurai ya ha tomado su decisión de ataque este turno.
+     * Evita que  Actualizacion lo llame varias veces en el mismo turno.
+     */
     public boolean enemigoYaAtaco = false;
-    public boolean heMuertoEnemigo=false;
-    public boolean isAnimacionMuerteTerminadaEnemigo=false;
 
-    boolean isHabilidadActivada=false;
+    /** true cuando el samurai ha llegado a 0 de vida y está muriendo */
+    public boolean heMuertoEnemigo = false;
 
+    /** true cuando la animación de muerte ha terminado completamente */
+    public boolean isAnimacionMuerteTerminadaEnemigo = false;
+
+    /** true cuando la habilidad única ya ha sido activada (solo se activa una vez) */
+    boolean isHabilidadActivada = false;
+
+    /**
+     * true cuando el samurai acaba de ejecutar un contrataque.
+     * Se usa en  KeyHandler para saber que, al cerrar la pantalla
+     * del contrataque que aparece de UI, el siguiente paso es el turno normal del enemigo.
+     */
+    public boolean fueContrataque = false;
+
+
+    /**
+     * Constructor: inicializa la referencia al GamePanel, el área sólida,
+     * los valores por defecto y carga las imágenes.
+     *
+     * @param gp referencia al panel principal del juego
+     */
     public samuraiErrante(GamePanel gp) {
         this.gp = gp;
-
-        solidArea = new Rectangle(48,48,gp.tamañoMosaico,gp.tamañoMosaico);
+        solidArea = new Rectangle(48, 48, gp.tamañoMosaico, gp.tamañoMosaico);
         setDefaultValuesEnemigo();
         getEnemyImage();
     }
 
+    /**
+     * Establece los valores iniciales del samurai: posición, vida, fuerza, etc.
+     */
+    public void setDefaultValuesEnemigo() {
+        enemyWidht = 340;
+        x1Enemigo = 710;
+        y1Enemigo = 120;
 
-    public void setDefaultValuesEnemigo(){
+        nombreEnemigo = "Samurai Errante";
+        maxLifeEnemigo = 4;
+        barraVidaEnemigo = maxLifeEnemigo * 10;
+        lifeEnemigo = barraVidaEnemigo;
 
-        //AJUSTES NORMALES
-        enemyWidht=340;
-        x1Enemigo=710;
-        y1Enemigo=120;
-
-
-        //JUGADOR ATRIBUTOS
-
-        nombreEnemigo ="Samurai Errante";
-
-        maxLifeEnemigo=4;
-        barraVidaEnemigo=maxLifeEnemigo*10;
-        lifeEnemigo=barraVidaEnemigo;
-
-        strenght=2;
-        fuerzaPorcentaje=0.4;
-
-
+        strenght = 2;
+        fuerzaPorcentaje = 0.4;
     }
 
-    public void getEnemyImage(){
-        try{
+    /**
+     * Carga todos los sprites del samurai desde los recursos del proyecto.
+     * Incluye animaciones de idle (10 frames), ataque (7 frames) y muerte (3 frames).
+     */
+    public void getEnemyImage() {
+        try {
+            quieto_1  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_1.png"));
+            quieto_2  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_2.png"));
+            quieto_3  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_3.png"));
+            quieto_4  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_4.png"));
+            quieto_5  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_5.png"));
+            quieto_6  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_6.png"));
+            quieto_7  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_7.png"));
+            quieto_8  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_8.png"));
+            quieto_9  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_9.png"));
+            quieto_10 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_10.png"));
 
-            // Quieto animacion
-            quieto_1= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_1.png"));
-            quieto_2= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_2.png"));
-            quieto_3= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_3.png"));
-            quieto_4= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_4.png"));
-            quieto_5= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_5.png"));
-            quieto_6= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_6.png"));
-            quieto_7= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_7.png"));
-            quieto_8= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_8.png"));
-            quieto_9= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_9.png"));
-            quieto_10= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/quieto_10.png"));
+            ata1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_1S.png"));
+            ata2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_2S.png"));
+            ata3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_3S.png"));
+            ata4 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_4S.png"));
+            ata5 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_5S.png"));
+            ata6 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_6S.png"));
+            ata7 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_7S.png"));
 
-
-            //Atacando animacion
-            ata1= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_1S.png"));
-            ata2=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_2S.png"));
-            ata3=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_3S.png"));
-            ata4=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_4S.png"));
-            ata5=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_5S.png"));
-            ata6=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_6S.png"));
-            ata7=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/ataque_7S.png"));
-
-
-
-            //Muriendo animacion
-           morir1= ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_1.png"));
-            morir2=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_2.png"));
-            morir3=ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_3.png"));
-
-
-            //Recibiendo daño animacion
-
-
-
-
-        }catch(IOException e){
+            morir1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_1.png"));
+            morir2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_2.png"));
+            morir3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("samuraierrante/muerte_3.png"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-    public void updateSamurai(){
-        if(!estoyAtacandoErrante && !heMuertoEnemigo){
+
+    /**
+     * Actualiza el estado del samurai cada frame.
+     * Solo avanza la animación de idle cuando no está atacando ni muerto.
+     */
+    public void updateSamurai() {
+        if (!estoyAtacandoErrante && !heMuertoEnemigo) {
             animacionQuieto();
         }
     }
-    public void drawSamurai(Graphics2D gd2){
 
+    /**
+     * Dibuja el samurai en pantalla según su estado actual:
+     * muerto → animación muerte, atacando → animación ataque, idle → animación quieto.
+     *
+     * @param gd2 contexto gráfico 2D
+     */
+    public void drawSamurai(Graphics2D gd2) {
         BufferedImage image = null;
 
-        if(heMuertoEnemigo){
+        if (heMuertoEnemigo) {
             image = (BufferedImage) dibujarMuerte();
-        }
-        else if(estoyAtacandoErrante){
+        } else if (estoyAtacandoErrante) {
             image = (BufferedImage) dibujarAtacar();
-        }
-        else{
+        } else {
             image = (BufferedImage) dibujarQuieto();
         }
 
-        if(image != null){
+        if (image != null) {
             gd2.drawImage(image, x1Enemigo, y1Enemigo, enemyWidht, enemyWidht, null);
         }
     }
 
+    // ── Animaciones ───────────────────────────────────────────────────────────
 
-
-
-
-
-    public void animacionQuieto(){
+    /** Avanza la animación de idle del samurai (ciclo de 10 frames) */
+    public void animacionQuieto() {
         idleCounterEnemigo++;
-
-        if(idleCounterEnemigo > 10){
+        if (idleCounterEnemigo > 10) {
             idleNumEnemigo++;
             idleCounterEnemigo = 0;
-            if(idleNumEnemigo > 10) idleNumEnemigo = 1;
+            if (idleNumEnemigo > 10) idleNumEnemigo = 1;
         }
     }
 
-    public void animacionAtacar(){
+    /**
+     * Avanza la animación de ataque del samurai (ciclo de 7 frames).
+     * Cuando completa un ciclo, incrementa  contadorMaxFramesEnemigo
+     * para señalar que la animación terminó.
+     */
+    public void animacionAtacar() {
         atacarCounterEnemigo++;
-        if(atacarCounterEnemigo > 5){
-
+        if (atacarCounterEnemigo > 5) {
             atacarNumEnemigo++;
             atacarCounterEnemigo = 0;
-            if(atacarNumEnemigo > 7) {
+            if (atacarNumEnemigo > 7) {
                 atacarNumEnemigo = 1;
                 contadorMaxFramesEnemigo++;
             }
         }
     }
 
-    public void animacionMuerte(){
-
+    /**
+     * Avanza la animación de muerte del samurai (ciclo de 3 frames).
+     * Se queda congelado en el último frame al terminar.
+     */
+    public void animacionMuerte() {
         muerteCounter++;
-        if(muerteCounter > 20){
+        if (muerteCounter > 20) {
             muerteNum++;
             muerteCounter = 0;
-            if(muerteNum > 3) {
+            if (muerteNum > 3) {
                 muerteNum = 3;
                 contadorMaxFramesEnemigo++;
             }
         }
     }
 
+    // ── Dibujo de frames ─────────────────────────────────────────────────────
 
-
-
-
-    public Image dibujarQuieto(){
-        BufferedImage Image= null;
-        if (idleNumEnemigo == 1) { Image= quieto_1; }
-        if (idleNumEnemigo == 2) { Image= quieto_2; }
-        if (idleNumEnemigo == 3) { Image= quieto_3; }
-        if (idleNumEnemigo == 4) { Image= quieto_4; }
-        if (idleNumEnemigo == 5) { Image= quieto_5;}
-        if (idleNumEnemigo == 6) { Image= quieto_6; }
-        if (idleNumEnemigo == 7) { Image= quieto_7; }
-        if (idleNumEnemigo == 8) { Image= quieto_8; }
-        if (idleNumEnemigo == 9) { Image= quieto_9; }
-        if (idleNumEnemigo == 10) { Image= quieto_10; }
-        return Image;
-    }
-
-    public Image dibujarMuerte(){
-        BufferedImage Image= null;
-        if (muerteNum == 1) { Image= morir1; }
-        if (muerteNum == 2) { Image= morir2; }
-        if (muerteNum == 3) { Image= morir3; }
-        return Image;
-    }
-
-    public Image dibujarAtacar(){
-        BufferedImage Image= null;
-
-        if (atacarNumEnemigo == 1) { Image= ata1; }
-        if (atacarNumEnemigo == 2) { Image= ata2; }
-        if (atacarNumEnemigo == 3) { Image= ata3; }
-        if (atacarNumEnemigo == 4) { Image= ata4; }
-        if (atacarNumEnemigo == 5) { Image= ata5;}
-        if (atacarNumEnemigo == 6) { Image= ata6; }
-        if (atacarNumEnemigo == 7) { Image= ata7; }
-
-        return Image;
-    }
-
-
-
-    public void actuarSamurai(){
-        contadorMaxFramesEnemigo=0;
-
-        //ACTIVA LA HABILIDAD SI BAJA LA VIDA A LA MITAD
-        if(!isHabilidadActivada && getLifeEnemigo()<=(getBarraVidaEnemigo()/2)){
-            activarHabilidadUnica();
+    /** @return el frame de idle correspondiente al contador actual */
+    public Image dibujarQuieto() {
+        BufferedImage image = null;
+        switch (idleNumEnemigo) {
+            case 1:  image = quieto_1;  break;
+            case 2:  image = quieto_2;  break;
+            case 3:  image = quieto_3;  break;
+            case 4:  image = quieto_4;  break;
+            case 5:  image = quieto_5;  break;
+            case 6:  image = quieto_6;  break;
+            case 7:  image = quieto_7;  break;
+            case 8:  image = quieto_8;  break;
+            case 9:  image = quieto_9;  break;
+            case 10: image = quieto_10; break;
         }
+        return image;
+    }
+    /** @return el frame de muerte correspondiente al contador actual */
+    public Image dibujarMuerte() {
+        BufferedImage image = null;
+        switch (muerteNum) {
+            case 1: image = morir1; break;
+            case 2: image = morir2; break;
+            case 3: image = morir3; break;
+        }
+        return image;
+    }
 
-        //SACAMOS EL TIPO DE ATAQUE QUE HARA EL SAMURAI
+    /** @return el frame de ataque correspondiente al contador actual */
+    public Image dibujarAtacar() {
+        BufferedImage image = null;
+        switch (atacarNumEnemigo) {
+            case 1: image = ata1; break;
+            case 2: image = ata2; break;
+            case 3: image = ata3; break;
+            case 4: image = ata4; break;
+            case 5: image = ata5; break;
+            case 6: image = ata6; break;
+            case 7: image = ata7; break;
+        }
+        return image;
+    }
+
+    // ── Lógica de combate ────────────────────────────────────────────────────
+
+    /**
+     * Calcula y aplica el ataque del samurai al jugador.
+     * Este método se llama SOLO cuando la animación de ataque ha terminado,
+     * para que el daño ocurra en el momento visual correcto.
+     * NO activa la habilidad aquí — eso se gestiona en  Actualizacion
+     * antes de arrancar la animación.
+     */
+    public void actuarSamurai() {
+        contadorMaxFramesEnemigo = 0;
+        fueEnemigoAtaque = true;
+
         Random rand = new Random();
         int numero = rand.nextInt(3) + 1;
-        if(numero==1){
-            ataqueSeguroSamurai();
-        }else if(numero==2){
-            ataqueEquilibradoSamurai();
-        }else{
-            ataqueArriesgadoSamurai();
-        }
-
-
-        estoyAtacandoErrante=true;
-
-
+        if      (numero == 1) ataqueSeguro();      // heredado de Enemigo
+        else if (numero == 2) ataqueEquilibrado(); // heredado de Enemigo
+        else                  ataqueArriesgado();  // heredado de Enemigo
     }
 
+    /** Delega al método de la clase padre  Enemigo ataqueSeguro() */
+    public void ataqueSeguro() { super.ataqueSeguro(); }
 
-    public void ataqueSeguroSamurai(){super.ataqueSeguroSamurai();}
+    /** Delega al método de la clase padre  Enemigo ataqueEquilibrado() */
+    public void ataqueEquilibrado() { super.ataqueEquilibrado(); }
 
-    public void ataqueEquilibradoSamurai(){super.ataqueEquilibradoSamurai();}
+    /** Delega al método de la clase padre Enemigo ataqueArriesgado() */
+    public void ataqueArriesgado() { super.ataqueArriesgado(); }
 
-    public void ataqueArriesgadoSamurai(){super.ataqueArriesgadoSamurai();}
-
-
-    public void activarHabilidadUnica(){
-        System.out.println("Ha activado su habilidad");
-        isHabilidadActivada=true;
-        strenght=strenght+2;
+    /**
+     * Activa la habilidad única del samurai cuando baja de la mitad de vida.
+     * Solo se puede activar una vez por combate.
+     * Sube la fuerza del samurai en 2 puntos y muestra la pantalla de habilidad.
+     * NO hace animación de ataque — solo muestra el mensaje en la UI.
+     */
+    public void activarHabilidadUnica() {
+        isHabilidadActivada = true;
+        strenght = strenght + 2;
+        seHaMostradoPantalla = true;  // flag para que UI muestre el mensaje
+        gp.isSituacionPelea = false;  // activa la pantalla de resultado
     }
 
-
-    public void contratacar(){
-        gp.jugador.haFallado=false;
-        int daño=5;
-        int vidaRestanteJugador=gp.jugador.getLife()-daño;
+    /**
+     * Ejecuta el contrataque del samurai cuando el jugador falla un ataque.
+     * Hace 5 puntos de daño fijo al jugador sin animación propia.
+     * Marca fueContrataque=true para que  KeyHandler sepa
+     * que al cerrar esta pantalla sobre contrataque, debe arrancar el turno normal del enemigo.
+     */
+    public void contratacar() {
+        fueContrataque = true;       // señal para KeyHandler
+        fueEnemigoAtaque = true;     // para que UI muestre el resultado
+        haFalladoEnemigo = false;
+        int daño = 5;
+        int vidaRestanteJugador = gp.jugador.getLife() - daño;
+        if (vidaRestanteJugador < 0) vidaRestanteJugador = 0;
         gp.jugador.setLife(vidaRestanteJugador);
+        dañoHechoEnemigo = daño;
+        gp.isSituacionPelea = false; // muestra pantalla del contrataque
     }
 
+    // ── Comprobaciones de fin de animación ───────────────────────────────────
 
-    public boolean animacionAtaqueTerminadaErrante(){
-        return contadorMaxFramesEnemigo >=1;
+    /**
+     * @return true si la animación de ataque del samurai ha completado al menos un ciclo
+     */
+    public boolean animacionAtaqueTerminadaErrante() {
+        return contadorMaxFramesEnemigo >= 1;
     }
 
-    public boolean animacionMuerteTerminadaErrante(){
-        if (muerteNum  ==3) {return true;}
-        else {return false;}
-    }
-
-    public int getBarraVidaEnemigo(){
-        return super.getBarraVidaEnemigo();
-    }
-
-    public void setBarraVidaEnemigo(int barraVidaEnemigo){
-        this.barraVidaEnemigo = barraVidaEnemigo;
-    }
-
-    public void setLifeEnemigo(int lifeEnemigo){
-        super.setLifeEnemigo(lifeEnemigo);
-    }
-
-    public int getLifeEnemigo(){
-        return super.getLifeEnemigo();
+    /**
+     * @return true si la animación de muerte ha llegado al último frame
+     */
+    public boolean animacionMuerteTerminadaErrante() {
+        return muerteNum == 3;
     }
 
 

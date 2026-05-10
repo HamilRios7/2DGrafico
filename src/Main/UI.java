@@ -5,232 +5,296 @@ import Objetos.SuperObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.text.DecimalFormat;
 
+/**
+ * Clase responsable de renderizar toda la interfaz de usuario (HUD, menús, etc.).
+ *
+ * Se encarga de dibujar en pantalla los diferentes estados del juego:
+ * título, pausa, combate, guías de interacción y pantallas de fin de partida.
+ *
+ */
 public class UI {
+
+    /** Referencia al panel principal del juego para acceder al estado global. */
     GamePanel gp;
+
+    /** Manejador de teclado para leer la entrada del jugador. */
     KeyHandler keyH;
+
+    /** Contexto gráfico 2D usado en el frame actual. */
     Graphics2D g2;
 
+    /** Fuente estándar de 20 pt en negrita. */
+    Font arial_40;
 
-    Font arial_40, arial_80B;
+    /** Fuente grande de 80 pt en negrita (para títulos). */
+    Font arial_80B;
 
+    /** Imagen del corazón que aparece junto a la barra de vida. */
     BufferedImage corazon;
 
-    //BufferedImage keyImage;
+    /**
+     * Índice de la opción seleccionada en los menús de título,
+     * muerte y enhorabuena.
+     */
     public int comandoNum = 0;
-    public int titleScreenState = 0;// 0: la primera pantalla 1: segunda pantalla
-
-    public int comandoNum1 = 0;// Índice de la opción seleccionada
-    public int subState = 0;   // 0: Selección principal (Inventario), 1: Selección de Ataques
 
 
-//movimiento personaje en pantalla
-  int idleCounter=0;
-  int idleNum=1;
+    /**
+     * Estado de la pantalla de título:
+     *
+     *   0 – Menú principal
+     *   1 – Historia / introducción
+     *   2 – Pantalla de muerte
+     */
+    public int titleScreenState = 0;
 
+    /**
+     * Índice de la opción seleccionada dentro del menú de combate.
+     * Se usa en el submenú principal (ATACAR / INVENTARIO).
+     */
+    public int comandoNum1 = 0;
+
+    /**
+     * Sub-estado del menú de combate:
+     *
+     *   0 – Selección principal (ATACAR / INVENTARIO)
+     *   1 – Selección de tipo de ataque (DÉBIL / EQUILIBRADO / FUERTE)
+     *
+     */
+    public int subState = 0;
+
+    /**
+     * Índice del cursor en el panel de información de batalla.
+     * Comienza en 1 para apuntar a "Continuar" por defecto.
+     */
+    public int comandoNum2 = 1;
+
+
+    /**
+     * Construye la UI, inicializa las fuentes y carga el icono de corazón.
+     *
+     * @param gp   panel principal del juego
+     * @param keyH manejador de teclado
+     */
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
+
         arial_40 = new Font("Arial", Font.BOLD, 20);
         arial_80B = new Font("Arial", Font.BOLD, 80);
 
-
-        //CREAR HUD DE OBJETOS
+        // Obtenemos la imagen del corazón a partir del objeto de vida
         SuperObject vida = new Obj_Vida(gp);
         corazon = vida.imagen;
-
-
     }
 
+    // ── Punto de entrada del renderizado ────────────────────────────────────
 
+    /**
+     * Método principal de dibujo llamado cada frame desde  GamePanel paintComponent.
+     *
+     * Delega en los métodos auxiliares según el estado actual del juego.
+     *
+     *
+     * @param g2 contexto gráfico del frame
+     */
     public void draw(Graphics2D g2) {
         this.g2 = g2;
 
         g2.setFont(arial_40);
         g2.setColor(Color.white);
 
-        //TITULO JUGANDO
+        // ── Pantalla de título (solo si el jugador no está en animación de muerte) ──
         if (gp.gameState == gp.titleState && !gp.jugador.isAnimacionMuerteTerminada) {
             drawTitleScreen();
-            if(comandoNum==1){
+            // Si el cursor apunta a "CRÉDITOS", mostrar la ventana emergente
+            if (comandoNum == 1) {
                 drawCreditos();
             }
         }
-        //ESTADO JUGANDO
+
+        // ── HUD durante el juego normal ──────────────────────────────────────
         if (gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3) {
             drawJugadorVida();
-            //Do playstate stuff
-
         }
 
-        //ESTADO PAUSADO
+        // ── HUD durante la pausa ─────────────────────────────────────────────
         if (gp.gameState == gp.pauseState1 || gp.gameState == gp.pauseState2 || gp.gameState == gp.pauseState3) {
             drawJugadorVida();
-
             drawPauseScreen();
         }
 
-
-        //SI ESTA CERCA DE PUERTA
+        // ── Texto de guía de interacción (puertas, peleas, piso 3) ──────────
         if (gp.jugador.cercaPuerta || gp.jugador.cercaPelea || gp.jugador.cercaIrPiso3 && !keyH.ePressed) {
             drawTextoGuia();
         }
 
+        // ── Estado de combate ────────────────────────────────────────────────
         if (gp.gameState == gp.statePelea) {
             drawJugadorVida();
             drawEnemigoVida();
-            drawCombatMenu();
+
+            if (gp.isSituacionPelea && gp.jugadorTurno) {
+                // Es el turno del jugador y no hay resultado pendiente: mostrar menú
+                drawCombatMenu();
+            } else if (!gp.isSituacionPelea) {
+                // Hay un resultado de ataque que informar al jugador
+                drawInformacionBatalla();
+            }
         }
 
-
+        // ── Pantalla de muerte (se activa cuando la animación de muerte termina) ──
         if (gp.jugador.isAnimacionMuerteTerminada && gp.gameState == gp.titleState) {
             gp.stopMusic();
             titleScreenState = 2;
             drawTitleScreen();
         }
 
-        if(gp.gameState==gp.congratulationsState){
+        // ── Pantalla de enhorabuena al completar el juego ────────────────────
+        if (gp.gameState == gp.congratulationsState) {
             drawCongratulationsPantalla();
         }
     }
 
+    // ── HUD de vida ──────────────────────────────────────────────────────────
 
+    /**
+     * Dibuja la barra de vida del jugador en la esquina inferior izquierda.
+     *
+     * La barra se escala con baseUnit píxeles por punto de vida,
+     * de modo que el tamaño refleja tanto la vida actual como la máxima.
+     *
+     */
     public void drawJugadorVida() {
-        // Cada punto de vida equivale a 16 píxeles en la barra
-        int baseUnit = 2;
+        int baseUnit = 2; // px por punto de vida
 
-        //Las posicion de la barra de vida
-        int barraX = 60;
-        int barraY = 525;
-
-        //La posicion de la imagen de corazon
-        int corazonX = 28;
+        int barraX = 60;   // posición X de la barra
+        int barraY = 525;  // posición Y de la barra
+        int corazonX = 28; // posición X del icono de corazón
         int corazonY = 518;
 
-        //Maxima Vida Dibujar
-        // Ancho actual de la vida , lo que le quede si le baja
-        double hpBarValue = gp.jugador.life * baseUnit;
-        // Ancho total de la barra de vida segun el nivel de vida
-        double maxHpBarValue = gp.jugador.barraVida * baseUnit;
+        double hpBarValue    = gp.jugador.life * baseUnit;          // anchura actual
+        double maxHpBarValue = gp.jugador.barraVida * baseUnit;     // anchura máxima
 
-        //FONDO_BARRA MAXIMA
+        // Fondo oscuro (vida perdida)
         g2.setColor(Color.DARK_GRAY);
         g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
 
-        //VIDA ACTUAL
+        // Vida actual en rojo
         g2.setColor(Color.RED);
         g2.fillRect(barraX, barraY, (int) hpBarValue, 15);
 
-        //BORDE DE BARRA
+        // Borde blanco
         g2.setColor(Color.WHITE);
         g2.drawRect(barraX, barraY, (int) maxHpBarValue, 15);
 
+        // Icono de corazón
         g2.drawImage(corazon, corazonX, corazonY, 40, 25, null);
     }
 
+    /**
+     * Dibuja la barra de vida del enemigo (samurái errante) en la parte superior derecha.
+     *
+     * Funciona de la misma manera a  #drawJugadorVida() pero leyendo
+     * los datos del enemigo.
+     *
+     */
     public void drawEnemigoVida() {
-        // Cada punto de vida equivale a 16 píxeles en la barra
         int baseUnit = 2;
 
-        //Las posicion de la barra de vida
         int barraX = 850;
         int barraY = 255;
-
-        //La posicion de la imagen de corazon
         int corazonX = 28;
         int corazonY = 518;
 
-        //Maxima Vida Dibujar
-        // Ancho actual de la vida , lo que le quede si le baja
-        double hpBarValue = gp.samuraiErrante.getLifeEnemigo() * baseUnit;
-        // Ancho total de la barra de vida segun el nivel de vida
+        double hpBarValue    = gp.samuraiErrante.getLifeEnemigo() * baseUnit;
         double maxHpBarValue = gp.samuraiErrante.barraVidaEnemigo * baseUnit;
 
-        //FONDO_BARRA MAXIMA
         g2.setColor(Color.DARK_GRAY);
         g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
 
-        //VIDA ACTUAL
         g2.setColor(Color.RED);
         g2.fillRect(barraX, barraY, (int) hpBarValue, 15);
 
-        //BORDE DE BARRA
         g2.setColor(Color.WHITE);
         g2.drawRect(barraX, barraY, (int) maxHpBarValue, 15);
 
         g2.drawImage(corazon, corazonX, corazonY, 40, 25, null);
     }
 
+    // ── Pantallas de menú y estado ───────────────────────────────────────────
+
+    /**
+     * Dibuja el texto "PAUSADO" centrado en pantalla.
+     */
     public void drawPauseScreen() {
         String text = "PAUSADO";
         int x = getXforCenteredText(text);
         int y = gp.pantallaAltura / 2;
-
         g2.drawString("PAUSADO", x, y);
     }
 
+    /**
+     * Dibuja la pantalla de título según el estado  #titleScreenState
+     *
+     *   Estado 0: menú principal con logo, animación del jugador y opciones.
+     *   Estado 1: texto de historia e introducción al juego.
+     *   Estado 2: pantalla de muerte con opción de salir.
+     *
+     */
     public void drawTitleScreen() {
 
         if (titleScreenState == 0) {
+            // ── Fondo oscuro ──
             g2.setColor(new Color(7, 10, 18));
             g2.fillRect(0, 0, gp.pantallaAnchura, gp.pantallaAltura);
 
-            //TITILO NOMBRE
+            // ── Título del juego ──
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
             String text = "Stairgrave";
             int x = getXforCenteredText(text);
             int y = gp.tamañoMosaico * 3;
 
-            //SOMBRAS
+            // Sombra del título
             g2.setColor(Color.black);
             g2.drawString(text, x + 5, y + 5);
 
-            //MAIN COLOR
+            // Color principal del título
             g2.setColor(new Color(209, 0, 28));
             g2.drawString(text, x, y);
 
-
-            //GUERRERO IMAGEN MOVIENDOSE IDLE
+            // ── Animación idle del personaje ──
             x = (gp.pantallaAnchura / 2) - 90;
             y = y + gp.tamañoMosaico * 2;
-            BufferedImage Image= null;
             gp.jugador.animacionQuieto();
-            Image=(BufferedImage) gp.jugador.dibujarQuieto();
-            g2.drawImage(Image, x-20, y-50, gp.tamañoMosaico * 5, gp.tamañoMosaico * 5, null);
+            BufferedImage Image = (BufferedImage) gp.jugador.dibujarQuieto();
+            g2.drawImage(Image, x - 20, y - 50,
+                    gp.tamañoMosaico * 5, gp.tamañoMosaico * 5, null);
 
-
-            //MENU
-
+            // ── Opciones del menú ──
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+
             text = "NUEVA PARTIDA";
             x = getXforCenteredText(text);
             y = y + gp.tamañoMosaico * 5;
             g2.drawString(text, x, y);
-            if (comandoNum == 0) {
-                g2.drawString(">", x - gp.tamañoMosaico, y);
-            }
-
+            if (comandoNum == 0) g2.drawString(">", x - gp.tamañoMosaico, y);
 
             text = "CREDITOS";
             x = getXforCenteredText(text);
             y = y + gp.tamañoMosaico;
             g2.drawString(text, x, y);
-            if (comandoNum == 1) {
-                g2.drawString(">", x - gp.tamañoMosaico, y);
-            }
+            if (comandoNum == 1) g2.drawString(">", x - gp.tamañoMosaico, y);
 
             text = "SALIR";
             x = getXforCenteredText(text);
             y = y + gp.tamañoMosaico;
             g2.drawString(text, x, y);
-            if (comandoNum == 2) {
-                g2.drawString(">", x - gp.tamañoMosaico, y);
-            }
-
+            if (comandoNum == 2) g2.drawString(">", x - gp.tamañoMosaico, y);
 
         } else if (titleScreenState == 1) {
-            //TEXTO HISTORIA
+            // ── Texto de introducción / historia ──
             g2.setColor(new Color(209, 0, 28));
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
 
@@ -240,206 +304,254 @@ public class UI {
             g2.drawString(text, x, y);
 
             text = "Nadie llega a la cima.";
-            x = getXforCenteredText(text);
-            y = y + gp.tamañoMosaico;
+            x = getXforCenteredText(text); y += gp.tamañoMosaico;
             g2.drawString(text, x, y);
 
             text = "No porque no puedan, sino porque el Castillo no lo permite.";
-            x = getXforCenteredText(text);
-            y = y + gp.tamañoMosaico;
+            x = getXforCenteredText(text); y += gp.tamañoMosaico;
             g2.drawString(text, x, y);
-
 
             text = "Y aun así, tú sigues subiendo.";
-            x = getXforCenteredText(text);
-            y = y + gp.tamañoMosaico;
+            x = getXforCenteredText(text); y += gp.tamañoMosaico;
             g2.drawString(text, x, y);
-
 
             text = "Desgarra el camino. O conviértete en él.";
-            x = getXforCenteredText(text);
-            y = y + gp.tamañoMosaico;
+            x = getXforCenteredText(text); y += gp.tamañoMosaico;
             g2.drawString(text, x, y);
 
-
+            // Botón para empezar
             text = "DESGARRAR";
-            x = getXforCenteredText(text);
-            y = y + gp.tamañoMosaico * 2;
+            x = getXforCenteredText(text); y += gp.tamañoMosaico * 2;
             g2.drawString(text, x, y);
-            if (comandoNum == 0) {
-                g2.drawString(">", x - gp.tamañoMosaico, y);
-            }
+            if (comandoNum == 0) g2.drawString(">", x - gp.tamañoMosaico, y);
+
         } else if (titleScreenState == 2) {
+            // ── Pantalla de muerte ──
             g2.setColor(new Color(209, 0, 28));
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+
             String muerteTexto = "HAS MUERTO";
-            g2.drawString(muerteTexto,  getXforCenteredText(muerteTexto), gp.pantallaAltura / 2);
+            g2.drawString(muerteTexto,
+                    getXforCenteredText(muerteTexto), gp.pantallaAltura / 2);
 
-
-            String ReinicioJuego = "Salir";
-            g2.drawString(ReinicioJuego, getXforCenteredText(ReinicioJuego), (gp.pantallaAltura / 2) + 70);
+            String reinicio = "Salir";
+            g2.drawString(reinicio,
+                    getXforCenteredText(reinicio), (gp.pantallaAltura / 2) + 70);
             if (comandoNum == 0) {
-                g2.drawString(">",  getXforCenteredText(ReinicioJuego)- 30, (gp.pantallaAltura / 2) + 70);
+                g2.drawString(">",
+                        getXforCenteredText(reinicio) - 30, (gp.pantallaAltura / 2) + 70);
             }
-
         }
     }
 
+    // ── Utilidad de centrado ─────────────────────────────────────────────────
 
+    /**
+     * Calcula la coordenada X necesaria para centrar un texto en la pantalla.
+     *
+     * @param text texto a centrar
+     * @return coordenada X de inicio del texto centrado
+     */
     public int getXforCenteredText(String text) {
-        int lenght = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-        int x = gp.pantallaAnchura / 2 - lenght / 2;
-        return x;
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return gp.pantallaAnchura / 2 - length / 2;
     }
 
+    // ── Texto de guía contextual ─────────────────────────────────────────────
+
+    /**
+     * Muestra cajas de texto emergentes cuando el jugador está cerca de un
+     * punto de interés (puerta, zona de pelea, acceso al siguiente piso).
+     */
     public void drawTextoGuia() {
         if (gp.jugador.cercaPuerta) {
-
-            int x = 250;
-            int y = 150;
-            int ancho = 400;
-            int alto = 100;
-
-            // Fondo negro
-            g2.setColor(new Color(0, 0, 0, 200)); // transparente
-            g2.fillRect(x, y, ancho, alto);
-
-            // Borde blanco
-            g2.setColor(Color.white);
-            g2.drawRect(x, y, ancho, alto);
-
-            // Texto
-            g2.setFont(g2.getFont().deriveFont(20F));
-            g2.drawString("Pulsa E para entrar al castillo", x + 20, y + 55);
+            dibujarCajaTexto(250, 150, 400, 100,
+                    "Pulsa E para entrar al castillo");
         }
         if (gp.jugador.cercaPelea && !gp.ispeleaFinalizada) {
-
-            int x = 250;
-            int y = 150;
-            int ancho = 400;
-            int alto = 100;
-            // Fondo negro
-            g2.setColor(new Color(0, 0, 0, 200)); // transparente
-            g2.fillRect(x, y, ancho, alto);
-
-            // Borde blanco
-            g2.setColor(Color.white);
-            g2.drawRect(x, y, ancho, alto);
-
-            // Texto
-            g2.setFont(g2.getFont().deriveFont(20F));
-            g2.drawString("Pulsa E para empezar la lucha", x + 20, y + 55);
-        }if(gp.jugador.cercaIrPiso3 && gp.ispeleaFinalizada){
-
-            int x = 450;
-            int y = 150;
-            int ancho = 400;
-            int alto = 100;
-            // Fondo negro
-            g2.setColor(new Color(0, 0, 0, 200)); // transparente
-            g2.fillRect(x, y, ancho, alto);
-
-            // Borde blanco
-            g2.setColor(Color.white);
-            g2.drawRect(x, y, ancho, alto);
-
-            // Texto
-            g2.setFont(g2.getFont().deriveFont(20F));
-            g2.drawString("Pulsa E para ir al siguiente piso", x + 20, y + 55);
-
+            dibujarCajaTexto(250, 150, 400, 100,
+                    "Pulsa E para empezar la lucha");
+        }
+        if (gp.jugador.cercaIrPiso3 && gp.ispeleaFinalizada) {
+            dibujarCajaTexto(450, 150, 400, 100,
+                    "Pulsa E para ir al siguiente piso");
         }
     }
 
+    /**
+     * Método auxiliar privado que dibuja una caja semitransparente con texto.
+     *
+     * @param x      posición X de la caja
+     * @param y      posición Y de la caja
+     * @param ancho  anchura de la caja
+     * @param alto   altura de la caja
+     * @param texto  texto a mostrar dentro de la caja
+     */
+    private void dibujarCajaTexto(int x, int y, int ancho, int alto, String texto) {
+        g2.setColor(new Color(0, 0, 0, 200)); // fondo negro semitransparente
+        g2.fillRect(x, y, ancho, alto);
+        g2.setColor(Color.white);
+        g2.drawRect(x, y, ancho, alto);
+        g2.setFont(g2.getFont().deriveFont(20F));
+        g2.drawString(texto, x + 20, y + 55);
+    }
+
+    // ── Menú de combate ──────────────────────────────────────────────────────
+
+    /**
+     * Dibuja el menú de combate en la parte inferior de la pantalla.
+     *
+     * En  #subState 0 muestra las acciones principales (ATACAR, INVENTARIO).
+     * En  #subState 1 muestra los tipos de ataque (DÉBIL, EQUILIBRADO, FUERTE).
+     *
+     */
     public void drawCombatMenu() {
-        // Dibujamos el marco principal de fondo
-        int x = 220;
-        int y = 502;
-        int width = 800;
-        int height = 115;
+        int x = 220, y = 502, width = 800, height = 115;
+
+        // Marco del menú
         g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(x, y, width, height);
         g2.setColor(Color.white);
         g2.drawRect(x, y, width, height);
 
-        //Creamos el menu de eleccion
         if (subState == 0) {
-            // --- MENÚ PRINCIPAL DEL COMBATE ---
+            // ── Menú principal: ATACAR / INVENTARIO ──
             g2.drawString("ATACAR", x + 60, y + 40);
-            if (comandoNum1 == 0) {
-                g2.drawString(">", x + 30, y + 40);
-            }
+            if (comandoNum1 == 0) g2.drawString(">", x + 30, y + 40);
+
             g2.drawString("INVENTARIO", x + 60, y + 90);
-            if (comandoNum1 == 1) {
-                g2.drawString(">", x + 30, y + 90);
-            }
+            if (comandoNum1 == 1) g2.drawString(">", x + 30, y + 90);
 
         } else if (subState == 1) {
-            // --- MENÚ DE TIPOS DE ATAQUE ---
+            // ── Submenú de tipos de ataque ──
             g2.drawString("DEBIL", x + 50, y + 30);
-            if (comandoNum1 == 0) {
-                g2.drawString(">", x + 30, y + 30);
+            if (comandoNum1 == 0) g2.drawString(">", x + 30, y + 30);
 
-            }
             g2.drawString("EQUILIBRADO", x + 50, y + 60);
-            if (comandoNum1 == 1) {
-                g2.drawString(">", x + 30, y + 60);
-            }
-            g2.drawString("FUERTE", x + 50, y +90);
-            if (comandoNum1 == 2) {
-                g2.drawString(">", x + 30, y + 90);
-            }
+            if (comandoNum1 == 1) g2.drawString(">", x + 30, y + 60);
+
+            g2.drawString("FUERTE", x + 50, y + 90);
+            if (comandoNum1 == 2) g2.drawString(">", x + 30, y + 90);
+
+            // Pista de navegación
             g2.setFont(g2.getFont().deriveFont(10F));
             g2.drawString("Presiona ESC para volver", x + 270, y + 110);
         }
     }
 
-    public void drawCongratulationsPantalla(){
+    // ── Pantalla de victoria ─────────────────────────────────────────────────
 
+    /**
+     * Muestra la pantalla de enhorabuena al completar el juego,
+     * con opción de salir.
+     */
+    public void drawCongratulationsPantalla() {
         g2.setColor(new Color(209, 0, 28));
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
-        String finJuegoTexto = "ENHORABUENA , HAS TERMINADO EL JUEGO";
-        g2.drawString(finJuegoTexto,  getXforCenteredText(finJuegoTexto), gp.pantallaAltura / 2);
 
+        String finJuegoTexto = "ENHORABUENA , HAS TERMINADO EL JUEGO";
+        g2.drawString(finJuegoTexto,
+                getXforCenteredText(finJuegoTexto), gp.pantallaAltura / 2);
 
         String salirJuego = "Salir";
-        g2.drawString(salirJuego, getXforCenteredText(salirJuego), (gp.pantallaAltura / 2) + 70);
+        g2.drawString(salirJuego,
+                getXforCenteredText(salirJuego), (gp.pantallaAltura / 2) + 70);
         if (comandoNum == 0) {
-            g2.drawString(">",  getXforCenteredText(salirJuego)- 30, (gp.pantallaAltura / 2) + 70);
+            g2.drawString(">",
+                    getXforCenteredText(salirJuego) - 30, (gp.pantallaAltura / 2) + 70);
         }
-
-
     }
 
-    public void drawCreditos(){
+    /**
+     * Dibuja la ventana emergente de créditos cuando el cursor apunta a
+     * "CRÉDITOS" en el menú principal.
+     */
+    public void drawCreditos() {
+        int x = 330, y = 180, ancho = 450, alto = 160;
 
-        int x = 330;
-        int y = 180;
-        int ancho = 450;
-        int alto = 160;
-
-        // Fondo negro
-        g2.setColor(new Color(0, 0, 0, 200)); // transparente
+        g2.setColor(new Color(0, 0, 0, 200));
         g2.fillRect(x, y, ancho, alto);
-
-        // Borde blanco
         g2.setColor(Color.white);
         g2.drawRect(x, y, ancho, alto);
 
-        // Texto
         g2.setFont(g2.getFont().deriveFont(20F));
         g2.drawString("CREADO POR HAMIL Y JOSUE", x + 80, y + 55);
-
-        g2.setFont(g2.getFont().deriveFont(12F));
-        g2.drawString("", x + 160, y + 90);
-
     }
 
+    // ── Inventario ───────────────────────────────────────────────────────────
+
+    /**
+     * Abre el inventario durante el combate pasando el turno al enemigo
+     * temporalmente mientras se navega por él.
+     */
     public void abrirInventario() {
         gp.jugadorTurno = false;
     }
 
+
+
+
+    // ── Información de batalla ───────────────────────────────────────────────
+
+    /**
+     * Muestra en pantalla el resultado del último ataque (jugador o enemigo),
+     * incluyendo si falló, cuánto daño hizo y cuánta vida le queda al objetivo.
+     *
+     * También gestiona la pantalla de habilidad especial del samurái (furia).
+     * El jugador debe pulsar ENTER sobre "Continuar" para avanzar al siguiente turno.
+     *
+     */
     public void drawInformacionBatalla() {
+        int x = 220, y = 502, width = 800, height = 115;
+
+        g2.setColor(new Color(0, 0, 0, 200));
+        g2.fillRect(x, y, width, height);
+        g2.setColor(Color.white);
+        g2.drawRect(x, y, width, height);
+
+        // ── Habilidad especial del samurái (prioridad máxima) ──
+        if (gp.samuraiErrante.seHaMostradoPantalla) {
+            g2.drawString(
+                    "El samurai se ha puesto furioso y ha subido su fuerza dos niveles",
+                    x + 50, y + 40);
+            g2.drawString("Continuar", x + 50, y + 90);
+            if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
+            return; // no seguir dibujando nada más
+        }
+
+        if (gp.jugador.fuejugadorAtaque) {
+            // ── Resultado del ataque del jugador ──
+            if (gp.jugador.heFalladoJugador) {
+                g2.drawString(
+                        "El heroe ha fallado el ataque , el samurai ha usado contrataque",
+                        x + 50, y + 40);
+            } else {
+                g2.drawString(
+                        "El heroe ha acertado el ataque ha hecho "
+                                + gp.jugador.dañoHechoJugador + " puntos de daño",
+                        x + 50, y + 40);
+                g2.drawString(
+                        "y ha dejado al samurai con " + gp.samuraiErrante.getLifeEnemigo(),
+                        x + 50, y + 60);
+            }
+            g2.drawString("Continuar", x + 50, y + 90);
+            if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
+
+        } else if (gp.samuraiErrante.fueEnemigoAtaque) {
+            // ── Resultado del ataque del enemigo ──
+            if (gp.samuraiErrante.haFalladoEnemigo) {
+                g2.drawString("El samurai ha fallado el ataque", x + 50, y + 40);
+            } else {
+                g2.drawString(
+                        "El samurai ha acertado el ataque , ha hecho "
+                                + gp.samuraiErrante.dañoHechoEnemigo + " puntos de daño",
+                        x + 50, y + 40);
+                g2.drawString(
+                        "y ha dejado al heroe con " + gp.jugador.getLife(),
+                        x + 50, y + 60);
+            }
+            g2.drawString("Continuar", x + 50, y + 90);
+            if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
+        }
     }
 }
-
-

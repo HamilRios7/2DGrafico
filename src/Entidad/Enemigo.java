@@ -3,137 +3,117 @@ package Entidad;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
-//modificada para que se extienda de la clase Personaje
+/**
+ * Clase base para todos los enemigos del juego.
+ * Extiende  Entidad y añade atributos y métodos específicos de los enemigos,
+ * incluyendo su propia lógica de ataque y flags de estado de combate.
+ */
 public class Enemigo extends Entidad {
-    public Enemigo() {
 
-    }
+    public Enemigo() {}
+
+    /** Nombre del enemigo mostrado en la UI */
     String nombreEnemigo;
+
+    /** Vida máxima del enemigo */
     public int maxLifeEnemigo;
+
+    /**
+     * Valor total de la barra de vida del enemigo (maxLifeEnemigo * 10).
+     * Se usa para calcular el ancho visual de la barra de vida.
+     */
     public int barraVidaEnemigo;
+
+    /** Vida actual del enemigo */
     public int lifeEnemigo;
+
+    /** Ancho en píxeles del sprite del enemigo al dibujarse */
     public int enemyWidht;
 
+    /** Posición del enemigo en pantalla */
     public int x1Enemigo, y1Enemigo;
 
 
-    //Samurai
-    public BufferedImage quieto_1,quieto_2,quieto_3,quieto_4,quieto_5,quieto_6,quieto_7,quieto_8,quieto_9,quieto_10,
-            ata1,ata2,ata3,ata4,ata5,ata6,ata7,
 
+    // ── Sprites del samurai ───────────────────────────────────────────────────
+    // Idle (10 frames), ataque (7 frames), muerte (3 frames)
+    public BufferedImage quieto_1,quieto_2,quieto_3,quieto_4,quieto_5, quieto_6,quieto_7,quieto_8,quieto_9,quieto_10,
+            ata1,ata2,ata3,ata4,ata5,ata6,ata7,
             morir1,morir2,morir3;
 
 
 
+    // ── Flags de estado de combate del enemigo ────────────────────────────────
 
+    /** true si el enemigo falló su último ataque */
+    public boolean haFalladoEnemigo = false;
 
-    //DE ENEMIGOS
-    public int idleCounterEnemigo =0;
-    public int idleNumEnemigo =1;
-    public int atacarCounterEnemigo =0;
-    public int atacarNumEnemigo =1;
-    int contadorMaxFramesEnemigo=0;
+    /** Daño que hizo el enemigo en su último ataque */
+    public int dañoHechoEnemigo = 0;
 
-    public void ataqueSeguroSamurai(){
-        int ataque=5;
-        int probabilidadAcierto=90;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+    /** true si el turno que acaba de ocurrir fue un ataque del enemigo */
+    public boolean fueEnemigoAtaque = false;
 
-
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
-            if(jugadorVidaRestante<0){
-                jugadorVidaRestante=0;
-            }
-
-
-            gp.jugador.setLife(jugadorVidaRestante);
-
-        }else{
-
-        }
-
-
-    }
+    /**
+     * true cuando el samurai acaba de activar su habilidad única.
+     * Se usa en  drawInformacionBatalla() para mostrar la pantalla
+     * de habilidad con prioridad sobre cualquier otro mensaje ya que ocurren bugs sin esto.
+     */
+    public boolean seHaMostradoPantalla = false;
 
 
 
+    // ── Contadores de animación del enemigo ───────────────────────────────────
 
-    public void ataqueEquilibradoSamurai(){
-        int ataque=8;
-        int probabilidadAcierto=68;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+    /** Contador de frames para la animación idle del enemigo */
+    public int idleCounterEnemigo = 0;
+    /** Frame actual de la animación idle del enemigo (1-10) */
+    public int idleNumEnemigo = 1;
 
+    /** Contador de frames para la animación de ataque del enemigo */
+    public int atacarCounterEnemigo = 0;
+    /** Frame actual de la animación de ataque del enemigo (1-7) */
+    public int atacarNumEnemigo = 1;
 
-        Random rand = new Random();
-
-
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
-            if(jugadorVidaRestante<0){
-                jugadorVidaRestante=0;
-            }
-            gp.jugador.setLife(jugadorVidaRestante);
-
-        }else{
-
-        }
-    }
+    /**
+     * Contador de ciclos completados de la animación del enemigo.
+     * Cuando llega a 1, la animación ha terminado.
+     */
+    int contadorMaxFramesEnemigo = 0;
 
 
 
-    public void ataqueArriesgadoSamurai(){
-        int ataque=12;
-        int probabilidadAcierto=44;
-        int dañoFinal=(int)(ataque+(strenght*fuerzaPorcentaje));
+    // ── Métodos de ataque del enemigo ─────────────────────────────────────────
 
+    private void ejecutarAtaqueEnemigo(int ataque, int probabilidadAcierto) {
+        fueEnemigoAtaque = true;
+        int dañoFinal = (int)(ataque + (strenght * fuerzaPorcentaje));
 
         Random rand = new Random();
-
-
-        if(rand.nextInt(100) < probabilidadAcierto){
-            int jugadorVidaRestante=gp.jugador.getLife()-dañoFinal;
-            if(jugadorVidaRestante<0){
-                jugadorVidaRestante=0;
-            }
+        if (rand.nextInt(100) < probabilidadAcierto) {
+            int jugadorVidaRestante = gp.jugador.getLife() - dañoFinal;
+            if (jugadorVidaRestante < 0) jugadorVidaRestante = 0;
             gp.jugador.setLife(jugadorVidaRestante);
-
-        }else{
-
+            dañoHechoEnemigo = dañoFinal;
+            haFalladoEnemigo = false;
+        } else {
+            haFalladoEnemigo = true;
         }
+        gp.isSituacionPelea = false;
     }
 
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public int getMaxLifeEnemigo() {
-        return maxLifeEnemigo;
-    }
-
-    public int getBarraVidaEnemigo() {
-        return barraVidaEnemigo;
-    }
-
-    public int getLifeEnemigo() {
-        return lifeEnemigo;
-    }
-
-    public void setLifeEnemigo(int lifeEnemigo) {
-        this.lifeEnemigo=lifeEnemigo;
-    }
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(5,  90); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(8,  68); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(12, 44); }
 
 
+
+    public String getNombre() { return nombre; }
+    public int getMaxLifeEnemigo() { return maxLifeEnemigo; }
+    public int getBarraVidaEnemigo() { return barraVidaEnemigo; }
+    public int getLifeEnemigo() { return lifeEnemigo; }
+    public void setLifeEnemigo(int lifeEnemigo) { this.lifeEnemigo = lifeEnemigo; }
 }
-
 
 
 
