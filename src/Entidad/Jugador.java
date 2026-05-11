@@ -45,6 +45,15 @@ public class Jugador extends Entidad {
     /** true cuando el jugador está cerca del acceso al siguiente piso. */
     public boolean cercaIrPiso3 = false;
 
+
+    /** true cuando el jugador está cerca del acceso al siguiente piso. */
+    public boolean cercaPeleaFinal = false;
+
+
+    /** true cuando el jugador está cerca del acceso al siguiente piso. */
+    public boolean cercaCongratulations = false;
+
+
     // ════════════════════════════════════════════════════════════════════════
     // FLAGS DE ESTADO DE ANIMACIÓN
     // ════════════════════════════════════════════════════════════════════════
@@ -293,22 +302,26 @@ public class Jugador extends Entidad {
         if (gp.gameState == gp.escenaState3) {
             if (moviendo) {
                 if (keyH.rightPressed) {
-                    direction   = "right";
-                    x3Jugador  += 6;
+                    direction = "right";
+                    x3Jugador += 6;
                 } else if (keyH.leftPressed) {
-                    direction   = "left";
-                    x3Jugador  -= 6;
+                    direction = "left";
+                    x3Jugador -= 6;
                 }
 
-                // Límites de la escena 2 (distintos a los de escena 1 por el layout)
-                x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 195);
-
+                if (!gp.cofreAparecido){
+                    // Límites de la escena 3 (distintos a los de escena 1 por el layout)
+                    x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 800);
+                }else if(gp.cofreAparecido){
+                    System.out.println(x3Jugador);
+                    x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 970);
+                }
                 animacionMoviendome();
             } else {
                 animacionQuieto();
             }
 
-        } else if (gp.gameState == gp.statePelea && !heMuerto) {
+        } else if (gp.gameState == gp.statePelea2 && !heMuerto) {
             // Durante el combate el jugador está quieto esperando su turno
             animacionQuieto();
         }
@@ -380,10 +393,10 @@ public class Jugador extends Entidad {
                     ? (BufferedImage) dibujarMoviendome()
                     : (BufferedImage) dibujarQuieto();
 
-        } else if (gp.gameState == gp.statePelea && estoyAtacando) {
+        } else if (gp.gameState == gp.statePelea2 && estoyAtacando) {
             image = (BufferedImage) dibujarAtaque();
 
-        } else if (gp.gameState == gp.statePelea && !heMuerto) {
+        } else if (gp.gameState == gp.statePelea2 && !heMuerto) {
             image = (BufferedImage) dibujarQuieto();
 
         } else if (heMuerto) {
@@ -659,10 +672,20 @@ public class Jugador extends Entidad {
         return new Rectangle(x2Jugador, y2Jugador, 64, 1);
     }
 
+    public Rectangle getBorde3() {
+        return new Rectangle(x3Jugador, y3Jugador, 10, 1);
+    }
 
-
-    public void moverPelea(){
+    public void moverPelea1(){
         gp.gameState = gp.statePelea;
+        moveNum = 1;
+        direction = "right";
+        cercaPuerta = false;
+        x2Jugador = 130;
+    }
+
+    public void moverPelea2(){
+        gp.gameState = gp.statePelea2;
         moveNum = 1;
         direction = "right";
         cercaPuerta = false;

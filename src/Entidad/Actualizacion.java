@@ -21,24 +21,31 @@ public class Actualizacion {
 
     /**
      * Actualización principal del combate, llamada cada frame cuando
-     *  gameState == statePelea.
+     * gameState == statePelea.
      *
      * El flujo de turnos es:
-     *
-     *   Jugador elige ataque → solo se guarda  ataqueElegido
+     *   Jugador elige ataque → solo se guarda ataqueElegido
      *   Animación del jugador se reproduce
-     *   Al terminar la animación → se calcula el daño →  isSituacionPelea=false
+     *   Al terminar la animación → se calcula el daño → isSituacionPelea=false
      *   UI muestra resultado → jugador pulsa Enter (gestionado en KeyHandler)
-     *   Si falló: contrataque Enemigo  → muestra pantalla →  Enter para salir de la informacion de UI→ turno normal del enemigo
+     *   Si falló: contrataque Enemigo → muestra pantalla → Enter → turno normal del enemigo
      *   Si acertó: turno del enemigo directamente
-     *   Posible pantalla de habilidad unica→ Enter para salir de la informacion de UI → animación de enemigo de ataque
-     *   → calculo de daño y muestra pantalla → Enter para salir de la informacion de UI → turno jugador
+     *   Posible pantalla de habilidad única → Enter → animación de enemigo de ataque
+     *   → cálculo de daño y muestra pantalla → Enter → turno jugador
      *
+     * NOTA: gp.enemigoActual debe estar asignado ANTES de entrar al estado statePelea.
+     *   gp.enemigoActual = gp.samuraiErrante;  // combate 1
+     *   gp.enemigoActual = gp.gigante;          // combate boss
      */
     public void actualizacionCombate1() {
-        gp.enemigoActual = gp.samuraiErrante;
-        gp.samuraiErrante.updateSamurai();
-        gp.jugador.update2();
+        // gp.enemigoActual ya viene asignado desde Actualizacion.actualizacionMoverEscena*
+        // NO se sobreescribe aquí para que funcione con cualquier enemigo.
+
+        Enemigo e = gp.enemigoActual; // alias local para no repetir
+
+        e.updateEnemigo();
+        if(gp.gameState == gp.statePelea) gp.jugador.update2();
+        if(gp.gameState == gp.statePelea2) gp.jugador.update3();
 
         // ── Comprobar muerte del jugador ──────────────────────────────────────
         if (gp.jugador.getLife() <= 0) {
@@ -48,31 +55,32 @@ public class Actualizacion {
             gp.jugador.animacionMuerte();
             if (gp.jugador.animacionMuerteTerminada()) {
                 gp.jugador.isAnimacionMuerteTerminada = true;
-                gp.gameState = gp.titleState; // volver al título con pantalla de muerte
+                gp.gameState = gp.titleState;
             }
         }
 
         // ── Comprobar muerte del enemigo ──────────────────────────────────────
-        if (gp.samuraiErrante.getLifeEnemigo() <= 0) {
-            gp.samuraiErrante.heMuertoEnemigo = true;
+        if (e.getLifeEnemigo() <= 0) {
+            e.heMuertoEnemigo = true;
             gp.jugadorTurno = false;
         }
-        if (gp.samuraiErrante.heMuertoEnemigo) {
-            gp.samuraiErrante.estoyAtacandoErrante = false;
-            gp.samuraiErrante.enemigoYaAtaco = false;
-            gp.samuraiErrante.animacionMuerte();
-            if (gp.samuraiErrante.animacionMuerteTerminadaErrante()) {
+        if (e.heMuertoEnemigo) {
+            e.estoyAtacando = false;
+            e.enemigoYaAtaco = false;
+            e.animacionMuerte();
+            if (e.animacionMuerteTerminada()) {
                 gp.ispeleaFinalizada = true;
-                gp.samuraiErrante.isAnimacionMuerteTerminadaEnemigo = true;
-                gp.gameState = gp.escenaState2; // volver a la escena 2
+                e.isAnimacionMuerteTerminadaEnemigo = true;
+                if(e instanceof samuraiErrante) {
+                    gp.gameState = gp.escenaState2;
+                }else if(e instanceof Gigante) {
+                    gp.gameState = gp.escenaState3;
+                    System.out.println(gp.escenaState3);
+                }
             }
-            return; // no procesar más lógica si el enemigo está muriendo
         }
 
         // ── Turno del jugador ─────────────────────────────────────────────────
-
-        // Solo gestiona la animación. El daño se calcula al terminar la animación,
-        // no al elegir el ataque, para sincronizarlo visualmente.
         if (gp.jugadorTurno && !gp.jugador.heMuerto) {
             if (gp.jugador.estoyAtacando) {
                 gp.jugador.animacionAtaque();
@@ -80,52 +88,45 @@ public class Actualizacion {
                 if (gp.jugador.animacionAtaqueTerminada()) {
                     gp.jugador.estoyAtacando = false;
 
-                    // Calcular daño según el ataque elegido por el jugador
                     if (gp.jugador.ataqueElegido == 0) gp.jugador.ataqueSeguro();
                     if (gp.jugador.ataqueElegido == 1) gp.jugador.ataqueEquilibrado();
                     if (gp.jugador.ataqueElegido == 2) gp.jugador.ataqueArriesgado();
-                    gp.jugador.ataqueElegido = -1; // reset para el siguiente turno
-
-                    // isSituacionPelea=false ya lo activa el método de ataque
-                    // jugadorTurno NO cambia aquí, cambia en KeyHandler al pulsar Enter
+                    gp.jugador.ataqueElegido = -1;
                 }
             }
         }
 
         // ── Turno del enemigo ─────────────────────────────────────────────────
+        if (!gp.jugadorTurno && !e.heMuertoEnemigo && gp.isSituacionPelea) {
 
-        // Solo entra cuando isSituacionPelea=true (no hay pantalla de UI abierta)
-        if (!gp.jugadorTurno && !gp.samuraiErrante.heMuertoEnemigo && gp.isSituacionPelea) {
+            if (!e.enemigoYaAtaco) {
 
-            if (!gp.samuraiErrante.enemigoYaAtaco) {
+                // Comprobar habilidad única ANTES de arrancar la animación
+                if (!e.isHabilidadActivada &&
+                        e.getLifeEnemigo() <= (e.getBarraVidaEnemigo() / 2)) {
 
-                // Se comprueba la habilidad ANTES de arrancar la animación.
-                // Si se activa, no hay animación este turno, solo pantalla de UI.
-                if (!gp.samuraiErrante.isHabilidadActivada &&
-                        gp.samuraiErrante.getLifeEnemigo() <= (gp.samuraiErrante.getBarraVidaEnemigo() / 2)) {
-
-                    gp.samuraiErrante.activarHabilidadUnica();
-                    gp.samuraiErrante.enemigoYaAtaco = true;
+                    e.activarHabilidadUnica();
+                    e.enemigoYaAtaco = true;
                     // isSituacionPelea=false → UI muestra pantalla de habilidad
-                    // NO ponemos estoyAtacandoErrante=true → sin animación
+                    // NO ponemos estoyAtacando=true → sin animación este turno
                     return;
                 }
 
                 // Sin habilidad → arrancar animación de ataque normal
-                gp.samuraiErrante.enemigoYaAtaco = true;
-                gp.samuraiErrante.estoyAtacandoErrante = true;
-                gp.samuraiErrante.contadorMaxFramesEnemigo = 0; // reset contador
-                gp.samuraiErrante.atacarNumEnemigo = 1;          // reset frame animación
+                e.enemigoYaAtaco = true;
+                e.estoyAtacando = true;
+                e.contadorMaxFramesEnemigo = 0;
+                e.atacarNumEnemigo = 1;
             }
 
-            if (gp.samuraiErrante.estoyAtacandoErrante) {
-                gp.samuraiErrante.animacionAtacar();
+            if (e.estoyAtacando) {
+                e.animacionAtacar();
 
-                if (gp.samuraiErrante.animacionAtaqueTerminadaErrante()) {
-                    gp.samuraiErrante.estoyAtacandoErrante = false;
+                if (e.animacionAtaqueTerminada()) {
+                    e.estoyAtacando = false;
                     // Calcular daño UNA SOLA VEZ al terminar la animación
-                    gp.samuraiErrante.actuarSamurai();
-                    // actuarSamurai pone isSituacionPelea=false → pantalla de resultado
+                    e.actuar();
+                    // actuar() pone isSituacionPelea=false → pantalla de resultado
                 }
             }
         }
@@ -139,6 +140,7 @@ public class Actualizacion {
         if (gp.cChecker.checkerCambioEscena(gp.jugador, new campoPuerta(gp))) {
             gp.jugador.cercaPuerta = true;
             if (gp.jugador.cercaPuerta && gp.keyH.ePressed) {
+                gp.enemigoActual = gp.samuraiErrante;
                 gp.gameState = gp.escenaState2;
                 gp.jugador.cercaPuerta = false;
             }
@@ -157,8 +159,8 @@ public class Actualizacion {
             gp.jugador.cercaPelea = true;
             if (gp.jugador.cercaPelea && gp.keyH.ePressed && !gp.ispeleaFinalizada) {
                 gp.jugador.cercaPelea = false;
-                gp.jugador.moverPelea();
-                gp.samuraiErrante.updateSamurai();
+                gp.jugador.moverPelea1();
+                gp.enemigoActual.updateEnemigo();
             }
         } else {
             gp.jugador.cercaPelea = false;
@@ -166,30 +168,53 @@ public class Actualizacion {
     }
 
     /**
+     * Comprueba si el jugador está en la zona de interacción de pelea
+     * y gestiona la transición al estado de combate al pulsar E.
+     * Solo funciona si la pelea no ha sido ya finalizada.
+     */
+    public void actualizacionMoverEstadoPeleaFinal() {
+        if (gp.cChecker.checkerEstadoPeleaFinal(gp.jugador, new campoPeleaInteraccion(gp))) {
+            gp.jugador.cercaPeleaFinal = true;
+            if (gp.jugador.cercaPeleaFinal && gp.keyH.ePressed && !gp.ispeleaFinalizada) {
+                gp.jugador.cercaPeleaFinal = false;
+                gp.jugadorTurno = true;
+                gp.jugador.moverPelea2();
+                gp.enemigoActual.updateEnemigo();
+            }
+        } else {
+            gp.jugador.cercaPeleaFinal = false;
+        }
+    }
+
+
+    /**
      * Comprueba si el jugador está en la zona de enhorabuena
-     * y gestiona la transición a la pantalla de congratulaciones al pulsar E.
+     * y gestiona la transición a la escena 3 al pulsar E.
      * Solo funciona si la pelea ha sido finalizada.
      */
     public void actualizacionMoverEscena3() {
-        if (gp.cChecker.checkerCambioPantallaEnhorabuena(gp.jugador, new campoEnhorabuenaInteraccion(gp))) {
+        if (gp.cChecker.checkerCambioPantallaEscena3(gp.jugador, new campoIntercaccionEscena3(gp))) {
             gp.jugador.cercaIrPiso3 = true;
             if (gp.jugador.cercaIrPiso3 && gp.keyH.ePressed && gp.ispeleaFinalizada) {
                 gp.jugador.cercaIrPiso3 = false;
+                gp.enemigoActual = gp.gigante;
                 gp.gameState = gp.escenaState3;
+                gp.ispeleaFinalizada = false;
             }
         } else {
             gp.jugador.cercaIrPiso3 = false;
         }
     }
+
     public void actualizacionMoverEscenaCongratulations() {
         if (gp.cChecker.checkerCambioPantallaEnhorabuena(gp.jugador, new campoEnhorabuenaInteraccion(gp))) {
-            gp.jugador.cercaIrPiso3 = true;
-            if (gp.jugador.cercaIrPiso3 && gp.keyH.ePressed && gp.ispeleaFinalizada) {
-                gp.jugador.cercaIrPiso3 = false;
-                gp.gameState = gp.escenaState3;
+            gp.jugador.cercaCongratulations = true;
+            if (gp.jugador.cercaCongratulations && gp.keyH.ePressed && gp.ispeleaFinalizada) {
+                gp.jugador.cercaCongratulations = false;
+                gp.gameState = gp.congratulationsState;
             }
         } else {
-            gp.jugador.cercaIrPiso3 = false;
+            gp.jugador.cercaCongratulations = false;
         }
     }
 }

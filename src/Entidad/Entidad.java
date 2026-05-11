@@ -133,9 +133,9 @@ public class Entidad {
         gp.isSituacionPelea = false;
     }
 
-    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(6,  90, enemigo); }
-    public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaqueJugador(10, 68, enemigo); }
-    public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaqueJugador(14, 40, enemigo); }
+    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(30,  90, enemigo); }
+    public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaqueJugador(40, 68, enemigo); }
+    public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaqueJugador(44, 40, enemigo); }
 
     public String getNombre() { return nombre; }
     public int getLife() { return life; }

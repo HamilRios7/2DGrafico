@@ -13,7 +13,6 @@ import java.awt.*;
  *
  * Extiende  JPanel para integrarse en la ventana Swing e implementa
  * Runnable para ejecutarse en su propio hilo de juego.
- *
  */
 public class GamePanel extends JPanel implements Runnable {
 
@@ -77,6 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
     /** Gestor de transiciones de escena y lógica de combate. */
     Actualizacion at = new Actualizacion(this);
 
+
     // ════════════════════════════════════════════════════════════════════════
     // ENTIDADES
     // ════════════════════════════════════════════════════════════════════════
@@ -86,6 +86,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     /** Enemigo principal del juego: el samurái errante. */
     public samuraiErrante samuraiErrante = new samuraiErrante(this);
+
+    /** Enemigo boss principal del juego: el Gigante */
+    public Gigante gigante = new Gigante(this);
 
     // ════════════════════════════════════════════════════════════════════════
     // ESTADOS DEL JUEGO
@@ -118,37 +121,49 @@ public class GamePanel extends JPanel implements Runnable {
     /** Estado de combate por turnos contra el samurái. */
     public int statePelea = 10;
 
+    /** Estado de combate por turnos contra el samurái. */
+    public int statePelea2 = 11;
+
     /** Estado de pantalla de victoria al completar el juego. */
-    public int congratulationsState = 11;
+    public int congratulationsState = 12;
 
     // ════════════════════════════════════════════════════════════════════════
     // FLAGS DE COMBATE
     // ════════════════════════════════════════════════════════════════════════
 
     /**
-     *  true cuando la pelea ha terminado (el enemigo ha sido derrotado).
+     * true cuando la pelea ha terminado (el enemigo ha sido derrotado).
      * Desbloquea el acceso al siguiente piso.
      */
     public boolean ispeleaFinalizada = false;
 
     /**
-     *  true mientras se está resolviendo un turno de combate
-     * (animaciones en curso).  false cuando hay un resultado
+     * true mientras se está resolviendo un turno de combate
+     * (animaciones en curso). false cuando hay un resultado
      * pendiente de confirmar en la UI.
      */
     public boolean isSituacionPelea = true;
 
     /**
-     *  true cuando es el turno del jugador para elegir acción.
-     *  false cuando el enemigo está actuando.
+     * true cuando es el turno del jugador para elegir acción.
+     * false cuando el enemigo está actuando.
      */
     public boolean jugadorTurno = true;
 
+
+
+    public boolean cofreAparecido=false;
+
     // ════════════════════════════════════════════════════════════════════════
-    // REFERENCIA AL ENEMIGO ACTIVO (para expansión futura con múltiples enemigos)
+    // REFERENCIA AL ENEMIGO ACTIVO
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Enemigo actualmente en combate (puede usarse para generalizar más adelante). */
+    /**
+     * Enemigo actualmente en combate.
+     * Asignar antes de entrar al combate:
+     *   gp.enemigoActual = gp.samuraiErrante;  // combate 1
+     *   gp.enemigoActual = gp.gigante;          // combate boss
+     */
     public Enemigo enemigoActual;
 
     // ════════════════════════════════════════════════════════════════════════
@@ -199,20 +214,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     /**
      * Núcleo del game loop basado en delta-time.
-     *
-     * Mantiene una tasa de actualización constante a  #fps fotogramas
+     * Mantiene una tasa de actualización constante a #fps fotogramas
      * por segundo independientemente del rendimiento del hardware.
-     * Cada iteración:
-     *
-     *   Calcula el delta acumulado desde el último frame.
-     *   Cuando delta ≥ 1, llama a #update() y a  #repaint().
-     *   Imprime los FPS reales por consola cada segundo (útil para depuración).
-     *
-     *
      */
     @Override
     public void run() {
-        double drawInterval = 1_000_000_000.0 / fps; // nanosegundos por frame
+        double drawInterval = 1_000_000_000.0 / fps;
         double delta      = 0;
         long lastTime     = System.nanoTime();
         long timer        = 0;
@@ -227,13 +234,12 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                update();   // lógica del juego
-                repaint();  // renderizado (llama a paintComponent)
+                update();
+                repaint();
                 delta--;
                 drawCounter++;
             }
 
-            // Mostrar FPS reales en consola cada segundo
             if (timer >= 1_000_000_000) {
                 System.out.println("FPS: " + drawCounter);
                 drawCounter = 0;
@@ -248,38 +254,30 @@ public class GamePanel extends JPanel implements Runnable {
 
     /**
      * Actualiza la lógica del juego una vez por frame.
-     *
-     * Delega en los métodos de cada entidad y en  Actualizacion
-     * según el estado activo. Los estados de pausa cortan el update
-     * para "congelar" el juego.
-     *
+     * Delega en los métodos de cada entidad y en Actualizacion
+     * según el estado activo.
      */
     public void update() {
         if (gameState == escenaState1) {
             jugador.update1();
-            // Comprueba si el jugador activa la transición a la escena 2
             at.actualizacionMoverEscena2();
 
         } else if (gameState == escenaState2) {
             jugador.update2();
-            samuraiErrante.updateSamurai();
-
-            // Comprueba si el jugador entra en zona de pelea
+            enemigoActual.updateEnemigo();
             at.actualizacionMoverEstadoPelea1();
-
-            // Comprueba si se cumplen las condiciones para mostrar la enhorabuena
             at.actualizacionMoverEscena3();
 
         } else if (gameState == escenaState3) {
             jugador.update3();
-
-
+            enemigoActual.updateEnemigo();
+            at.actualizacionMoverEstadoPeleaFinal();
+            at.actualizacionMoverEscenaCongratulations();
 
 
         }
 
-        if (gameState == statePelea) {
-            // Controla animaciones de combate y lógica de turnos
+        if (gameState == statePelea || gameState == statePelea2) {
             at.actualizacionCombate1();
         }
 
@@ -295,10 +293,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     /**
      * Dibuja todos los elementos visuales del frame actual.
-     *
-     * El orden de dibujado es importante: fondo → entidades → UI (siempre encima).
-     * Convierte el  Graphics de Swing a  Graphics2D para mayor control.
-     *
+     * Orden: fondo → entidades → UI (siempre encima).
      *
      * @param g contexto gráfico proporcionado por Swing
      */
@@ -314,31 +309,30 @@ public class GamePanel extends JPanel implements Runnable {
 
             // ── Escena 1: exterior del castillo ─────────────────────────────────
         } else if (gameState == escenaState1) {
-            fondoM.draw1(g2d);  // fondo / mapa
-            jugador.draw1(g2d); // sprite del jugador
-            ui.draw(g2d);       // HUD y textos
+            fondoM.draw1(g2d);
+            jugador.draw1(g2d);
+            ui.draw(g2d);
             g2d.dispose();
 
             // ── Escena 2 y estado de combate (comparten el mismo mapa) ──────────
         } else if (gameState == escenaState2 || gameState == statePelea) {
             fondoM.draw2(g2d);
             jugador.draw2(g2d);
-            samuraiErrante.drawSamurai(g2d);
+            enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
             g2d.dispose();
 
-            // ── Pantalla de escena 3 final ──────────────────────────────────────────
-        }else if(gameState==escenaState3){
+            // ── Escena 3 y estado de combate (comparten el mismo mapa) ─────────────────────────────────────────────────────────
+        } else if (gameState == escenaState3 || gameState == statePelea2) {
             fondoM.draw3(g2d);
             jugador.draw3(g2d);
-
+            enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
             g2d.dispose();
 
             // ── Pantalla de enhorabuena ──────────────────────────────────────────
-        }else if (gameState == congratulationsState) {
+        } else if (gameState == congratulationsState) {
             ui.draw(g2d);
-            // No se llama a dispose() aquí; Swing lo gestiona al salir del método
         }
 
         // ── Pausa escena 1 ───────────────────────────────────────────────────
@@ -351,14 +345,15 @@ public class GamePanel extends JPanel implements Runnable {
             // ── Pausa escena 2 ───────────────────────────────────────────────────
         } else if (gameState == pauseState2) {
             fondoM.draw2(g2d);
-            samuraiErrante.drawSamurai(g2d);
+            enemigoActual.drawEnemigo(g2d); // antes: samuraiErrante.drawSamurai(g2d)
             jugador.draw2(g2d);
             ui.draw(g2d);
             g2d.dispose();
-        }else if (gameState == pauseState3) {
+
+            // ── Pausa escena 3 ───────────────────────────────────────────────────
+        } else if (gameState == pauseState3) {
             fondoM.draw3(g2d);
             jugador.draw2(g2d);
-
             ui.draw(g2d);
             g2d.dispose();
         }
@@ -368,30 +363,19 @@ public class GamePanel extends JPanel implements Runnable {
     // AUDIO
     // ════════════════════════════════════════════════════════════════════════
 
-    /**
-     * Carga y reproduce una pista de música en bucle.
-     *
-     * @param i índice de la pista de audio en el sistema  Sonido
-     */
+    /** Carga y reproduce una pista de música en bucle. */
     public void playMusic(int i) {
         sound.setFile(i);
         sound.play();
         sound.loop();
     }
 
-    /**
-     * Detiene la música que esté sonando en ese momento.
-     */
+    /** Detiene la música que esté sonando en ese momento. */
     public void stopMusic() {
         sound.stop();
     }
 
-    /**
-     * Reproduce un efecto de sonido puntual (sin bucle).
-     * Reservado para implementación futura.
-     *
-     * @param i índice del efecto de sonido
-     */
+    /** Reproduce un efecto de sonido puntual (sin bucle). */
     public void playSE(int i) {
         // TODO: implementar efectos de sonido
     }

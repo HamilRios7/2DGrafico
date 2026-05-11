@@ -2,10 +2,7 @@ package Main;
 
 
 
-import Entidad.Jugador;
-import Entidad.campoEnhorabuenaInteraccion;
-import Entidad.campoPuerta;
-import Entidad.campoPeleaInteraccion;
+import Entidad.*;
 
 import static java.lang.Math.clamp;
 
@@ -35,9 +32,27 @@ public class ColisionChecker {
 
     }
 
+    public boolean checkerEstadoPeleaFinal(Jugador jugador, campoPeleaInteraccion escena){
+
+        if( jugador.getBorde3().intersects(escena.getBorde())){
+            return true;
+        }else {
+            return false;
+        }
+
+    }
+
+
+    public boolean checkerCambioPantallaEscena3(Jugador jugador, campoIntercaccionEscena3 campoEnhorabuenaInteraccion) {
+        if( jugador.getBorde2().intersects(campoEnhorabuenaInteraccion.getBorde())){
+            return true;
+        }else {
+            return false;
+        }
+    }
 
     public boolean checkerCambioPantallaEnhorabuena(Jugador jugador, campoEnhorabuenaInteraccion campoEnhorabuenaInteraccion) {
-        if( jugador.getBorde2().intersects(campoEnhorabuenaInteraccion.getBorde())){
+        if( jugador.getBorde3().intersects(campoEnhorabuenaInteraccion.getBorde())){
             return true;
         }else {
             return false;

@@ -1,5 +1,6 @@
 package Main;
 
+import Objetos.Obj_CofreTesoro;
 import Objetos.Obj_Vida;
 import Objetos.SuperObject;
 
@@ -32,13 +33,13 @@ public class UI {
 
     /** Imagen del corazón que aparece junto a la barra de vida. */
     BufferedImage corazon;
+    BufferedImage cofre;
 
     /**
      * Índice de la opción seleccionada en los menús de título,
      * muerte y enhorabuena.
      */
     public int comandoNum = 0;
-
 
     /**
      * Estado de la pantalla de título:
@@ -87,15 +88,17 @@ public class UI {
         // Obtenemos la imagen del corazón a partir del objeto de vida
         SuperObject vida = new Obj_Vida(gp);
         corazon = vida.imagen;
+
+        SuperObject cofreTesoro = new Obj_CofreTesoro(gp);
+        cofre = cofreTesoro.imagen;
     }
 
     // ── Punto de entrada del renderizado ────────────────────────────────────
 
     /**
-     * Método principal de dibujo llamado cada frame desde  GamePanel paintComponent.
+     * Método principal de dibujo llamado cada frame desde GamePanel paintComponent.
      *
      * Delega en los métodos auxiliares según el estado actual del juego.
-     *
      *
      * @param g2 contexto gráfico del frame
      */
@@ -117,6 +120,9 @@ public class UI {
         // ── HUD durante el juego normal ──────────────────────────────────────
         if (gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3) {
             drawJugadorVida();
+            if(gp.gameState == gp.escenaState3 && gp.ispeleaFinalizada){
+                drawCofre();
+            }
         }
 
         // ── HUD durante la pausa ─────────────────────────────────────────────
@@ -126,12 +132,12 @@ public class UI {
         }
 
         // ── Texto de guía de interacción (puertas, peleas, piso 3) ──────────
-        if (gp.jugador.cercaPuerta || gp.jugador.cercaPelea || gp.jugador.cercaIrPiso3 && !keyH.ePressed) {
+        if (gp.jugador.cercaPuerta || gp.jugador.cercaPelea || gp.jugador.cercaIrPiso3 || gp.jugador.cercaPeleaFinal || gp.jugador.cercaCongratulations && !keyH.ePressed) {
             drawTextoGuia();
         }
 
         // ── Estado de combate ────────────────────────────────────────────────
-        if (gp.gameState == gp.statePelea) {
+        if (gp.gameState == gp.statePelea || gp.gameState==gp.statePelea2) {
             drawJugadorVida();
             drawEnemigoVida();
 
@@ -142,6 +148,11 @@ public class UI {
                 // Hay un resultado de ataque que informar al jugador
                 drawInformacionBatalla();
             }
+        }
+
+
+        if(gp.ispeleaFinalizada && gp.gameState==gp.escenaState3){
+
         }
 
         // ── Pantalla de muerte (se activa cuando la animación de muerte termina) ──
@@ -164,7 +175,6 @@ public class UI {
      *
      * La barra se escala con baseUnit píxeles por punto de vida,
      * de modo que el tamaño refleja tanto la vida actual como la máxima.
-     *
      */
     public void drawJugadorVida() {
         int baseUnit = 2; // px por punto de vida
@@ -174,8 +184,8 @@ public class UI {
         int corazonX = 28; // posición X del icono de corazón
         int corazonY = 518;
 
-        double hpBarValue    = gp.jugador.life * baseUnit;          // anchura actual
-        double maxHpBarValue = gp.jugador.barraVida * baseUnit;     // anchura máxima
+        double hpBarValue    = gp.jugador.life * baseUnit;
+        double maxHpBarValue = gp.jugador.barraVida * baseUnit;
 
         // Fondo oscuro (vida perdida)
         g2.setColor(Color.DARK_GRAY);
@@ -194,34 +204,70 @@ public class UI {
     }
 
     /**
-     * Dibuja la barra de vida del enemigo (samurái errante) en la parte superior derecha.
+     * Dibuja la barra de vida del enemigo actual en la parte superior derecha.
      *
-     * Funciona de la misma manera a  #drawJugadorVida() pero leyendo
-     * los datos del enemigo.
-     *
+     * Usa gp.enemigoActual para ser compatible con cualquier enemigo presente
+     * en el combate, sin importar su tipo concreto.
      */
     public void drawEnemigoVida() {
-        int baseUnit = 2;
+        // Guardamos en variable local para evitar referencias nulas si cambia mid-frame
+        if (gp.enemigoActual == null) return;
+        else if(gp.enemigoActual==gp.samuraiErrante) {
+            int baseUnit = 2;
 
-        int barraX = 850;
-        int barraY = 255;
-        int corazonX = 28;
-        int corazonY = 518;
+            int barraX = 850;
+            int barraY = 255;
 
-        double hpBarValue    = gp.samuraiErrante.getLifeEnemigo() * baseUnit;
-        double maxHpBarValue = gp.samuraiErrante.barraVidaEnemigo * baseUnit;
 
-        g2.setColor(Color.DARK_GRAY);
-        g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
+            double hpBarValue = gp.enemigoActual.getLifeEnemigo() * baseUnit;
+            double maxHpBarValue = gp.enemigoActual.barraVidaEnemigo * baseUnit;
 
-        g2.setColor(Color.RED);
-        g2.fillRect(barraX, barraY, (int) hpBarValue, 15);
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
 
-        g2.setColor(Color.WHITE);
-        g2.drawRect(barraX, barraY, (int) maxHpBarValue, 15);
+            g2.setColor(Color.RED);
+            g2.fillRect(barraX, barraY, (int) hpBarValue, 15);
 
-        g2.drawImage(corazon, corazonX, corazonY, 40, 25, null);
+            g2.setColor(Color.WHITE);
+            g2.drawRect(barraX, barraY, (int) maxHpBarValue, 15);
+
+
+        }
+        else if (gp.enemigoActual == gp.gigante) {
+            int baseUnit = 2;
+
+            int barraX = 750;
+            int barraY = 105;
+
+
+            double hpBarValue = gp.enemigoActual.getLifeEnemigo() * baseUnit;
+            double maxHpBarValue = gp.enemigoActual.barraVidaEnemigo * baseUnit;
+
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
+
+            g2.setColor(Color.RED);
+            g2.fillRect(barraX, barraY, (int) hpBarValue, 15);
+
+            g2.setColor(Color.WHITE);
+            g2.drawRect(barraX, barraY, (int) maxHpBarValue, 15);
+
+
+
+
+        }
     }
+    // ── Dibujar Cofre ───────────────────────────────────────────
+
+    public void drawCofre(){
+        gp.cofreAparecido=true;
+        int cofreX = 370; // posición X del icono de corazón
+        int cofreY = 280;
+
+        g2.drawImage(cofre, cofreX, cofreY, 100, 110, null);
+    }
+
+
 
     // ── Pantallas de menú y estado ───────────────────────────────────────────
 
@@ -236,12 +282,11 @@ public class UI {
     }
 
     /**
-     * Dibuja la pantalla de título según el estado  #titleScreenState
+     * Dibuja la pantalla de título según el estado {@link #titleScreenState}
      *
      *   Estado 0: menú principal con logo, animación del jugador y opciones.
      *   Estado 1: texto de historia e introducción al juego.
      *   Estado 2: pantalla de muerte con opción de salir.
-     *
      */
     public void drawTitleScreen() {
 
@@ -368,13 +413,25 @@ public class UI {
             dibujarCajaTexto(250, 150, 400, 100,
                     "Pulsa E para entrar al castillo");
         }
+
         if (gp.jugador.cercaPelea && !gp.ispeleaFinalizada) {
             dibujarCajaTexto(250, 150, 400, 100,
                     "Pulsa E para empezar la lucha");
         }
+
+        if(gp.jugador.cercaPeleaFinal && !gp.ispeleaFinalizada){
+            dibujarCajaTexto(250, 150, 400, 100,
+                    "Pulsa E para empezar la lucha");
+        }
+
         if (gp.jugador.cercaIrPiso3 && gp.ispeleaFinalizada) {
             dibujarCajaTexto(450, 150, 400, 100,
                     "Pulsa E para ir al siguiente piso");
+        }
+
+        if (gp.jugador.cercaCongratulations && gp.ispeleaFinalizada && gp.cofreAparecido) {
+            dibujarCajaTexto(450, 150, 400, 100,
+                    "Pulsa E para abrir el tesoro");
         }
     }
 
@@ -401,9 +458,8 @@ public class UI {
     /**
      * Dibuja el menú de combate en la parte inferior de la pantalla.
      *
-     * En  #subState 0 muestra las acciones principales (ATACAR, INVENTARIO).
-     * En  #subState 1 muestra los tipos de ataque (DÉBIL, EQUILIBRADO, FUERTE).
-     *
+     * En {@link #subState} 0 muestra las acciones principales (ATACAR, INVENTARIO).
+     * En {@link #subState} 1 muestra los tipos de ataque (DÉBIL, EQUILIBRADO, FUERTE).
      */
     public void drawCombatMenu() {
         int x = 220, y = 502, width = 800, height = 115;
@@ -488,20 +544,21 @@ public class UI {
         gp.jugadorTurno = false;
     }
 
-
-
-
     // ── Información de batalla ───────────────────────────────────────────────
 
     /**
      * Muestra en pantalla el resultado del último ataque (jugador o enemigo),
      * incluyendo si falló, cuánto daño hizo y cuánta vida le queda al objetivo.
      *
-     * También gestiona la pantalla de habilidad especial del samurái (furia).
-     * El jugador debe pulsar ENTER sobre "Continuar" para avanzar al siguiente turno.
+     * Usa gp.enemigoActual para ser compatible con cualquier enemigo presente,
+     * sin necesidad de conocer su tipo concreto.
      *
+     * También gestiona la pantalla de habilidad especial del enemigo.
+     * El jugador debe pulsar ENTER sobre "Continuar" para avanzar al siguiente turno.
      */
     public void drawInformacionBatalla() {
+        if (gp.enemigoActual == null) return;
+
         int x = 220, y = 502, width = 800, height = 115;
 
         g2.setColor(new Color(0, 0, 0, 200));
@@ -509,10 +566,13 @@ public class UI {
         g2.setColor(Color.white);
         g2.drawRect(x, y, width, height);
 
-        // ── Habilidad especial del samurái (prioridad máxima) ──
-        if (gp.samuraiErrante.seHaMostradoPantalla) {
+        // Alias genérico: funciona con SamuraiErrante, Gigante, o cualquier Enemigo futuro
+        var enemigo = gp.enemigoActual;
+
+        // ── Habilidad especial del enemigo (prioridad máxima) ──
+        if (enemigo.seHaMostradoPantalla) {
             g2.drawString(
-                    "El samurai se ha puesto furioso y ha subido su fuerza dos niveles",
+                    "El enemigo ha activado su habilidad especial",
                     x + 50, y + 40);
             g2.drawString("Continuar", x + 50, y + 90);
             if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
@@ -523,7 +583,7 @@ public class UI {
             // ── Resultado del ataque del jugador ──
             if (gp.jugador.heFalladoJugador) {
                 g2.drawString(
-                        "El heroe ha fallado el ataque , el samurai ha usado contrataque",
+                        "El heroe ha fallado el ataque , el enemigo ha usado contrataque",
                         x + 50, y + 40);
             } else {
                 g2.drawString(
@@ -531,20 +591,20 @@ public class UI {
                                 + gp.jugador.dañoHechoJugador + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
-                        "y ha dejado al samurai con " + gp.samuraiErrante.getLifeEnemigo(),
+                        "y ha dejado al enemigo con " + enemigo.getLifeEnemigo(),
                         x + 50, y + 60);
             }
             g2.drawString("Continuar", x + 50, y + 90);
             if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
 
-        } else if (gp.samuraiErrante.fueEnemigoAtaque) {
+        } else if (enemigo.fueEnemigoAtaque) {
             // ── Resultado del ataque del enemigo ──
-            if (gp.samuraiErrante.haFalladoEnemigo) {
-                g2.drawString("El samurai ha fallado el ataque", x + 50, y + 40);
+            if (enemigo.haFalladoEnemigo) {
+                g2.drawString("El enemigo ha fallado el ataque", x + 50, y + 40);
             } else {
                 g2.drawString(
-                        "El samurai ha acertado el ataque , ha hecho "
-                                + gp.samuraiErrante.dañoHechoEnemigo + " puntos de daño",
+                        "El enemigo ha acertado el ataque , ha hecho "
+                                + enemigo.dañoHechoEnemigo + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
                         "y ha dejado al heroe con " + gp.jugador.getLife(),
