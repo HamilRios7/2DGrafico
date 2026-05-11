@@ -35,6 +35,13 @@ public class TileManager {
      */
     Fondo2[] fondos2;
 
+    /**
+     * Array de capas de fondo para la escena 2 (interior / sala del samurái).
+     * Mismo concepto que #fondos1 pero con menos capas.
+     */
+    Fondo3[] fondos3;
+
+
     // ════════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ════════════════════════════════════════════════════════════════════════
@@ -58,6 +65,11 @@ public class TileManager {
         fondos2 = new Fondo2[5];
         for (int i = 0; i < fondos2.length; i++) {
             fondos2[i] = new Fondo2();
+        }
+
+        fondos3 = new Fondo3[5];
+        for (int i = 0; i < fondos3.length; i++) {
+            fondos3[i] = new Fondo3();
         }
 
         // Cargamos todas las imágenes al iniciar (solo una vez en memoria)
@@ -110,6 +122,16 @@ public class TileManager {
 
             // Franja inferior de la escena 2 (mismo recurso que escena 1)
             fondos2[3].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f2/fondoEscritura.png"));
+
+
+            // ── Capas de la escena 3 (interior del castillo) ─────────────────
+            fondos3[3].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_0.png"));
+            fondos3[2].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_1.png"));
+            fondos3[1].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_2.png"));
+            fondos3[0].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_3.png"));
+            // Franja inferior de la escena 2 (mismo recurso que escena 1)
+            fondos3[4].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/fondoEscritura.png"));
+
 
         } catch (IOException e) {
             // Si falta algún recurso, el juego no puede continuar correctamente
@@ -184,5 +206,17 @@ public class TileManager {
 
         // Franja decorativa de suelo (mismo recurso que escena 1)
         g.drawImage(fondos2[3].imagen, -350, 490, 1800, 140, null);
+    }
+
+
+    public void draw3(Graphics2D g) {
+        // ── Capas de interior (fondo → primer plano) ─────────────────────────
+        g.drawImage(fondos3[0].imagen,    0, -210, gp.pantallaAnchura, 700, null);
+        g.drawImage(fondos3[1].imagen,    0, -210, gp.pantallaAnchura, 700, null);
+        g.drawImage(fondos3[2].imagen,    0, -210, gp.pantallaAnchura, 700, null);
+        g.drawImage(fondos3[3].imagen,    0, -210, gp.pantallaAnchura, 700, null);
+
+        // Franja decorativa de suelo (mismo recurso que escena 1)
+        g.drawImage(fondos3[4].imagen, -350, 490, 1800, 140, null);
     }
 }

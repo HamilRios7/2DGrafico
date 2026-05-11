@@ -170,12 +170,23 @@ public class Actualizacion {
      * y gestiona la transición a la pantalla de congratulaciones al pulsar E.
      * Solo funciona si la pelea ha sido finalizada.
      */
-    public void actualizacionMoverEscenaCongratulatons() {
+    public void actualizacionMoverEscena3() {
         if (gp.cChecker.checkerCambioPantallaEnhorabuena(gp.jugador, new campoEnhorabuenaInteraccion(gp))) {
             gp.jugador.cercaIrPiso3 = true;
             if (gp.jugador.cercaIrPiso3 && gp.keyH.ePressed && gp.ispeleaFinalizada) {
                 gp.jugador.cercaIrPiso3 = false;
-                gp.gameState = gp.congratulationsState;
+                gp.gameState = gp.escenaState3;
+            }
+        } else {
+            gp.jugador.cercaIrPiso3 = false;
+        }
+    }
+    public void actualizacionMoverEscenaCongratulations() {
+        if (gp.cChecker.checkerCambioPantallaEnhorabuena(gp.jugador, new campoEnhorabuenaInteraccion(gp))) {
+            gp.jugador.cercaIrPiso3 = true;
+            if (gp.jugador.cercaIrPiso3 && gp.keyH.ePressed && gp.ispeleaFinalizada) {
+                gp.jugador.cercaIrPiso3 = false;
+                gp.gameState = gp.escenaState3;
             }
         } else {
             gp.jugador.cercaIrPiso3 = false;

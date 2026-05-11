@@ -18,6 +18,7 @@ public class Entidad {
     // Posiciones del jugador en cada escena
     public int x1Jugador, y1Jugador; // Posición en escena 1
     public int x2Jugador, y2Jugador; // Posición en escena 2
+    public int x3Jugador, y3Jugador; // Posición en escena 3
 
     /** Velocidad de movimiento de la entidad */
     public int speed;
@@ -122,9 +123,7 @@ public class Entidad {
 
         Random rand = new Random();
         if (rand.nextInt(100) < probabilidadAcierto) {
-            int vida = enemigo.getLifeEnemigo() - dañoFinal;
-            if (vida < 0) vida = 0;
-            enemigo.setLifeEnemigo(vida);
+            enemigo.recibirDaño(enemigo,dañoFinal);
             heFalladoJugador = false;
             dañoHechoJugador = dañoFinal;
         } else {
@@ -141,4 +140,10 @@ public class Entidad {
     public String getNombre() { return nombre; }
     public int getLife() { return life; }
     public void setLife(int life) { this.life = life; }
+
+    public void recibirDaño(Entidad jugador, int dañoFinal){
+        int jugadorVidaRestante = jugador.getLife() - dañoFinal;
+        if (jugadorVidaRestante < 0) jugadorVidaRestante = 0;
+        jugador.setLife(jugadorVidaRestante);
+    }
 }

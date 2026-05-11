@@ -245,11 +245,18 @@ public class samuraiErrante extends Enemigo {
         contadorMaxFramesEnemigo = 0;
         fueEnemigoAtaque = true;
 
-        Random rand = new Random();
-        int numero = rand.nextInt(3) + 1;
-        if      (numero == 1) ataqueSeguro();      // heredado de Enemigo
-        else if (numero == 2) ataqueEquilibrado(); // heredado de Enemigo
-        else                  ataqueArriesgado();  // heredado de Enemigo
+        int opcion=(int) (Math.random()*3);// opciones 0,1,2.
+         switch (opcion){
+        case 0:
+          ataqueSeguro();
+          break;
+         case 1:
+          ataqueEquilibrado();
+          break;
+         case 2:
+          ataqueArriesgado();
+          break;
+          }
     }
 
     /** Delega al método de la clase padre  Enemigo ataqueSeguro() */
@@ -307,6 +314,7 @@ public class samuraiErrante extends Enemigo {
     public boolean animacionMuerteTerminadaErrante() {
         return muerteNum == 3;
     }
+
 
 
 }

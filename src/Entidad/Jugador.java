@@ -118,6 +118,10 @@ public class Jugador extends Entidad {
         x2Jugador = 0;
         y2Jugador = 60;
 
+        // Posición en la escena 3 / combate (interior)
+        x3Jugador = 0;
+        y3Jugador = 64;
+
         speed     = 5;
         direction = "right";
 
@@ -277,6 +281,39 @@ public class Jugador extends Entidad {
         }
     }
 
+    public void update3() {
+        boolean moviendo = keyH.rightPressed || keyH.leftPressed;
+
+        // Si ha muerto, solo reproducimos la animación y bloqueamos todo lo demás
+        if (heMuerto) {
+            animacionMuerte();
+            return;
+        }
+
+        if (gp.gameState == gp.escenaState3) {
+            if (moviendo) {
+                if (keyH.rightPressed) {
+                    direction   = "right";
+                    x3Jugador  += 6;
+                } else if (keyH.leftPressed) {
+                    direction   = "left";
+                    x3Jugador  -= 6;
+                }
+
+                // Límites de la escena 2 (distintos a los de escena 1 por el layout)
+                x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 195);
+
+                animacionMoviendome();
+            } else {
+                animacionQuieto();
+            }
+
+        } else if (gp.gameState == gp.statePelea && !heMuerto) {
+            // Durante el combate el jugador está quieto esperando su turno
+            animacionQuieto();
+        }
+    }
+
     // ════════════════════════════════════════════════════════════════════════
     // RENDERIZADO (llamado cada frame desde GamePanel)
     // ════════════════════════════════════════════════════════════════════════
@@ -332,6 +369,29 @@ public class Jugador extends Entidad {
 
         // En la escena 2 y combate el sprite se dibuja más grande (400×400)
         gd2.drawImage(image, x2Jugador, y2Jugador, 400, 400, null);
+    }
+
+    public void draw3(Graphics2D gd2) {
+        boolean moviendo = keyH.rightPressed || keyH.leftPressed;
+        BufferedImage image = null;
+
+        if (gp.gameState == gp.escenaState3) {
+            image = moviendo
+                    ? (BufferedImage) dibujarMoviendome()
+                    : (BufferedImage) dibujarQuieto();
+
+        } else if (gp.gameState == gp.statePelea && estoyAtacando) {
+            image = (BufferedImage) dibujarAtaque();
+
+        } else if (gp.gameState == gp.statePelea && !heMuerto) {
+            image = (BufferedImage) dibujarQuieto();
+
+        } else if (heMuerto) {
+            image = (BufferedImage) dibujarMuerte();
+        }
+
+        // En la escena 2 y combate el sprite se dibuja más grande (400×400)
+        gd2.drawImage(image, x3Jugador, y3Jugador, 400, 400, null);
     }
 
     // ════════════════════════════════════════════════════════════════════════

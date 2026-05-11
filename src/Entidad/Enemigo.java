@@ -85,15 +85,13 @@ public class Enemigo extends Entidad {
 
     // ── Métodos de ataque del enemigo ─────────────────────────────────────────
 
-    private void ejecutarAtaqueEnemigo(int ataque, int probabilidadAcierto) {
+    private void ejecutarAtaqueEnemigo(Entidad jugador,int ataque, int probabilidadAcierto) {
         fueEnemigoAtaque = true;
         int dañoFinal = (int)(ataque + (strenght * fuerzaPorcentaje));
 
         Random rand = new Random();
         if (rand.nextInt(100) < probabilidadAcierto) {
-            int jugadorVidaRestante = gp.jugador.getLife() - dañoFinal;
-            if (jugadorVidaRestante < 0) jugadorVidaRestante = 0;
-            gp.jugador.setLife(jugadorVidaRestante);
+           jugador.recibirDaño(jugador,dañoFinal);
             dañoHechoEnemigo = dañoFinal;
             haFalladoEnemigo = false;
         } else {
@@ -102,17 +100,24 @@ public class Enemigo extends Entidad {
         gp.isSituacionPelea = false;
     }
 
-    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(5,  90); }
-    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(8,  68); }
-    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(12, 44); }
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador,5,  90); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador,8,  68); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 12, 44); }
 
 
 
     public String getNombre() { return nombre; }
-    public int getMaxLifeEnemigo() { return maxLifeEnemigo; }
     public int getBarraVidaEnemigo() { return barraVidaEnemigo; }
     public int getLifeEnemigo() { return lifeEnemigo; }
     public void setLifeEnemigo(int lifeEnemigo) { this.lifeEnemigo = lifeEnemigo; }
+
+    public void recibirDaño(Enemigo enemigo, int dañoFinal){
+        int vida = enemigo.getLifeEnemigo() - dañoFinal;
+        if (vida < 0) vida = 0;
+        enemigo.setLifeEnemigo(vida);
+    }
+
+
 }
 
 

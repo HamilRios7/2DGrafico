@@ -268,10 +268,14 @@ public class GamePanel extends JPanel implements Runnable {
             at.actualizacionMoverEstadoPelea1();
 
             // Comprueba si se cumplen las condiciones para mostrar la enhorabuena
-            at.actualizacionMoverEscenaCongratulatons();
+            at.actualizacionMoverEscena3();
 
         } else if (gameState == escenaState3) {
-            jugador.update2();
+            jugador.update3();
+
+
+
+
         }
 
         if (gameState == statePelea) {
@@ -323,8 +327,16 @@ public class GamePanel extends JPanel implements Runnable {
             ui.draw(g2d);
             g2d.dispose();
 
+            // ── Pantalla de escena 3 final ──────────────────────────────────────────
+        }else if(gameState==escenaState3){
+            fondoM.draw3(g2d);
+            jugador.draw3(g2d);
+
+            ui.draw(g2d);
+            g2d.dispose();
+
             // ── Pantalla de enhorabuena ──────────────────────────────────────────
-        } else if (gameState == congratulationsState) {
+        }else if (gameState == congratulationsState) {
             ui.draw(g2d);
             // No se llama a dispose() aquí; Swing lo gestiona al salir del método
         }
@@ -341,6 +353,12 @@ public class GamePanel extends JPanel implements Runnable {
             fondoM.draw2(g2d);
             samuraiErrante.drawSamurai(g2d);
             jugador.draw2(g2d);
+            ui.draw(g2d);
+            g2d.dispose();
+        }else if (gameState == pauseState3) {
+            fondoM.draw3(g2d);
+            jugador.draw2(g2d);
+
             ui.draw(g2d);
             g2d.dispose();
         }
