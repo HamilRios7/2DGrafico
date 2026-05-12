@@ -115,6 +115,9 @@ public class Gigante extends Enemigo {
         if (atacarCounterEnemigo > 6) {
             atacarNumEnemigo++;
             atacarCounterEnemigo = 0;
+            if(atacarNumEnemigo==10){
+                gp.playSE(11);
+            }
             if (atacarNumEnemigo > 14) {
                 atacarNumEnemigo = 1;
                 contadorMaxFramesEnemigo++;
@@ -128,6 +131,9 @@ public class Gigante extends Enemigo {
         if (muerteCounter > 8) {
             muerteNum++;
             muerteCounter = 0;
+            if(muerteNum==9){
+                gp.playSE(10);
+            }
             if (muerteNum > 16) {
                 muerteNum = 16;
                 contadorMaxFramesEnemigo++;

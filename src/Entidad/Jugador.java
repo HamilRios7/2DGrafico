@@ -448,6 +448,9 @@ public class Jugador extends Entidad {
         if (atacarCounter > 6) {
             atacarNum++;
             atacarCounter = 0;
+            if(atacarNum==4){
+                gp.playSE(6);
+            }
             if (atacarNum > 6) {
                 atacarNum = 1;
                 contadorMaxFrames++; // señal de fin de animación de ataque

@@ -54,6 +54,7 @@ public class Actualizacion {
         if (gp.jugador.heMuerto) {
             gp.jugador.animacionMuerte();
             if (gp.jugador.animacionMuerteTerminada()) {
+                gp.stopMusic();
                 gp.jugador.isAnimacionMuerteTerminada = true;
                 gp.gameState = gp.titleState;
             }
@@ -72,10 +73,13 @@ public class Actualizacion {
                 gp.ispeleaFinalizada = true;
                 e.isAnimacionMuerteTerminadaEnemigo = true;
                 if(e instanceof samuraiErrante) {
+                    gp.stopMusic();
                     gp.gameState = gp.escenaState2;
+                    gp.playMusic(0);
                 }else if(e instanceof Gigante) {
+                    gp.stopMusic();
                     gp.gameState = gp.escenaState3;
-                    System.out.println(gp.escenaState3);
+                    gp.playMusic(4);
                 }
             }
         }
@@ -140,9 +144,13 @@ public class Actualizacion {
         if (gp.cChecker.checkerCambioEscena(gp.jugador, new campoPuerta(gp))) {
             gp.jugador.cercaPuerta = true;
             if (gp.jugador.cercaPuerta && gp.keyH.ePressed) {
+                gp.stopMusic();
                 gp.enemigoActual = gp.samuraiErrante;
                 gp.gameState = gp.escenaState2;
+
                 gp.jugador.cercaPuerta = false;
+                gp.playMusic(0);
+
             }
         } else {
             gp.jugador.cercaPuerta = false;
@@ -158,9 +166,13 @@ public class Actualizacion {
         if (gp.cChecker.checkerEstadoPelea(gp.jugador, new campoPeleaInteraccion(gp))) {
             gp.jugador.cercaPelea = true;
             if (gp.jugador.cercaPelea && gp.keyH.ePressed && !gp.ispeleaFinalizada) {
+                gp.stopMusic();
                 gp.jugador.cercaPelea = false;
+                gp.jugadorTurno = true;        // ← aquí
+                gp.isSituacionPelea = true;    // ← aquí
                 gp.jugador.moverPelea1();
                 gp.enemigoActual.updateEnemigo();
+                gp.playMusic(2);
             }
         } else {
             gp.jugador.cercaPelea = false;
@@ -176,10 +188,16 @@ public class Actualizacion {
         if (gp.cChecker.checkerEstadoPeleaFinal(gp.jugador, new campoPeleaInteraccion(gp))) {
             gp.jugador.cercaPeleaFinal = true;
             if (gp.jugador.cercaPeleaFinal && gp.keyH.ePressed && !gp.ispeleaFinalizada) {
+                gp.stopMusic();
                 gp.jugador.cercaPeleaFinal = false;
                 gp.jugadorTurno = true;
+
+                // ── Resetear estado de combate antes de empezar ──
+                gp.isSituacionPelea = true;
+
                 gp.jugador.moverPelea2();
                 gp.enemigoActual.updateEnemigo();
+                gp.playMusic(3);
             }
         } else {
             gp.jugador.cercaPeleaFinal = false;
@@ -196,6 +214,7 @@ public class Actualizacion {
         if (gp.cChecker.checkerCambioPantallaEscena3(gp.jugador, new campoIntercaccionEscena3(gp))) {
             gp.jugador.cercaIrPiso3 = true;
             if (gp.jugador.cercaIrPiso3 && gp.keyH.ePressed && gp.ispeleaFinalizada) {
+
                 gp.jugador.cercaIrPiso3 = false;
                 gp.enemigoActual = gp.gigante;
                 gp.gameState = gp.escenaState3;

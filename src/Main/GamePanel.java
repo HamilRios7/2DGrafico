@@ -20,42 +20,62 @@ public class GamePanel extends JPanel implements Runnable {
     // CONFIGURACIÓN DE PANTALLA
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Tamaño base de cada mosaico (tile) antes de escalar, en píxeles. */
+    /**
+     * Tamaño base de cada mosaico (tile) antes de escalar, en píxeles.
+     */
     int originalTamañoMosaico = 16;
 
-    /** Factor de escala aplicado a los mosaicos para adaptarlos a la resolución. */
+    /**
+     * Factor de escala aplicado a los mosaicos para adaptarlos a la resolución.
+     */
     int escala = 3;
 
-    /** Tamaño final de cada mosaico en pantalla ( originalTamañoMosaico × escala). */
+    /**
+     * Tamaño final de cada mosaico en pantalla ( originalTamañoMosaico × escala).
+     */
     public int tamañoMosaico = originalTamañoMosaico * escala; // 48 px
 
-    /** Número de columnas de mosaicos visibles en pantalla. */
+    /**
+     * Número de columnas de mosaicos visibles en pantalla.
+     */
     int maxPantallaCol = 23;
 
-    /** Número de filas de mosaicos visibles en pantalla. */
+    /**
+     * Número de filas de mosaicos visibles en pantalla.
+     */
     int maxPantallaRow = 13;
 
-    /** Anchura total de la ventana de juego en píxeles. */
+    /**
+     * Anchura total de la ventana de juego en píxeles.
+     */
     public int pantallaAnchura = tamañoMosaico * maxPantallaCol; // 1104 px
 
-    /** Altura total de la ventana de juego en píxeles. */
+    /**
+     * Altura total de la ventana de juego en píxeles.
+     */
     public int pantallaAltura = tamañoMosaico * maxPantallaRow;  // 624 px
 
     // ════════════════════════════════════════════════════════════════════════
     // RENDIMIENTO
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Fotogramas por segundo objetivo del game loop. */
+    /**
+     * Fotogramas por segundo objetivo del game loop.
+     */
     int fps = 60;
 
     // ════════════════════════════════════════════════════════════════════════
     // SUBSISTEMAS
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Gestor de tiles que dibuja el fondo/mapa de cada escena. */
+    /**
+     * Gestor de tiles que dibuja el fondo/mapa de cada escena.
+     */
     TileManager fondoM = new TileManager(this);
 
-    /** Manejador de teclado que traduce las pulsaciones en flags de entrada. */
+    /**
+     * Manejador de teclado que traduce las pulsaciones en flags de entrada.
+     */
     public KeyHandler keyH = new KeyHandler(this);
 
     /**
@@ -64,16 +84,25 @@ public class GamePanel extends JPanel implements Runnable {
      */
     Thread gameThread;
 
-    /** Detector de colisiones entre entidades y tiles del mapa. */
+    /**
+     * Detector de colisiones entre entidades y tiles del mapa.
+     */
     public ColisionChecker cChecker = new ColisionChecker(this);
 
-    /** Sistema de audio para música y efectos de sonido. */
+    /**
+     * Sistema de audio para música .
+     */
     Sonido sound = new Sonido();
 
-    /** Interfaz de usuario: HUD, menús y textos en pantalla. */
+
+    /**
+     * Interfaz de usuario: HUD, menús y textos en pantalla.
+     */
     public UI ui = new UI(this, keyH);
 
-    /** Gestor de transiciones de escena y lógica de combate. */
+    /**
+     * Gestor de transiciones de escena y lógica de combate.
+     */
     Actualizacion at = new Actualizacion(this);
 
 
@@ -81,50 +110,78 @@ public class GamePanel extends JPanel implements Runnable {
     // ENTIDADES
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Entidad del jugador: movimiento, animación, combate y vida. */
+    /**
+     * Entidad del jugador: movimiento, animación, combate y vida.
+     */
     public Jugador jugador = new Jugador(this, keyH);
 
-    /** Enemigo principal del juego: el samurái errante. */
+    /**
+     * Enemigo principal del juego: el samurái errante.
+     */
     public samuraiErrante samuraiErrante = new samuraiErrante(this);
 
-    /** Enemigo boss principal del juego: el Gigante */
+    /**
+     * Enemigo boss principal del juego: el Gigante
+     */
     public Gigante gigante = new Gigante(this);
 
     // ════════════════════════════════════════════════════════════════════════
     // ESTADOS DEL JUEGO
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Estado actual del juego. Se compara con las constantes de estado definidas abajo. */
+    /**
+     * Estado actual del juego. Se compara con las constantes de estado definidas abajo.
+     */
     public int gameState;
 
-    /** Estado de la pantalla de título / menú principal. */
+    /**
+     * Estado de la pantalla de título / menú principal.
+     */
     public int titleState = 0;
 
-    /** Estado de la primera escena (exterior del castillo). */
+    /**
+     * Estado de la primera escena (exterior del castillo).
+     */
     public int escenaState1 = 1;
 
-    /** Estado de la segunda escena (interior / sala del samurái). */
+    /**
+     * Estado de la segunda escena (interior / sala del samurái).
+     */
     public int escenaState2 = 2;
 
-    /** Estado de la tercera escena (piso superior). */
+    /**
+     * Estado de la tercera escena (piso superior).
+     */
     public int escenaState3 = 3;
 
-    /** Estado de pausa de la escena 1. */
+    /**
+     * Estado de pausa de la escena 1.
+     */
     public int pauseState1 = 4;
 
-    /** Estado de pausa de la escena 2. */
+    /**
+     * Estado de pausa de la escena 2.
+     */
     public int pauseState2 = 5;
 
-    /** Estado de pausa de la escena 3. */
+    /**
+     * Estado de pausa de la escena 3.
+     */
     public int pauseState3 = 6;
 
-    /** Estado de combate por turnos contra el samurái. */
+    /**
+     * Estado de combate por turnos contra el samurái.
+     */
     public int statePelea = 10;
 
-    /** Estado de combate por turnos contra el samurái. */
+    /**
+     * Estado de combate por turnos contra el samurái.
+     */
     public int statePelea2 = 11;
 
-    /** Estado de pantalla de victoria al completar el juego. */
+    /**
+     * Estado de pantalla de victoria al completar el juego.
+     */
     public int congratulationsState = 12;
 
     // ════════════════════════════════════════════════════════════════════════
@@ -151,8 +208,10 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean jugadorTurno = true;
 
 
+    public boolean cofreAparecido = false;
 
-    public boolean cofreAparecido=false;
+
+
 
     // ════════════════════════════════════════════════════════════════════════
     // REFERENCIA AL ENEMIGO ACTIVO
@@ -161,8 +220,8 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Enemigo actualmente en combate.
      * Asignar antes de entrar al combate:
-     *   gp.enemigoActual = gp.samuraiErrante;  // combate 1
-     *   gp.enemigoActual = gp.gigante;          // combate boss
+     * gp.enemigoActual = gp.samuraiErrante;  // combate 1
+     * gp.enemigoActual = gp.gigante;          // combate boss
      */
     public Enemigo enemigoActual;
 
@@ -196,6 +255,7 @@ public class GamePanel extends JPanel implements Runnable {
      * Actualmente establece el estado en la pantalla de título.
      */
     public void setupGame() {
+        playMusic(1);
         gameState = titleState;
     }
 
@@ -220,14 +280,14 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void run() {
         double drawInterval = 1_000_000_000.0 / fps;
-        double delta      = 0;
-        long lastTime     = System.nanoTime();
-        long timer        = 0;
-        int drawCounter   = 0;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long timer = 0;
+        int drawCounter = 0;
 
         while (gameThread != null) {
             long currentTime = System.nanoTime();
-            long elapsed     = currentTime - lastTime;
+            long elapsed = currentTime - lastTime;
 
             delta += elapsed / drawInterval;
             timer += elapsed;
@@ -243,7 +303,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (timer >= 1_000_000_000) {
                 System.out.println("FPS: " + drawCounter);
                 drawCounter = 0;
-                timer       = 0;
+                timer = 0;
             }
         }
     }
@@ -345,15 +405,16 @@ public class GamePanel extends JPanel implements Runnable {
             // ── Pausa escena 2 ───────────────────────────────────────────────────
         } else if (gameState == pauseState2) {
             fondoM.draw2(g2d);
-            enemigoActual.drawEnemigo(g2d); // antes: samuraiErrante.drawSamurai(g2d)
             jugador.draw2(g2d);
+            enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
             g2d.dispose();
 
             // ── Pausa escena 3 ───────────────────────────────────────────────────
         } else if (gameState == pauseState3) {
             fondoM.draw3(g2d);
-            jugador.draw2(g2d);
+            jugador.draw3(g2d);
+            enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
             g2d.dispose();
         }
@@ -363,20 +424,15 @@ public class GamePanel extends JPanel implements Runnable {
     // AUDIO
     // ════════════════════════════════════════════════════════════════════════
 
-    /** Carga y reproduce una pista de música en bucle. */
     public void playMusic(int i) {
-        sound.setFile(i);
-        sound.play();
-        sound.loop();
+        sound.playMusic(i);
     }
 
-    /** Detiene la música que esté sonando en ese momento. */
     public void stopMusic() {
-        sound.stop();
+        sound.stopMusic();
     }
 
-    /** Reproduce un efecto de sonido puntual (sin bucle). */
     public void playSE(int i) {
-        // TODO: implementar efectos de sonido
+        sound.playSE(i);
     }
 }

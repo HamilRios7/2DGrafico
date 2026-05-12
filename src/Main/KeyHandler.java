@@ -60,10 +60,8 @@ public class KeyHandler implements KeyListener {
         // ESTADO: TÍTULO
         // ════════════════════════════════════════════════════════════════════
         if (gp.gameState == gp.titleState) {
-
             // ── Sub-pantalla 0: Menú principal ───────────────────────────────
             if (gp.ui.titleScreenState == 0) {
-
                 if (code == KeyEvent.VK_W) {
                     gp.ui.comandoNum--;
                     if (gp.ui.comandoNum < 0) gp.ui.comandoNum = 2;
@@ -82,8 +80,11 @@ public class KeyHandler implements KeyListener {
             } else if (gp.ui.titleScreenState == 1) {
 
                 if (code == KeyEvent.VK_ENTER && gp.ui.comandoNum == 0) {
+                    gp.stopMusic();
                     gp.gameState = gp.escenaState1;
-                    gp.playMusic(0);
+                    gp.playMusic(5);
+
+
                 }
 
                 // ── Sub-pantalla 2: Pantalla de muerte ──────────────────────────
@@ -210,6 +211,7 @@ public class KeyHandler implements KeyListener {
             if (gp.gameState == gp.pauseState1) {
                 gp.gameState = gp.escenaState1;
                 gp.playMusic(0);
+                gp.playMusic(5);
             } else if (gp.gameState == gp.escenaState1) {
                 gp.gameState = gp.pauseState1;
                 gp.stopMusic();

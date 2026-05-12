@@ -106,6 +106,10 @@ public class samuraiErrante extends Enemigo {
         if (atacarCounterEnemigo > 5) {
             atacarNumEnemigo++;
             atacarCounterEnemigo = 0;
+
+            if(atacarNumEnemigo==5){
+                gp.playSE(7);
+            }
             if (atacarNumEnemigo > 7) {
                 atacarNumEnemigo = 1;
                 contadorMaxFramesEnemigo++;
@@ -119,6 +123,9 @@ public class samuraiErrante extends Enemigo {
         if (muerteCounter > 20) {
             muerteNum++;
             muerteCounter = 0;
+            if(muerteNum==2){
+                gp.playSE(9);
+            }
             if (muerteNum > 3) {
                 muerteNum = 3;
                 contadorMaxFramesEnemigo++;

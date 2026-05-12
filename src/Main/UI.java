@@ -120,6 +120,7 @@ public class UI {
         // ── HUD durante el juego normal ──────────────────────────────────────
         if (gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3) {
             drawJugadorVida();
+
             if(gp.gameState == gp.escenaState3 && gp.ispeleaFinalizada){
                 drawCofre();
             }
@@ -572,7 +573,7 @@ public class UI {
         // ── Habilidad especial del enemigo (prioridad máxima) ──
         if (enemigo.seHaMostradoPantalla) {
             g2.drawString(
-                    "El enemigo ha activado su habilidad especial",
+                    "El "+ gp.enemigoActual.getNombreEnemigo() + " ha activado su habilidad especial",
                     x + 50, y + 40);
             g2.drawString("Continuar", x + 50, y + 90);
             if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
@@ -591,7 +592,7 @@ public class UI {
                                 + gp.jugador.dañoHechoJugador + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
-                        "y ha dejado al enemigo con " + enemigo.getLifeEnemigo(),
+                        "y ha dejado a "+ gp.enemigoActual.getNombreEnemigo() + " con " + enemigo.getLifeEnemigo(),
                         x + 50, y + 60);
             }
             g2.drawString("Continuar", x + 50, y + 90);
@@ -600,10 +601,10 @@ public class UI {
         } else if (enemigo.fueEnemigoAtaque) {
             // ── Resultado del ataque del enemigo ──
             if (enemigo.haFalladoEnemigo) {
-                g2.drawString("El enemigo ha fallado el ataque", x + 50, y + 40);
+                g2.drawString("El "+ gp.enemigoActual.getNombreEnemigo() + " ha fallado el ataque", x + 50, y + 40);
             } else {
                 g2.drawString(
-                        "El enemigo ha acertado el ataque , ha hecho "
+                        "El "+ gp.enemigoActual.getNombreEnemigo() + " ha acertado el ataque , ha hecho "
                                 + enemigo.dañoHechoEnemigo + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
