@@ -9,7 +9,7 @@ public class campoPeleaInteraccion extends Entidad {
     public int spawnX = 90;
     public int spawnY = 60;
     GamePanel gp;
-    public Rectangle area = new Rectangle(spawnX, spawnY, 1, 150);
+    public Rectangle area = new Rectangle(spawnX, spawnY, 3, 150);
 
     public campoPeleaInteraccion(GamePanel gp) {
         this.gp = gp;

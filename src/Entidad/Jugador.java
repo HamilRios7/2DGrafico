@@ -276,8 +276,14 @@ public class Jugador extends Entidad {
                     x2Jugador  -= 6;
                 }
 
-                // Límites de la escena 2 (distintos a los de escena 1 por el layout)
-                x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 195);
+                if (!gp.samuraiErrante.heMuertoEnemigo){
+                    // Límites de la escena 2 (distintos a los de escena 1 por el layout)
+                    x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 800);
+                }else if(gp.samuraiErrante.heMuertoEnemigo){
+                    System.out.println(x2Jugador);
+                    x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 195);
+                }
+
 
                 animacionMoviendome();
             } else {
@@ -365,11 +371,12 @@ public class Jugador extends Entidad {
         boolean moviendo = keyH.rightPressed || keyH.leftPressed;
         BufferedImage image = null;
 
-        if (gp.gameState == gp.escenaState2) {
-            image = moviendo
-                    ? (BufferedImage) dibujarMoviendome()
-                    : (BufferedImage) dibujarQuieto();
-
+        if (gp.gameState == gp.escenaState2 || gp.gameState== gp.pauseState2) {
+            if(moviendo){
+                image=(BufferedImage)dibujarMoviendome();
+            }else {
+                image=(BufferedImage) dibujarQuieto();
+            }
         } else if (gp.gameState == gp.statePelea && estoyAtacando) {
             image = (BufferedImage) dibujarAtaque();
 
@@ -388,11 +395,12 @@ public class Jugador extends Entidad {
         boolean moviendo = keyH.rightPressed || keyH.leftPressed;
         BufferedImage image = null;
 
-        if (gp.gameState == gp.escenaState3) {
-            image = moviendo
-                    ? (BufferedImage) dibujarMoviendome()
-                    : (BufferedImage) dibujarQuieto();
-
+        if (gp.gameState == gp.escenaState3 || gp.gameState== gp.pauseState3) {
+            if(moviendo){
+                image=(BufferedImage)dibujarMoviendome();
+            }else {
+                image=(BufferedImage) dibujarQuieto();
+            }
         } else if (gp.gameState == gp.statePelea2 && estoyAtacando) {
             image = (BufferedImage) dibujarAtaque();
 

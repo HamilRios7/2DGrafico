@@ -117,11 +117,11 @@ public class UI {
             }
         }
 
-        // ── HUD durante el juego normal ──────────────────────────────────────
+        // ** HUD durante el juego normal *****************
         if (gp.gameState == gp.escenaState1 || gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3) {
             drawJugadorVida();
 
-            if(gp.gameState == gp.escenaState3 && gp.ispeleaFinalizada){
+            if(gp.gameState == gp.escenaState3  && gp.ispeleaFinalizada){
                 drawCofre();
             }
         }
@@ -130,6 +130,10 @@ public class UI {
         if (gp.gameState == gp.pauseState1 || gp.gameState == gp.pauseState2 || gp.gameState == gp.pauseState3) {
             drawJugadorVida();
             drawPauseScreen();
+
+            if(gp.gameState == gp.pauseState3  && gp.ispeleaFinalizada){
+                drawCofre();
+            }
         }
 
         // ── Texto de guía de interacción (puertas, peleas, piso 3) ──────────
@@ -152,9 +156,6 @@ public class UI {
         }
 
 
-        if(gp.ispeleaFinalizada && gp.gameState==gp.escenaState3){
-
-        }
 
         // ── Pantalla de muerte (se activa cuando la animación de muerte termina) ──
         if (gp.jugador.isAnimacionMuerteTerminada && gp.gameState == gp.titleState) {
