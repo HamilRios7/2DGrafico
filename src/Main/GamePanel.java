@@ -2,6 +2,9 @@ package Main;
 
 import Entidad.*;
 import Fondo.TileManager;
+import Objetos.Inventario;
+import Objetos.Obj_PocionVida;
+import Objetos.SuperObject;
 
 import javax.swing.JPanel;
 import java.awt.*;
@@ -106,6 +109,9 @@ public class GamePanel extends JPanel implements Runnable {
     Actualizacion at = new Actualizacion(this);
 
 
+    public Inventario  inventario = new Inventario(this);
+
+
     // ════════════════════════════════════════════════════════════════════════
     // ENTIDADES
     // ════════════════════════════════════════════════════════════════════════
@@ -184,6 +190,9 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public int congratulationsState = 12;
 
+
+    public int inventarioSlot = 0;
+
     // ════════════════════════════════════════════════════════════════════════
     // FLAGS DE COMBATE
     // ════════════════════════════════════════════════════════════════════════
@@ -211,7 +220,14 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean cofreAparecido = false;
 
 
+    public boolean inventarioAbierto=false;
 
+
+    public SuperObject objetoDropeado = null;
+    public int dropX, dropY;
+
+
+    public boolean fuerzaActiva = false;
 
     // ════════════════════════════════════════════════════════════════════════
     // REFERENCIA AL ENEMIGO ACTIVO
@@ -257,6 +273,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         playMusic(1);
         gameState = titleState;
+        inventario.añadirObjeto(new Obj_PocionVida(this));
     }
 
     /**
@@ -325,13 +342,18 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (gameState == escenaState2 && !ui.dibujadoOpciones) {
             jugador.update2();
             enemigoActual.updateEnemigo();
+
             at.actualizacionEmpezarPelea1();
+            at.actualizacionRecogerDrop();
             at.actualizacionIrEscena3();
+
+
 
         } else if (gameState == escenaState3 && !ui.dibujadoOpciones) {
             jugador.update3();
             enemigoActual.updateEnemigo();
             at.actualizacionEmpezarPeleaFinal();
+            at.actualizacionRecogerDrop();
             at.actualizacionMostrarEscenaCongratulations();
 
 

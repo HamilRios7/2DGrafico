@@ -57,7 +57,7 @@ public class Entidad {
     public int level;
 
     /** Fuerza base que se suma al daño final */
-    protected int strenght;
+    public int strenght;
 
     /** Porcentaje de fuerza que se aplica al daño */
     public double fuerzaPorcentaje;

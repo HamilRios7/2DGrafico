@@ -1,15 +1,39 @@
 package Objetos;
 
+import Main.GamePanel;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Inventario {
 
-    //en esta clase se deberia guardar los objetos
-    //como dinero, pociones y por ahora hasta ahi
+    GamePanel gp;
+    private final int MAX_OBJETOS = 20;
+    public List<SuperObject> objetos = new ArrayList<>();
 
-    // el del video tambien tiene un explicacion y guia de como crearlo y llegar a mostrarlo
+    public Inventario(GamePanel gp) {
+        this.gp = gp;
+    }
 
+    public boolean añadirObjeto(SuperObject obj) {
+        if (objetos.size() < MAX_OBJETOS) {
+            objetos.add(obj);
+            return true;
+        }
+        return false;
+    }
 
-    //IMPORTANTE: probablemente la clase inventario no sea aqui y haya que crear otro package , ya que esta es para renderizar la imagen de los objetos como la de vida
-    //que genera el corazon del juego que sale junto a la barra de vida
-    //Sera necesario seguir el video del tio para poder llegar a
-    //a crear los obejtos y toda la cosa
+    public void eliminarObjeto(int index) {
+        if (index >= 0 && index < objetos.size())
+            objetos.remove(index);
+    }
+
+    public SuperObject getObjeto(int index) {
+        if (index >= 0 && index < objetos.size())
+            return objetos.get(index);
+        return null;
+    }
+
+    public int getSize() {
+        return objetos.size();
+    }
 }

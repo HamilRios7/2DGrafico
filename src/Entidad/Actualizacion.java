@@ -1,6 +1,8 @@
 package Entidad;
 
 import Main.GamePanel;
+import Objetos.Obj_PocionFuerza;
+import Objetos.Obj_PocionVida;
 
 /**
  * Clase que gestiona toda la lógica de actualización del juego cada frame.
@@ -72,11 +74,29 @@ public class Actualizacion {
             if (e.animacionMuerteTerminada()) {
                 gp.ispeleaFinalizada = true;
                 e.isAnimacionMuerteTerminadaEnemigo = true;
-                if(e instanceof samuraiErrante) {
+
+                // ── Drop aleatorio ──
+                int rand = new java.util.Random().nextInt(100);
+                if (rand < 50) {
+                    gp.objetoDropeado = new Obj_PocionVida(gp);
+                } else if (rand < 80) {
+                    gp.objetoDropeado = new Obj_PocionFuerza(gp);
+                }
+                // 20% no dropea nada, objetoDropeado queda null
+
+
+
+
+                if (e instanceof samuraiErrante) {
+                    gp.dropX = 500; // centro de la escena 2
+                    gp.dropY = 420; // justo encima del suelo
                     gp.stopMusic();
                     gp.gameState = gp.escenaState2;
                     gp.playMusic(0);
-                }else if(e instanceof Gigante) {
+
+                } else if (e instanceof Gigante) {
+                    gp.dropX = 500; // centro de la escena 3
+                    gp.dropY = 420;
                     gp.stopMusic();
                     gp.gameState = gp.escenaState3;
                     gp.playMusic(4);
@@ -91,18 +111,22 @@ public class Actualizacion {
 
                 if (gp.jugador.animacionAtaqueTerminada()) {
                     gp.jugador.estoyAtacando = false;
-
                     if (gp.jugador.ataqueElegido == 0) gp.jugador.ataqueSeguro();
                     if (gp.jugador.ataqueElegido == 1) gp.jugador.ataqueEquilibrado();
                     if (gp.jugador.ataqueElegido == 2) gp.jugador.ataqueArriesgado();
                     gp.jugador.ataqueElegido = -1;
+
+// Resetear fuerza temporal después del ataque
+                    if (gp.fuerzaActiva) {
+                        gp.jugador.strenght -= 2;
+                        gp.fuerzaActiva = false;
+                    }
                 }
             }
         }
 
         // ── Turno del enemigo ─────────────────────────────────────────────────
-        if (!gp.jugadorTurno && !e.heMuertoEnemigo && gp.isSituacionPelea) {
-
+        if (!gp.jugadorTurno && !e.heMuertoEnemigo && gp.isSituacionPelea && !gp.inventarioAbierto) {
             if (!e.enemigoYaAtaco) {
 
                 // Comprobar habilidad única ANTES de arrancar la animación
@@ -234,6 +258,37 @@ public class Actualizacion {
             }
         } else {
             gp.jugador.cercaCongratulations = false;
+        }
+    }
+
+    public void actualizacionInventario() {
+        if (gp.gameState == gp.statePelea || gp.gameState == gp.statePelea2) {
+            if (!gp.jugadorTurno && gp.inventarioAbierto) {
+                // El jugador está navegando el inventario, no hacer nada más
+                return;
+            }
+        }
+    }
+    public void actualizacionRecogerDrop() {
+        if (gp.objetoDropeado == null) return;
+
+        int jugadorX;
+
+        if (gp.gameState == gp.escenaState2) {
+            jugadorX = gp.jugador.x2Jugador + 200; // centro del sprite 400px
+        } else if (gp.gameState == gp.escenaState3) {
+            jugadorX = gp.jugador.x3Jugador + 200;
+        } else {
+            return;
+        }
+
+        int distX = Math.abs(jugadorX - gp.dropX);
+
+        if (distX < 60) {
+            gp.inventario.añadirObjeto(gp.objetoDropeado);
+            gp.objetoDropeado = null;
+            gp.inventarioSlot = 0;
+            System.out.println("Pocion recogida!");
         }
     }
 }

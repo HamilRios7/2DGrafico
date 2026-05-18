@@ -1,8 +1,6 @@
 package Main;
 
-import Objetos.Obj_CofreTesoro;
-import Objetos.Obj_Vida;
-import Objetos.SuperObject;
+import Objetos.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -34,6 +32,8 @@ public class UI {
     /** Imagen del corazón que aparece junto a la barra de vida. */
     BufferedImage corazon;
     BufferedImage cofre;
+    BufferedImage vidaPoc;
+    BufferedImage fuerzaPoc;
 
     /**
      * Índice de la opción seleccionada en los menús de título,
@@ -94,6 +94,12 @@ public class UI {
 
         SuperObject cofreTesoro = new Obj_CofreTesoro(gp);
         cofre = cofreTesoro.imagen;
+
+        SuperObject pocionFuerza = new Obj_PocionFuerza(gp);
+        fuerzaPoc = pocionFuerza.imagen;
+
+        SuperObject pocionVida = new Obj_PocionVida(gp);
+        vidaPoc = pocionVida.imagen;
     }
 
     // ── Punto de entrada del renderizado ────────────────────────────────────
@@ -159,7 +165,7 @@ public class UI {
         }
 
 
-        if(keyH.spacePressed && gp.gameState==gp.escenaState1 || gp.gameState==gp.escenaState2 || gp.gameState==gp.escenaState3){
+        if(keyH.spacePressed && (gp.gameState==gp.escenaState1 || gp.gameState==gp.escenaState2 || gp.gameState==gp.escenaState3)){
             drawOpciones();
             dibujadoOpciones=true;
         }
@@ -175,6 +181,15 @@ public class UI {
         // ── Pantalla de enhorabuena al completar el juego ────────────────────
         if (gp.gameState == gp.congratulationsState) {
             drawCongratulationsPantalla();
+        }
+
+        if (gp.inventarioAbierto) {
+            abrirInventario();
+        }
+
+        if (gp.objetoDropeado != null && (gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3)) {
+            g2.drawImage(gp.objetoDropeado.imagen, gp.dropX, gp.dropY,
+                    gp.tamañoMosaico, gp.tamañoMosaico, null);
         }
     }
 
@@ -551,9 +566,55 @@ public class UI {
      * temporalmente mientras se navega por él.
      */
     public void abrirInventario() {
-        gp.jugadorTurno = false;
-    }
+        // Solo dibuja, no toca la lógica
+        int x = 220, y = 100, width = 700, height = 400;
 
+        g2.setColor(new Color(0, 0, 0, 200));
+        g2.fillRect(x, y, width, height);
+        g2.setColor(Color.WHITE);
+        g2.drawRect(x, y, width, height);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+        g2.drawString("INVENTARIO", x + 20, y + 30);
+
+        int slotSize = 64;
+        int padding  = 16;
+        int cols     = 6;
+
+        for (int i = 0; i < gp.inventario.objetos.size(); i++) {
+            SuperObject obj = gp.inventario.objetos.get(i);
+
+            int col = i % cols;
+            int row = i / cols;
+            int sx  = x + 20 + col * (slotSize + padding);
+            int sy  = y + 50 + row * (slotSize + padding + 15);
+
+            g2.setColor(new Color(50, 50, 50, 180));
+            g2.fillRect(sx, sy, slotSize, slotSize);
+            g2.setColor(Color.GRAY);
+            g2.drawRect(sx, sy, slotSize, slotSize);
+
+            // Resaltar slot seleccionado
+            if (i == gp.inventarioSlot) {
+                g2.setColor(new Color(200, 162, 82, 150));
+                g2.fillRect(sx, sy, slotSize, slotSize);
+            }
+
+            if (obj.imagen != null) {
+                g2.drawImage(obj.imagen, sx + 8, sy + 8, 48, 48, null);
+            }
+
+            g2.setFont(g2.getFont().deriveFont(10F));
+            g2.setColor(Color.WHITE);
+            g2.drawString(obj.name, sx, sy + slotSize + 12);
+        }
+
+        g2.setFont(g2.getFont().deriveFont(12F));
+        g2.setColor(Color.GRAY);
+        g2.drawString("ESC para cerrar", x + 20, y + height - 10);
+
+
+    }
     // ── Información de batalla ───────────────────────────────────────────────
 
     /**

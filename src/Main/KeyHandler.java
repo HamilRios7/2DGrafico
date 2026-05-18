@@ -1,6 +1,7 @@
 package Main;
 
 import Entidad.Enemigo;
+import Objetos.SuperObject;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -103,15 +104,52 @@ public class KeyHandler implements KeyListener {
         // ESTADO: COMBATE — turno del jugador (menú de acciones)
         // ════════════════════════════════════════════════════════════════════
         if (gp.gameState == gp.statePelea || gp.gameState == gp.statePelea2) {
-
+// ── INVENTARIO (prioridad máxima, antes que cualquier otro bloque) ──
+            if (gp.inventarioAbierto) {
+                if (code == KeyEvent.VK_D && !gp.inventario.objetos.isEmpty()) {
+                    gp.inventarioSlot++;
+                    if (gp.inventarioSlot >= gp.inventario.objetos.size())
+                        gp.inventarioSlot = 0;
+                }
+                if (code == KeyEvent.VK_A && !gp.inventario.objetos.isEmpty()) {
+                    gp.inventarioSlot--;
+                    if (gp.inventarioSlot < 0)
+                        gp.inventarioSlot = gp.inventario.objetos.size() - 1;
+                }
+                if (code == KeyEvent.VK_ENTER) {
+                    if (!gp.inventario.objetos.isEmpty()) {
+                        SuperObject obj = gp.inventario.objetos.get(gp.inventarioSlot);
+                        obj.usar(gp);
+                        gp.inventario.eliminarObjeto(gp.inventarioSlot);
+                        gp.inventarioSlot = 0;
+                    }
+                    gp.inventarioAbierto = false;
+                    gp.jugadorTurno = true; // sigue siendo turno del jugador
+                    gp.isSituacionPelea = true; // vuelve al menú de combate
+                }
+                if (code == KeyEvent.VK_ESCAPE) {
+                    gp.inventarioAbierto = false;
+                    gp.jugadorTurno = true; // sigue siendo turno del jugador
+                    gp.isSituacionPelea = true; // vuelve al menú de combate
+                }
+                return;
+            }
             if (code == KeyEvent.VK_ENTER && gp.jugadorTurno) {
 
                 if (gp.ui.subState == 0) {
                     if (gp.ui.comandoNum1 == 0) {
                         gp.ui.subState = 1;
                     }
-                    if (gp.ui.comandoNum1 == 1) {
-                        gp.ui.abrirInventario();
+                    // Al abrir inventario
+                    if (gp.ui.comandoNum1 == 1 && code == KeyEvent.VK_ENTER && gp.jugadorTurno) {
+                        gp.inventarioAbierto = true;
+                        gp.jugadorTurno = false;
+                    }
+
+// Al cerrar inventario
+                    if (code == KeyEvent.VK_ESCAPE && gp.inventarioAbierto) {
+                        gp.inventarioAbierto = false;
+                        gp.jugadorTurno = true;
                     }
                     gp.ui.comandoNum1 = 0;
 
@@ -137,6 +175,8 @@ public class KeyHandler implements KeyListener {
                 gp.ui.comandoNum1++;
             }
         }
+
+
 
         // ════════════════════════════════════════════════════════════════════
         // ESTADO: COMBATE — confirmación de resultado

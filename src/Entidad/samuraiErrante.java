@@ -217,9 +217,9 @@ public class samuraiErrante extends Enemigo {
 
     // ── Tipos de ataque ───────────────────────────────────────────────────────
 
-    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 5,  0); }
-    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 8,  0); }
-    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 12, 0); }
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 5,  100); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 8,  100); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 12, 100); }
 
     // ── Contrataque ───────────────────────────────────────────────────────────
 
