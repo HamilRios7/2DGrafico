@@ -238,6 +238,8 @@ public class Jugador extends Entidad {
                     x1Jugador  -= speed;
                 }
 
+
+                System.out.println("ME SIGO MOVIENDO : "+x1Jugador);
                 // Evita que el jugador salga de los bordes de la pantalla
                 x1Jugador = clamp(x1Jugador, -54, gp.pantallaAnchura - 70);
 
@@ -280,7 +282,6 @@ public class Jugador extends Entidad {
                     // Límites de la escena 2 (distintos a los de escena 1 por el layout)
                     x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 800);
                 }else if(gp.samuraiErrante.heMuertoEnemigo){
-                    System.out.println(x2Jugador);
                     x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 195);
                 }
 
@@ -319,7 +320,6 @@ public class Jugador extends Entidad {
                     // Límites de la escena 3 (distintos a los de escena 1 por el layout)
                     x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 800);
                 }else if(gp.cofreAparecido){
-                    System.out.println(x3Jugador);
                     x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 970);
                 }
                 animacionMoviendome();

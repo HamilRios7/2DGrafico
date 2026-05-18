@@ -37,7 +37,7 @@ public class Actualizacion {
      *   gp.enemigoActual = gp.samuraiErrante;  // combate 1
      *   gp.enemigoActual = gp.gigante;          // combate boss
      */
-    public void actualizacionCombate1() {
+    public void actualizacionSistemaCombate() {
         // gp.enemigoActual ya viene asignado desde Actualizacion.actualizacionMoverEscena*
         // NO se sobreescribe aquí para que funcione con cualquier enemigo.
 
@@ -140,7 +140,7 @@ public class Actualizacion {
      * Comprueba si el jugador está en la zona de la puerta de la escena 1
      * y gestiona la transición a la escena 2 al pulsar E.
      */
-    public void actualizacionMoverEscena2() {
+    public void actualizacionIrEscena2() {
         if (gp.cChecker.checkerCambioEscena(gp.jugador, new campoPuerta(gp))) {
             gp.jugador.cercaPuerta = true;
             if (gp.jugador.cercaPuerta && gp.keyH.ePressed) {
@@ -162,7 +162,7 @@ public class Actualizacion {
      * y gestiona la transición al estado de combate al pulsar E.
      * Solo funciona si la pelea no ha sido ya finalizada.
      */
-    public void actualizacionMoverEstadoPelea1() {
+    public void actualizacionEmpezarPelea1() {
         if (gp.cChecker.checkerEstadoPelea(gp.jugador, new campoPeleaInteraccion(gp))) {
             gp.jugador.cercaPelea = true;
             if (gp.jugador.cercaPelea && gp.keyH.ePressed && !gp.ispeleaFinalizada) {
@@ -184,7 +184,7 @@ public class Actualizacion {
      * y gestiona la transición al estado de combate al pulsar E.
      * Solo funciona si la pelea no ha sido ya finalizada.
      */
-    public void actualizacionMoverEstadoPeleaFinal() {
+    public void actualizacionEmpezarPeleaFinal() {
         if (gp.cChecker.checkerEstadoPeleaFinal(gp.jugador, new campoPeleaInteraccion(gp))) {
             gp.jugador.cercaPeleaFinal = true;
             if (gp.jugador.cercaPeleaFinal && gp.keyH.ePressed && !gp.ispeleaFinalizada) {
@@ -210,7 +210,7 @@ public class Actualizacion {
      * y gestiona la transición a la escena 3 al pulsar E.
      * Solo funciona si la pelea ha sido finalizada.
      */
-    public void actualizacionMoverEscena3() {
+    public void actualizacionIrEscena3() {
         if (gp.cChecker.checkerCambioPantallaEscena3(gp.jugador, new campoIntercaccionEscena3(gp))) {
             gp.jugador.cercaIrPiso3 = true;
             if (gp.jugador.cercaIrPiso3 && gp.keyH.ePressed && gp.ispeleaFinalizada) {
@@ -225,7 +225,7 @@ public class Actualizacion {
         }
     }
 
-    public void actualizacionMoverEscenaCongratulations() {
+    public void actualizacionMostrarEscenaCongratulations() {
         if (gp.cChecker.checkerCambioPantallaEnhorabuena(gp.jugador, new campoEnhorabuenaInteraccion(gp))) {
             gp.jugador.cercaCongratulations = true;
             if (gp.jugador.cercaCongratulations && gp.keyH.ePressed && gp.ispeleaFinalizada) {

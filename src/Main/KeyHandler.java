@@ -29,6 +29,9 @@ public class KeyHandler implements KeyListener {
      */
     public boolean ePressed;
 
+
+    public boolean spacePressed=false;
+
     /**
      * Construye el manejador de teclado vinculado al panel de juego.
      *
@@ -243,6 +246,17 @@ public class KeyHandler implements KeyListener {
                 System.exit(0);
             }
         }
+
+
+
+
+        if(code==KeyEvent.VK_O){
+            spacePressed=true;
+           if(gp.ui.dibujadoOpciones && code==KeyEvent.VK_O){
+               spacePressed=false;
+               gp.ui.dibujadoOpciones=false;
+           }
+        }
     }
 
     /**
@@ -258,5 +272,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_D) rightPressed = false;
         if (code == KeyEvent.VK_A) leftPressed  = false;
         if (code == KeyEvent.VK_E) ePressed     = false;
+
+
     }
 }

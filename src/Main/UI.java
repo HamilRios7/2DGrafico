@@ -72,6 +72,9 @@ public class UI {
     public int comandoNum2 = 1;
 
 
+
+    public boolean dibujadoOpciones=false;
+
     /**
      * Construye la UI, inicializa las fuentes y carga el icono de corazón.
      *
@@ -155,6 +158,11 @@ public class UI {
             }
         }
 
+
+        if(keyH.spacePressed && gp.gameState==gp.escenaState1 || gp.gameState==gp.escenaState2 || gp.gameState==gp.escenaState3){
+            drawOpciones();
+            dibujadoOpciones=true;
+        }
 
 
         // ── Pantalla de muerte (se activa cuando la animación de muerte termina) ──
@@ -615,5 +623,35 @@ public class UI {
             g2.drawString("Continuar", x + 50, y + 90);
             if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
         }
+    }
+
+
+    public void drawOpciones(){
+
+
+            g2.setColor(Color.BLACK);
+            g2.fillRect(380, 80, 350, 360);
+            g2.setColor(Color.white);
+            g2.drawRect(380, 80, 350, 360);
+
+        g2.setFont(g2.getFont().deriveFont(34F));
+        String text = "OPCIONES";
+        g2.drawString(text, getXforCenteredText(text), 120);
+
+        g2.setFont(g2.getFont().deriveFont(18F));
+        text = "Sonido";
+        g2.drawString(text, 400, 220);
+
+        text = "Pantalla Completa  ";
+        g2.drawString(text, 400, 280);
+
+
+
+        String salirJuego = "Salir";
+
+        g2.drawString(salirJuego,getXforCenteredText(salirJuego),  (gp.pantallaAltura / 2) + 70);
+
+
+
     }
 }

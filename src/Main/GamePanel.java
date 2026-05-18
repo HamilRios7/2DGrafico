@@ -318,31 +318,31 @@ public class GamePanel extends JPanel implements Runnable {
      * según el estado activo.
      */
     public void update() {
-        if (gameState == escenaState1) {
+        if (gameState == escenaState1 && !ui.dibujadoOpciones) {
             jugador.update1();
-            at.actualizacionMoverEscena2();
+            at.actualizacionIrEscena2();
 
-        } else if (gameState == escenaState2) {
+        } else if (gameState == escenaState2 && !ui.dibujadoOpciones) {
             jugador.update2();
             enemigoActual.updateEnemigo();
-            at.actualizacionMoverEstadoPelea1();
-            at.actualizacionMoverEscena3();
+            at.actualizacionEmpezarPelea1();
+            at.actualizacionIrEscena3();
 
-        } else if (gameState == escenaState3) {
+        } else if (gameState == escenaState3 && !ui.dibujadoOpciones) {
             jugador.update3();
             enemigoActual.updateEnemigo();
-            at.actualizacionMoverEstadoPeleaFinal();
-            at.actualizacionMoverEscenaCongratulations();
+            at.actualizacionEmpezarPeleaFinal();
+            at.actualizacionMostrarEscenaCongratulations();
 
 
         }
 
         if (gameState == statePelea || gameState == statePelea2) {
-            at.actualizacionCombate1();
+            at.actualizacionSistemaCombate();
         }
 
         // Los estados de pausa no actualizan nada → el juego queda congelado
-        if (gameState == pauseState1 || gameState == pauseState2 || gameState == pauseState3) {
+        if (gameState == pauseState1 || gameState == pauseState2 || gameState == pauseState3 || ui.dibujadoOpciones) {
             // Intencional: sin lógica de actualización mientras está pausado
         }
     }
