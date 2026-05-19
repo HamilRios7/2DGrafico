@@ -31,7 +31,7 @@ public class KeyHandler implements KeyListener {
     public boolean ePressed;
 
 
-    public boolean spacePressed=false;
+    public boolean oPressed =false;
 
     /**
      * Construye el manejador de teclado vinculado al panel de juego.
@@ -236,6 +236,11 @@ public class KeyHandler implements KeyListener {
                         enemigo.estoyAtacando      = false;
                         gp.isSituacionPelea       = true;
 
+                    } else if(enemigo.fueStuneado()) {
+                        gp.jugadorTurno        = false;
+                        enemigo.enemigoYaAtaco  = false;
+                        enemigo.estoyAtacando   = false;
+                        enemigo.resetStun();
                     } else {
                         // Ataque del enemigo resuelto → devolver turno al jugador
                         gp.jugadorTurno        = true;
@@ -291,9 +296,9 @@ public class KeyHandler implements KeyListener {
 
 
         if(code==KeyEvent.VK_O){
-            spacePressed=true;
+            oPressed =true;
            if(gp.ui.dibujadoOpciones && code==KeyEvent.VK_O){
-               spacePressed=false;
+               oPressed =false;
                gp.ui.dibujadoOpciones=false;
            }
         }

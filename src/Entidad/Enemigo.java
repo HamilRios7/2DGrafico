@@ -133,7 +133,11 @@ public abstract class Enemigo extends Entidad {
      * Las subclases que quieran contrataque deben sobreescribir este método.
      */
     public void contratacar() {
-        // No-op por defecto: este enemigo no tiene contrataque
+
+    }
+
+    public void activarStun(){
+
     }
 
     // ── Lógica de ataque compartida ───────────────────────────────────────────
@@ -165,18 +169,23 @@ public abstract class Enemigo extends Entidad {
 
 
 
-    // ← Añadir estos dos:
+    // Samurai
     public boolean fueContrataque() {
         return false;
     }
 
-    public void resetContrataque() {
-        // No-op por defecto
+    public void resetContrataque() {}
+
+    //Gigante
+    public boolean fueStuneado() {
+        return false;
     }
+
+    public void resetStun() {}
 
     public void recibirDaño(Enemigo enemigo, int dañoFinal) {
         int vida = enemigo.getLifeEnemigo() - dañoFinal;
-        if (vida < 0) vida = 0;
+        if (vida < 0) {vida = 0;}
         enemigo.setLifeEnemigo(vida);
     }
 }

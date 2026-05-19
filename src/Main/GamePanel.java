@@ -65,7 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Fotogramas por segundo objetivo del game loop.
      */
-    int fps = 60;
+    int fps = 54;
 
     // ════════════════════════════════════════════════════════════════════════
     // SUBSISTEMAS
@@ -296,7 +296,7 @@ public class GamePanel extends JPanel implements Runnable {
      */
     @Override
     public void run() {
-        double drawInterval = 1_000_000_000.0 / fps;
+        double drawInterval = 1000000000.0 / fps;
         double delta = 0;
         long lastTime = System.nanoTime();
         long timer = 0;

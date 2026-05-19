@@ -41,7 +41,7 @@ public class samuraiErrante extends Enemigo {
         lifeEnemigo = barraVidaEnemigo;
 
         strenght = 2;
-        fuerzaPorcentaje = 0.4;
+        fuerzaPorcentaje = 0.5;
     }
 
     public void getEnemyImage() {
@@ -217,9 +217,10 @@ public class samuraiErrante extends Enemigo {
 
     // ── Tipos de ataque ───────────────────────────────────────────────────────
 
-    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 5,  100); }
-    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 8,  100); }
-    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 12, 100); }
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador,6,  88); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador,9,  68); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 13, 41); }
+
 
     // ── Contrataque ───────────────────────────────────────────────────────────
 
@@ -242,7 +243,7 @@ public class samuraiErrante extends Enemigo {
 
     @Override
     public boolean fueContrataque() {
-        return fueContrataque;  // usa el campo que ya tienes
+        return fueContrataque;
     }
 
     @Override

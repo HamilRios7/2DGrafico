@@ -1,6 +1,8 @@
 package Entidad;
 
 import Main.GamePanel;
+import Objetos.Obj_PocionVida;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,7 +14,7 @@ import java.io.IOException;
  */
 public class Gigante extends Enemigo {
 
-    // NOTA: isHabilidadActivada NO se declara aquí, se hereda de Enemigo.
+  public boolean fueStun=false;
 
     public Gigante(GamePanel gp) {
         this.gp = gp;
@@ -33,7 +35,7 @@ public class Gigante extends Enemigo {
         barraVidaEnemigo = maxLifeEnemigo * 10;
         lifeEnemigo = barraVidaEnemigo;
 
-        strenght = 6;
+        strenght = 5;
         fuerzaPorcentaje = 0.4;
     }
 
@@ -141,26 +143,17 @@ public class Gigante extends Enemigo {
         }
     }
 
-    @Override
-    public void actuar() {
-        contadorMaxFramesEnemigo = 0;
-        fueEnemigoAtaque = true;
 
-        int opcion = (int)(Math.random() * 3);
-        switch (opcion) {
-            case 0: ataqueSeguro();      break;
-            case 1: ataqueEquilibrado(); break;
-            case 2: ataqueArriesgado();  break;
-        }
-    }
 
     @Override
     public void activarHabilidadUnica() {
         isHabilidadActivada = true;
-        strenght = strenght + 2;
+        strenght = strenght + 3;
         seHaMostradoPantalla = true;
         gp.isSituacionPelea = false;
     }
+
+
 
     @Override
     public boolean animacionAtaqueTerminada() {
@@ -184,6 +177,8 @@ public class Gigante extends Enemigo {
             if (idleNumEnemigo > 6) idleNumEnemigo = 1;
         }
     }
+
+
 
     // ── Dibujo de frames ──────────────────────────────────────────────────────
 
@@ -248,9 +243,44 @@ public class Gigante extends Enemigo {
 
     // ── Tipos de ataque ───────────────────────────────────────────────────────
 
-    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 7,  0); }
-    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 10, 0); }
-    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 14, 0); }
+    @Override
+    public void actuar() {
+        contadorMaxFramesEnemigo = 0;
+        fueEnemigoAtaque = true;
+        resetStun();
+
+        int opcion = (int)(Math.random() * 3);
+        switch (opcion) {
+            case 0: ataqueSeguro();      break;
+            case 1: ataqueEquilibrado(); break;
+            case 2: ataqueArriesgado();  break;
+        }
+        if(!haFalladoEnemigo) {
+            activarStun();
+        }
+    }
+
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 6,  79); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 10, 55); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 14, 34); }
+
+    @Override
+    public boolean fueStuneado() {
+        return fueStun;
+    }
+
+    @Override
+    public void resetStun() {
+        fueStun = false;
+    }
+
+    public void activarStun(){
+        int rand = new java.util.Random().nextInt(100);
+        if (rand < 25) {
+            System.out.println("me active");
+            fueStun=true;
+        }
+    }
 }
     //posible boss
     //public Gigante(){

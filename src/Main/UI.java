@@ -1,5 +1,7 @@
 package Main;
 
+import Entidad.Gigante;
+import Entidad.samuraiErrante;
 import Objetos.*;
 
 import java.awt.*;
@@ -165,7 +167,7 @@ public class UI {
         }
 
 
-        if(keyH.spacePressed && (gp.gameState==gp.escenaState1 || gp.gameState==gp.escenaState2 || gp.gameState==gp.escenaState3)){
+        if(keyH.oPressed && (gp.gameState==gp.escenaState1 || gp.gameState==gp.escenaState2 || gp.gameState==gp.escenaState3)){
             drawOpciones();
             dibujadoOpciones=true;
         }
@@ -642,17 +644,26 @@ public class UI {
 
         // ── Habilidad especial del enemigo (prioridad máxima) ──
         if (enemigo.seHaMostradoPantalla) {
-            g2.drawString(
-                    "El "+ gp.enemigoActual.getNombreEnemigo() + " ha activado su habilidad especial",
-                    x + 50, y + 40);
-            g2.drawString("Continuar", x + 50, y + 90);
-            if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
-            return; // no seguir dibujando nada más
+            if(enemigo instanceof samuraiErrante) {
+                g2.drawString(
+                        "El " + enemigo.getNombreEnemigo() + " ha activado su habilidad especial. Su fuerza aumenta 2 puntos",
+                        x + 50, y + 40);
+                g2.drawString("Continuar", x + 50, y + 90);
+                if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
+                return; // no seguir dibujando nada más
+            }else if(enemigo instanceof Gigante){
+                g2.drawString(
+                        "El " + enemigo.getNombreEnemigo() + " ha activado su habilidad especial. Su fuerza aumenta 3 puntos",
+                        x + 50, y + 40);
+                g2.drawString("Continuar", x + 50, y + 90);
+                if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
+                return; // no seguir dibujando nada más
+            }
         }
 
         if (gp.jugador.fuejugadorAtaque) {
             // ── Resultado del ataque del jugador ──
-            if (gp.jugador.heFalladoJugador) {
+            if (gp.jugador.heFalladoJugador && gp.enemigoActual instanceof samuraiErrante) {
                 g2.drawString(
                         "El heroe ha fallado el ataque , el enemigo ha usado contrataque",
                         x + 50, y + 40);
@@ -662,7 +673,7 @@ public class UI {
                                 + gp.jugador.dañoHechoJugador + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
-                        "y ha dejado a "+ gp.enemigoActual.getNombreEnemigo() + " con " + enemigo.getLifeEnemigo(),
+                        "y ha dejado a "+ enemigo.getNombreEnemigo() + " con " + enemigo.getLifeEnemigo(),
                         x + 50, y + 60);
             }
             g2.drawString("Continuar", x + 50, y + 90);
@@ -671,10 +682,18 @@ public class UI {
         } else if (enemigo.fueEnemigoAtaque) {
             // ── Resultado del ataque del enemigo ──
             if (enemigo.haFalladoEnemigo) {
-                g2.drawString("El "+ gp.enemigoActual.getNombreEnemigo() + " ha fallado el ataque", x + 50, y + 40);
-            } else {
+                g2.drawString("El "+ enemigo.getNombreEnemigo() + " ha fallado el ataque", x + 50, y + 40);
+            } else if(!enemigo.haFalladoEnemigo && enemigo instanceof Gigante &&  gp.gigante.fueStun== true){
                 g2.drawString(
-                        "El "+ gp.enemigoActual.getNombreEnemigo() + " ha acertado el ataque , ha hecho "
+                        "El "+ enemigo.getNombreEnemigo() + " ha acertado el ataque , ha hecho "
+                                + enemigo.dañoHechoEnemigo + " puntos de daño",
+                        x + 50, y + 40);
+                g2.drawString(
+                        "y ha dejado al heroe con " + gp.jugador.getLife() +" . Ha stuneado al heroe",
+                        x + 50, y + 60);
+            }else{
+                g2.drawString(
+                        "El "+ enemigo.getNombreEnemigo() + " ha acertado el ataque , ha hecho "
                                 + enemigo.dañoHechoEnemigo + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(

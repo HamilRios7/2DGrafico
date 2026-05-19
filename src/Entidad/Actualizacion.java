@@ -130,8 +130,7 @@ public class Actualizacion {
             if (!e.enemigoYaAtaco) {
 
                 // Comprobar habilidad única ANTES de arrancar la animación
-                if (!e.isHabilidadActivada &&
-                        e.getLifeEnemigo() <= (e.getBarraVidaEnemigo() / 2)) {
+                if (!e.isHabilidadActivada && e.getLifeEnemigo() <= (e.getBarraVidaEnemigo() / 2)) {
 
                     e.activarHabilidadUnica();
                     e.enemigoYaAtaco = true;
@@ -154,6 +153,7 @@ public class Actualizacion {
                     e.estoyAtacando = false;
                     // Calcular daño UNA SOLA VEZ al terminar la animación
                     e.actuar();
+
                     // actuar() pone isSituacionPelea=false → pantalla de resultado
                 }
             }
