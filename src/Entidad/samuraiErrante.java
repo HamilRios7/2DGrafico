@@ -36,12 +36,11 @@ public class samuraiErrante extends Enemigo {
         y1Enemigo = 120;
 
         nombreEnemigo = "Samurai Errante";
-        maxLifeEnemigo = 4;
-        barraVidaEnemigo = maxLifeEnemigo * 10;
-        lifeEnemigo = barraVidaEnemigo;
-
-        strenght = 2;
-        fuerzaPorcentaje = 0.5;
+        maxLifeEnemigo   = 5;
+        barraVidaEnemigo = maxLifeEnemigo * 10; // 50
+        lifeEnemigo      = barraVidaEnemigo;
+        strenght         = 3;
+        fuerzaPorcentaje = 1.8;
     }
 
     public void getEnemyImage() {
@@ -217,9 +216,9 @@ public class samuraiErrante extends Enemigo {
 
     // ── Tipos de ataque ───────────────────────────────────────────────────────
 
-    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador,6,  88); }
-    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador,9,  68); }
-    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 13, 41); }
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 2,  94); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 5,  78); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 9,  55); }
 
 
     // ── Contrataque ───────────────────────────────────────────────────────────

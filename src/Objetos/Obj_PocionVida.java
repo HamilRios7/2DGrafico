@@ -12,6 +12,7 @@ public class Obj_PocionVida  extends  SuperObject{
         this.gp = gp;
 
         name="PocionVida";
+        descripcion = "Recupera 30 puntos de vida";
 
         try {
             imagen= ImageIO.read(getClass().getClassLoader().getResourceAsStream("objetos/pocionvida.png"));

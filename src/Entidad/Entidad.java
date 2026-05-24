@@ -118,11 +118,12 @@ public class Entidad {
     // ── Métodos de ataque del jugador ─────────────────────────────────────────
 
     private void ejecutarAtaqueJugador(int ataque, int probabilidadAcierto, Enemigo enemigo) {
+        if (fuejugadorAtaque) return; // ← evita doble ejecución
         fuejugadorAtaque = true;
         int dañoFinal = (int)(ataque + (strenght * fuerzaPorcentaje));
         Random rand = new Random();
         if (rand.nextInt(100) < probabilidadAcierto) {
-            enemigo.recibirDaño(enemigo,dañoFinal);
+            enemigo.recibirDaño(enemigo, dañoFinal);
             heFalladoJugador = false;
             dañoHechoJugador = dañoFinal;
         } else {
@@ -132,9 +133,9 @@ public class Entidad {
         gp.isSituacionPelea = false;
     }
 
-    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(5,  90, enemigo); }
-    public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaqueJugador(10, 70, enemigo); }
-    public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaqueJugador(15, 40, enemigo); }
+    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(5,  92, enemigo); }
+    public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaqueJugador(10, 68, enemigo); }
+    public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaqueJugador(16, 40, enemigo); }
 
     public String getNombre() { return nombre; }
     public int getLife() { return life; }

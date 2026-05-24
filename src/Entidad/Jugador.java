@@ -135,14 +135,11 @@ public class Jugador extends Entidad {
         direction = "right";
 
         // ── Atributos de combate ──
-        level            = 1;
-        strenght         = 3;    // fuerza base
-        fuerzaPorcentaje = 0.5;  // multiplicador aplicado al daño
-
-        // ── Vida ──
-        maxLife  = 4;
-        barraVida = maxLife * 10; // escala visual de la barra (30 px de barra = vida llena)
-        life      = barraVida;    // comienza con la vida al máximo
+        strenght         = 4;
+        fuerzaPorcentaje = 1.5;
+        maxLife          = 6;
+        barraVida        = maxLife * 10; // 60
+        life             = barraVida;
     }
 
     /**

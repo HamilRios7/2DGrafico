@@ -1,10 +1,15 @@
 package Main;
 
 import Entidad.Enemigo;
+import HallOfFame.GestorXml;
+import HallOfFame.RegistroJugador;
 import Objetos.SuperObject;
 
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Manejador de eventos de teclado del juego.
@@ -84,11 +89,20 @@ public class KeyHandler implements KeyListener {
             } else if (gp.ui.titleScreenState == 1) {
 
                 if (code == KeyEvent.VK_ENTER && gp.ui.comandoNum == 0) {
+                    // Obtener la ventana principal del juego
+                    JFrame ventana = (JFrame) SwingUtilities.getWindowAncestor(gp);
+
+                    // Mostrar pantalla de nombre (bloqueante hasta confirmar)
+                    PantallaIntroducirNombre pantallaIntroducirNombre =
+                            new PantallaIntroducirNombre(ventana);
+                    pantallaIntroducirNombre.mostrar();
+
+                    // Guardar nombre y arrancar cronómetro
+                    gp.nombreJugador = pantallaIntroducirNombre.getNombre();
                     gp.stopMusic();
                     gp.gameState = gp.escenaState1;
                     gp.playMusic(5);
-
-
+                    gp.cronometro.arrancar();
                 }
 
                 // ── Sub-pantalla 2: Pantalla de muerte ──────────────────────────
@@ -134,29 +148,21 @@ public class KeyHandler implements KeyListener {
                 }
                 return;
             }
-            if (code == KeyEvent.VK_ENTER && gp.jugadorTurno) {
+            if (code == KeyEvent.VK_ENTER && gp.jugadorTurno && gp.isSituacionPelea) {
 
                 if (gp.ui.subState == 0) {
                     if (gp.ui.comandoNum1 == 0) {
                         gp.ui.subState = 1;
-                    }
-                    // Al abrir inventario
-                    if (gp.ui.comandoNum1 == 1 && code == KeyEvent.VK_ENTER && gp.jugadorTurno) {
+                    } else if (gp.ui.comandoNum1 == 1) {
                         gp.inventarioAbierto = true;
                         gp.jugadorTurno = false;
+                        gp.ui.comandoNum1 = 0;
                     }
-
-// Al cerrar inventario
-                    if (code == KeyEvent.VK_ESCAPE && gp.inventarioAbierto) {
-                        gp.inventarioAbierto = false;
-                        gp.jugadorTurno = true;
-                    }
-                    gp.ui.comandoNum1 = 0;
-
                 } else if (gp.ui.subState == 1) {
                     if (!gp.jugador.estoyAtacando) {
                         gp.jugador.ejecutarAtaque(gp.ui.comandoNum1);
-                        gp.ui.subState = 0;
+                        gp.ui.subState    = 0;
+                        gp.ui.comandoNum1 = 0;
                     }
                 }
             }
@@ -182,7 +188,7 @@ public class KeyHandler implements KeyListener {
         // ESTADO: COMBATE — confirmación de resultado
         // Usa gp.enemigoActual para ser compatible con cualquier enemigo futuro.
         // ════════════════════════════════════════════════════════════════════
-        if (gp.gameState == gp.statePelea || gp.gameState== gp.statePelea2 && !gp.isSituacionPelea) {
+        if ((gp.gameState == gp.statePelea || gp.gameState == gp.statePelea2) && !gp.isSituacionPelea) {
 
             if (code == KeyEvent.VK_ENTER && gp.ui.comandoNum2 == 1) {
 
@@ -288,19 +294,61 @@ public class KeyHandler implements KeyListener {
         // ════════════════════════════════════════════════════════════════════
         if (gp.gameState == gp.congratulationsState) {
             if (code == KeyEvent.VK_ENTER && gp.ui.comandoNum == 0) {
+                long finalTime = gp.cronometro.detener();
+                String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+                RegistroJugador registro = new RegistroJugador(gp.nombreJugador, finalTime, fecha);
+                GestorXml.guardar(registro);
+                gp.gameState = gp.hallOfFameState;
+                return; // ← evita que el bloque de hallOfFameState procese este mismo ENTER
+            }
+        }
+
+        if (gp.gameState == gp.hallOfFameState) {
+            if (code == KeyEvent.VK_ENTER) {
                 System.exit(0);
             }
         }
 
 
 
+        // ════════════════════════════════════════════════════════════════════
+// MENÚ DE OPCIONES (tecla O)
+// ════════════════════════════════════════════════════════════════════
+        if (gp.ui.dibujadoOpciones) {
+            if (code == KeyEvent.VK_W) {
+                gp.ui.opcionesComando--;
+                if (gp.ui.opcionesComando < 0) gp.ui.opcionesComando = 2;
+            }
+            if (code == KeyEvent.VK_S) {
+                gp.ui.opcionesComando++;
+                if (gp.ui.opcionesComando > 2) gp.ui.opcionesComando = 0;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                if (gp.ui.opcionesComando == 1) {
+                    // Togglear pantalla completa
+                    gp.pantallaCompleta = !gp.pantallaCompleta;
+                    if (gp.pantallaCompleta) {
+                        Main.gd.setFullScreenWindow(
+                                SwingUtilities.getWindowAncestor(gp));
+                    } else {
+                        Main.gd.setFullScreenWindow(null);
+                    }
+                }
+                if (gp.ui.opcionesComando == 2) {
+                    gp.ui.dibujadoOpciones = false;
+                    oPressed = false;
+                }
+            }
+            if (code == KeyEvent.VK_O || code == KeyEvent.VK_ESCAPE) {
+                gp.ui.dibujadoOpciones = false;
+                oPressed = false;
+            }
+            return; // bloquea el resto del input mientras opciones está abierto
+        }
 
-        if(code==KeyEvent.VK_O){
-            oPressed =true;
-           if(gp.ui.dibujadoOpciones && code==KeyEvent.VK_O){
-               oPressed =false;
-               gp.ui.dibujadoOpciones=false;
-           }
+        if (code == KeyEvent.VK_O) {
+            oPressed = true;
+            gp.ui.dibujadoOpciones = true;
         }
     }
 

@@ -76,27 +76,28 @@ public class Actualizacion {
                 e.isAnimacionMuerteTerminadaEnemigo = true;
 
                 // ── Drop aleatorio ──
-                int rand = new java.util.Random().nextInt(100);
-                if (rand < 50) {
-                    gp.objetoDropeado = new Obj_PocionVida(gp);
-                } else if (rand < 80) {
-                    gp.objetoDropeado = new Obj_PocionFuerza(gp);
-                }
+
                 // 20% no dropea nada, objetoDropeado queda null
 
 
 
 
                 if (e instanceof samuraiErrante) {
-                    gp.dropX = 500; // centro de la escena 2
-                    gp.dropY = 420; // justo encima del suelo
+                    // Drop solo para el samurái
+                     int rand = new java.util.Random().nextInt(100);
+                    if (rand < 60) {
+                        gp.objetoDropeado = new Obj_PocionVida(gp);
+                    } else if (rand < 85) {
+                        gp.objetoDropeado = new Obj_PocionFuerza(gp);
+                    }
+                    gp.dropX = 500;
+                    gp.dropY = 420;
                     gp.stopMusic();
                     gp.gameState = gp.escenaState2;
                     gp.playMusic(0);
 
                 } else if (e instanceof Gigante) {
-                    gp.dropX = 500; // centro de la escena 3
-                    gp.dropY = 420;
+                    // Gigante no dropea nada
                     gp.stopMusic();
                     gp.gameState = gp.escenaState3;
                     gp.playMusic(4);
@@ -115,10 +116,11 @@ public class Actualizacion {
                     if (gp.jugador.ataqueElegido == 1) gp.jugador.ataqueEquilibrado();
                     if (gp.jugador.ataqueElegido == 2) gp.jugador.ataqueArriesgado();
                     gp.jugador.ataqueElegido = -1;
+                    gp.ui.comandoNum1 = 0; // ← añadir
+                    gp.ui.subState    = 0; // ← añadir
 
-// Resetear fuerza temporal después del ataque
                     if (gp.fuerzaActiva) {
-                        gp.jugador.strenght -= 2;
+                        gp.jugador.strenght -= 5;
                         gp.fuerzaActiva = false;
                     }
                 }
@@ -151,10 +153,9 @@ public class Actualizacion {
 
                 if (e.animacionAtaqueTerminada()) {
                     e.estoyAtacando = false;
-                    // Calcular daño UNA SOLA VEZ al terminar la animación
                     e.actuar();
-
-                    // actuar() pone isSituacionPelea=false → pantalla de resultado
+                    gp.ui.comandoNum1 = 0;
+                    gp.ui.subState    = 0;
                 }
             }
         }
@@ -215,10 +216,12 @@ public class Actualizacion {
                 gp.stopMusic();
                 gp.jugador.cercaPeleaFinal = false;
                 gp.jugadorTurno = true;
-
-                // ── Resetear estado de combate antes de empezar ──
                 gp.isSituacionPelea = true;
-
+                gp.enemigoActual = gp.gigante;
+                gp.gigante.heMuertoEnemigo = false;
+                gp.gigante.enemigoYaAtaco = false;
+                gp.gigante.estoyAtacando = false;
+                gp.gigante.contadorMaxFramesEnemigo = 0;
                 gp.jugador.moverPelea2();
                 gp.enemigoActual.updateEnemigo();
                 gp.playMusic(3);

@@ -74,6 +74,7 @@ public class UI {
     public int comandoNum2 = 1;
 
 
+    public int opcionesComando = 0; // 0=Sonido, 1=Pantalla Completa, 2=Salir
 
     public boolean dibujadoOpciones=false;
 
@@ -184,6 +185,10 @@ public class UI {
         if (gp.gameState == gp.congratulationsState) {
             drawCongratulationsPantalla();
         }
+        if (gp.gameState == gp.hallOfFameState) {
+            gp.pantallaHallOfFame.draw(g2);
+        }
+
 
         if (gp.inventarioAbierto) {
             abrirInventario();
@@ -193,6 +198,8 @@ public class UI {
             g2.drawImage(gp.objetoDropeado.imagen, gp.dropX, gp.dropY,
                     gp.tamañoMosaico, gp.tamañoMosaico, null);
         }
+
+
     }
 
     // ── HUD de vida ──────────────────────────────────────────────────────────
@@ -228,6 +235,12 @@ public class UI {
 
         // Icono de corazón
         g2.drawImage(corazon, corazonX, corazonY, 40, 25, null);
+
+
+        long ms  = gp.cronometro.getTiempoTranscurridoMs();
+        long seg = (ms / 1000) % 60;
+        long min = ms / 60000;
+        g2.drawString(String.format("%02d:%02d", min, seg), gp.pantallaAnchura - 110, 30);
     }
 
     /**
@@ -263,7 +276,7 @@ public class UI {
         else if (gp.enemigoActual == gp.gigante) {
             int baseUnit = 2;
 
-            int barraX = 750;
+            int barraX = 710;
             int barraY = 105;
 
 
@@ -536,7 +549,7 @@ public class UI {
         g2.drawString(finJuegoTexto,
                 getXforCenteredText(finJuegoTexto), gp.pantallaAltura / 2);
 
-        String salirJuego = "Salir";
+        String salirJuego = "Continuar";
         g2.drawString(salirJuego,
                 getXforCenteredText(salirJuego), (gp.pantallaAltura / 2) + 70);
         if (comandoNum == 0) {
@@ -568,7 +581,6 @@ public class UI {
      * temporalmente mientras se navega por él.
      */
     public void abrirInventario() {
-        // Solo dibuja, no toca la lógica
         int x = 220, y = 100, width = 700, height = 400;
 
         g2.setColor(new Color(0, 0, 0, 200));
@@ -596,7 +608,6 @@ public class UI {
             g2.setColor(Color.GRAY);
             g2.drawRect(sx, sy, slotSize, slotSize);
 
-            // Resaltar slot seleccionado
             if (i == gp.inventarioSlot) {
                 g2.setColor(new Color(200, 162, 82, 150));
                 g2.fillRect(sx, sy, slotSize, slotSize);
@@ -611,11 +622,31 @@ public class UI {
             g2.drawString(obj.name, sx, sy + slotSize + 12);
         }
 
+        // ── Descripción del objeto seleccionado ───────────────────────────────
+        if (!gp.inventario.objetos.isEmpty()) {
+            SuperObject objSeleccionado = gp.inventario.objetos.get(gp.inventarioSlot);
+
+            // Caja de descripción en la parte inferior
+            int descY = y + height - 80;
+            g2.setColor(new Color(30, 30, 30, 220));
+            g2.fillRect(x + 10, descY, width - 20, 60);
+            g2.setColor(Color.YELLOW);
+            g2.drawRect(x + 10, descY, width - 20, 60);
+
+            // Nombre del objeto
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 14F));
+            g2.setColor(Color.YELLOW);
+            g2.drawString(objSeleccionado.name, x + 20, descY + 20);
+
+            // Descripción
+            g2.setFont(g2.getFont().deriveFont(12F));
+            g2.setColor(Color.WHITE);
+            g2.drawString(objSeleccionado.descripcion, x + 20, descY + 42);
+        }
+
         g2.setFont(g2.getFont().deriveFont(12F));
         g2.setColor(Color.GRAY);
-        g2.drawString("ESC para cerrar", x + 20, y + height - 10);
-
-
+        g2.drawString("ESC para cerrar", x + 20, y + height - 88);
     }
     // ── Información de batalla ───────────────────────────────────────────────
 
@@ -706,32 +737,28 @@ public class UI {
     }
 
 
-    public void drawOpciones(){
-
-
-            g2.setColor(Color.BLACK);
-            g2.fillRect(380, 80, 350, 360);
-            g2.setColor(Color.white);
-            g2.drawRect(380, 80, 350, 360);
+    public void drawOpciones() {
+        g2.setColor(Color.BLACK);
+        g2.fillRect(380, 80, 350, 360);
+        g2.setColor(Color.white);
+        g2.drawRect(380, 80, 350, 360);
 
         g2.setFont(g2.getFont().deriveFont(34F));
         String text = "OPCIONES";
         g2.drawString(text, getXforCenteredText(text), 120);
 
         g2.setFont(g2.getFont().deriveFont(18F));
+
         text = "Sonido";
-        g2.drawString(text, 400, 220);
+        g2.drawString(text, 420, 220);
+        if (opcionesComando == 0) g2.drawString(">", 400, 220);
 
-        text = "Pantalla Completa  ";
-        g2.drawString(text, 400, 280);
+        text = gp.pantallaCompleta ? "Pantalla Completa: ON" : "Pantalla Completa: OFF";
+        g2.drawString(text, 420, 280);
+        if (opcionesComando == 1) g2.drawString(">", 400, 280);
 
-
-
-        String salirJuego = "Salir";
-
-        g2.drawString(salirJuego,getXforCenteredText(salirJuego),  (gp.pantallaAltura / 2) + 70);
-
-
-
+        text = "Salir";
+        g2.drawString(text, 420, 340);
+        if (opcionesComando == 2) g2.drawString(">", 400, 340);
     }
 }

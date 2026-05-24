@@ -13,6 +13,7 @@ public class Obj_PocionFuerza  extends SuperObject {
         this.gp = gp;
 
         name="PocionFuerza";
+        descripcion = "Aumenta fuerza +5 durante 1 ataque";
 
         try {
             imagen= ImageIO.read(getClass().getClassLoader().getResourceAsStream("objetos/pocionfuerza.png"));
@@ -25,7 +26,7 @@ public class Obj_PocionFuerza  extends SuperObject {
     }
     @Override
     public void usar(GamePanel gp) {
-        gp.jugador.strenght += 2;
+        gp.jugador.strenght += 5;
         gp.fuerzaActiva = true;
     }
 }

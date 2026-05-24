@@ -10,6 +10,7 @@ public class SuperObject {
 
     public BufferedImage imagen;
     public String name;
+    public String descripcion = "";
 
     UtilityTool uTool=new UtilityTool();
 

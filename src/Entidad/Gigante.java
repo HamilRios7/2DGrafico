@@ -31,12 +31,11 @@ public class Gigante extends Enemigo {
         y1Enemigo = 46;
 
         nombreEnemigo = "Gigante";
-        maxLifeEnemigo = 9;
-        barraVidaEnemigo = maxLifeEnemigo * 10;
-        lifeEnemigo = barraVidaEnemigo;
-
-        strenght = 5;
-        fuerzaPorcentaje = 0.4;
+        maxLifeEnemigo   = 13;
+        barraVidaEnemigo = maxLifeEnemigo * 10; // 200
+        lifeEnemigo      = barraVidaEnemigo;
+        strenght         = 8;
+        fuerzaPorcentaje = 2.0;
     }
 
     public void getEnemyImage() {
@@ -260,9 +259,9 @@ public class Gigante extends Enemigo {
         }
     }
 
-    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 6,  79); }
-    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 10, 55); }
-    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 14, 34); }
+    public void ataqueSeguro()      { ejecutarAtaqueEnemigo(gp.jugador, 4,  68); }
+    public void ataqueEquilibrado() { ejecutarAtaqueEnemigo(gp.jugador, 9,  48); }
+    public void ataqueArriesgado()  { ejecutarAtaqueEnemigo(gp.jugador, 16, 28); }
 
     @Override
     public boolean fueStuneado() {

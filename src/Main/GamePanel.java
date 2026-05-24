@@ -2,12 +2,14 @@ package Main;
 
 import Entidad.*;
 import Fondo.TileManager;
+import HallOfFame.PantallaHallOfFame;
 import Objetos.Inventario;
 import Objetos.Obj_PocionVida;
 import Objetos.SuperObject;
 
 import javax.swing.JPanel;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * Panel principal del juego. Actúa como núcleo del motor:
@@ -57,6 +59,9 @@ public class GamePanel extends JPanel implements Runnable {
      * Altura total de la ventana de juego en píxeles.
      */
     public int pantallaAltura = tamañoMosaico * maxPantallaRow;  // 624 px
+
+
+    public boolean pantallaCompleta = false;
 
     // ════════════════════════════════════════════════════════════════════════
     // RENDIMIENTO
@@ -111,6 +116,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     public Inventario  inventario = new Inventario(this);
 
+
+    public CronometroPartida cronometro = new CronometroPartida();
+
+
+ public PantallaHallOfFame pantallaHallOfFame = new PantallaHallOfFame(this);
 
     // ════════════════════════════════════════════════════════════════════════
     // ENTIDADES
@@ -190,6 +200,8 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public int congratulationsState = 12;
 
+    public int hallOfFameState = 13;
+
 
     public int inventarioSlot = 0;
 
@@ -229,6 +241,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public boolean fuerzaActiva = false;
 
+
+    public String nombreJugador = "Anónimo";
     // ════════════════════════════════════════════════════════════════════════
     // REFERENCIA AL ENEMIGO ACTIVO
     // ════════════════════════════════════════════════════════════════════════
@@ -273,6 +287,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void setupGame() {
         playMusic(1);
         gameState = titleState;
+        inventario.añadirObjeto(new Obj_PocionVida(this));
+        inventario.añadirObjeto(new Obj_PocionVida(this));
         inventario.añadirObjeto(new Obj_PocionVida(this));
     }
 
@@ -364,8 +380,16 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         // Los estados de pausa no actualizan nada → el juego queda congelado
-        if (gameState == pauseState1 || gameState == pauseState2 || gameState == pauseState3 || ui.dibujadoOpciones) {
-            // Intencional: sin lógica de actualización mientras está pausado
+        if (gameState == pauseState1 || gameState == pauseState2 ||
+                gameState == pauseState3 || ui.dibujadoOpciones) {
+
+            if (cronometro.estaContando()) cronometro.pausar();
+
+        } else if (gameState == escenaState1 || gameState == escenaState2 ||
+                gameState == escenaState3 || gameState == statePelea ||
+                gameState == statePelea2) {
+
+            if (!cronometro.estaContando()) cronometro.reanudar();
         }
     }
 
@@ -380,66 +404,97 @@ public class GamePanel extends JPanel implements Runnable {
      * @param g contexto gráfico proporcionado por Swing
      */
     @Override
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+
+        int anchoReal;
+        int altoReal;
+
+        // Crear buffer del tamaño original del juego
+        BufferedImage buffer = new BufferedImage(pantallaAnchura, pantallaAltura,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = buffer.createGraphics();
 
         // ── Pantalla de título ───────────────────────────────────────────────
         if (gameState == titleState) {
             ui.draw(g2d);
-            g2d.dispose();
 
-            // ── Escena 1: exterior del castillo ─────────────────────────────────
+            // ── Escena 1: exterior del castillo ──────────────────────────────────
         } else if (gameState == escenaState1) {
             fondoM.draw1(g2d);
             jugador.draw1(g2d);
             ui.draw(g2d);
-            g2d.dispose();
 
-            // ── Escena 2 y estado de combate (comparten el mismo mapa) ──────────
+            // ── Escena 2 y combate 1 ─────────────────────────────────────────────
         } else if (gameState == escenaState2 || gameState == statePelea) {
             fondoM.draw2(g2d);
             jugador.draw2(g2d);
             enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
-            g2d.dispose();
 
-            // ── Escena 3 y estado de combate (comparten el mismo mapa) ─────────────────────────────────────────────────────────
+            // ── Escena 3 y combate 2 ─────────────────────────────────────────────
         } else if (gameState == escenaState3 || gameState == statePelea2) {
             fondoM.draw3(g2d);
             jugador.draw3(g2d);
             enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
-            g2d.dispose();
 
-            // ── Pantalla de enhorabuena ──────────────────────────────────────────
+            // ── Enhorabuena ───────────────────────────────────────────────────────
         } else if (gameState == congratulationsState) {
             ui.draw(g2d);
+
+            // ── Hall of Fame ──────────────────────────────────────────────────────
+        } else if (gameState == hallOfFameState) {
+            pantallaHallOfFame.draw(g2d);
         }
 
-        // ── Pausa escena 1 ───────────────────────────────────────────────────
+        // ── Pausa escena 1 ────────────────────────────────────────────────────
         if (gameState == pauseState1) {
             fondoM.draw1(g2d);
             jugador.draw1(g2d);
             ui.draw(g2d);
-            g2d.dispose();
 
-            // ── Pausa escena 2 ───────────────────────────────────────────────────
+            // ── Pausa escena 2 ────────────────────────────────────────────────────
         } else if (gameState == pauseState2) {
             fondoM.draw2(g2d);
             jugador.draw2(g2d);
             enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
-            g2d.dispose();
 
-            // ── Pausa escena 3 ───────────────────────────────────────────────────
+            // ── Pausa escena 3 ────────────────────────────────────────────────────
         } else if (gameState == pauseState3) {
             fondoM.draw3(g2d);
             jugador.draw3(g2d);
             enemigoActual.drawEnemigo(g2d);
             ui.draw(g2d);
-            g2d.dispose();
         }
+
+        g2d.dispose();
+
+        // ── Escalar y centrar el buffer sobre la pantalla real ────────────────
+        if (pantallaCompleta) {
+            anchoReal = Main.gd.getDisplayMode().getWidth();
+            altoReal  = Main.gd.getDisplayMode().getHeight();
+        } else {
+            anchoReal = getWidth();
+            altoReal  = getHeight();
+        }
+
+        double escalaX    = (double) anchoReal / pantallaAnchura;
+        double escalaY    = (double) altoReal  / pantallaAltura;
+        double escalaFinal = Math.min(escalaX, escalaY);
+
+        int anchoEscalado = (int)(pantallaAnchura * escalaFinal);
+        int altoEscalado  = (int)(pantallaAltura  * escalaFinal);
+        int offsetX = (anchoReal  - anchoEscalado) / 2;
+        int offsetY = (altoReal   - altoEscalado)  / 2;
+
+        Graphics2D gPantalla = (Graphics2D) g;
+        gPantalla.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        gPantalla.drawImage(buffer, offsetX, offsetY, anchoEscalado, altoEscalado, null);
+        gPantalla.dispose();
     }
 
     // ════════════════════════════════════════════════════════════════════════
