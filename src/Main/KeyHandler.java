@@ -299,7 +299,7 @@ public class KeyHandler implements KeyListener {
                 RegistroJugador registro = new RegistroJugador(gp.nombreJugador, finalTime, fecha);
                 GestorXml.guardar(registro);
                 gp.gameState = gp.hallOfFameState;
-                return; // ← evita que el bloque de hallOfFameState procese este mismo ENTER
+                return; //  evita que el bloque de hallOfFameState procese este mismo ENTER
             }
         }
 

@@ -1,24 +1,20 @@
 package HallOfFame;
 
 /**
- * REGISTRO DE JUGADOR
- * ─────────────────────────────────────────────────────────────────
+
  * Representa una entrada del Hall of Fame: el nombre del jugador
- * y el tiempo que tardó en completar el juego.
+ * y el tiempo que tardó en completar el juego , ademas de la fecha y hora de cuando se jugó.
  *
  * Es un modelo de datos puro — solo guarda información y ofrece
  * métodos para consultarla. No dibuja, no escribe archivos, no
- * escucha teclas. Esa separación de responsabilidades es uno de
- * los principios básicos de la Programación Orientada a Objetos.
+ * escucha teclas.
  *
  * Implementa Comparable para que Collections.sort() pueda ordenar
  * una lista de registros de menor a mayor tiempo automáticamente.
- * ─────────────────────────────────────────────────────────────────
  */
 public class RegistroJugador implements Comparable<RegistroJugador> {
 
-    // ── Campos privados ───────────────────────────────────────────────────
-    // Son final porque una entrada del Hall of Fame no debería modificarse.
+
     // Si un jugador mejora su tiempo, GestorXml reemplaza el nodo entero.
 
     /** Nombre introducido por el jugador en PantallaIntroducirNombre. */
@@ -47,14 +43,14 @@ public class RegistroJugador implements Comparable<RegistroJugador> {
     }
 
 
-    // ── Getters ───────────────────────────────────────────────────────────
+    // ── Getters
 
     public String getNombre()   { return nombre; }
     public long   getTiempoMs() { return tiempoMs; }
     public String getFecha() { return fecha; }
 
 
-    // ── Formato legible del tiempo ────────────────────────────────────────
+    // ── Formato legible del tiempo
 
     /**
      * Convierte milisegundos a formato MM:SS.mmm
@@ -77,7 +73,7 @@ public class RegistroJugador implements Comparable<RegistroJugador> {
     }
 
 
-    // ── Ordenación ────────────────────────────────────────────────────────
+    // ── Ordenación
 
     /**
      * Menor tiempo = mejor jugador = va primero en la lista.

@@ -5,13 +5,12 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * PANTALLA HALL OF FAME
- * ─────────────────────────────────────────────────────────────────
+
  * Renderiza la pantalla del Hall of Fame con Graphics2D,
  * igual que UI.java dibuja el resto de pantallas del juego.
  *
  * Llamar desde UI.draw() cuando gp.gameState == gp.hallOfFameState.
- * ─────────────────────────────────────────────────────────────────
+
  */
 public class PantallaHallOfFame {
 
@@ -24,14 +23,14 @@ public class PantallaHallOfFame {
     private static final Color ROJO_JUEGO = new Color(209, 0, 28);
 
 
-    // ── Constructor ───────────────────────────────────────────────────────
+    //Constructor
 
     public PantallaHallOfFame(GamePanel gp) {
         this.gp = gp;
     }
 
 
-    // ── Método principal de dibujado ──────────────────────────────────────
+    //Método principal de dibujado
 
     /**
      * Dibuja la pantalla completa del Hall of Fame.
@@ -42,23 +41,23 @@ public class PantallaHallOfFame {
     public void draw(Graphics2D g2) {
         int centroX = gp.pantallaAnchura / 2;
 
-        // ── Fondo ─────────────────────────────────────────────────────────
+        // Fondo
         g2.setColor(new Color(7, 10, 18)); // mismo negro que el menú principal
         g2.fillRect(0, 0, gp.pantallaAnchura, gp.pantallaAltura);
 
-        // ── Título ────────────────────────────────────────────────────────
+        //  Título
         g2.setFont(new Font("Arial", Font.BOLD, 64));
         g2.setColor(ROJO_JUEGO);
         String titulo = "HALL OF FAME";
         g2.drawString(titulo,
                 centroX - g2.getFontMetrics().stringWidth(titulo) / 2, 90);
 
-        // ── Línea separadora bajo el título ──────────────────────────────
+        //  Línea separadora bajo el título
         g2.setStroke(new BasicStroke(2f));
         g2.setColor(ROJO_JUEGO);
         g2.drawLine(100, 108, gp.pantallaAnchura - 100, 108);
 
-        // ── Cabecera de columnas ──────────────────────────────────────────
+        //  Cabecera de columnas
         g2.setFont(new Font("Arial", Font.BOLD, 20));
         g2.setColor(Color.LIGHT_GRAY);
         g2.drawString("#",       120, 145);
@@ -66,11 +65,11 @@ public class PantallaHallOfFame {
         g2.drawString("TIEMPO",  650, 145);
         g2.drawString("FECHA",   820, 145);
 
-         // ── Línea separadora bajo la cabecera ───────────────────────────
+         //  Línea separadora bajo la cabecera
         g2.drawLine(100, 108, gp.pantallaAnchura - 100, 108);
         g2.drawLine(100, 155, gp.pantallaAnchura - 100, 155);
 
-        // ── Filas de registros ────────────────────────────────────────────
+        // Filas de registros
         List<RegistroJugador> registros = GestorXml.cargarOrdenados();
         int mostrados = Math.min(registros.size(), MAX_ENTRADAS);
 
@@ -79,7 +78,12 @@ public class PantallaHallOfFame {
             int y = 195 + i * 50;
 
             // Resaltar la entrada del jugador que acaba de terminar
-            boolean esJugadorActual = r.getNombre().equals(gp.nombreJugador) && r.getTiempoMs() == gp.cronometro.getResultadoFinalMs();
+            boolean esJugadorActual ;
+            if(r.getNombre().equals(gp.nombreJugador) && r.getTiempoMs() == gp.cronometro.getResultadoFinalMs()){
+                esJugadorActual = true;
+            } else {
+                esJugadorActual = false;
+            }
 
             if (esJugadorActual) {
                 g2.setColor(new Color(209, 0, 28, 60)); // rojo semitransparente
@@ -111,7 +115,7 @@ public class PantallaHallOfFame {
                     gp.pantallaAltura / 2);
         }
 
-        // ── Instrucción de salida ─────────────────────────────────────────
+        //Instrucción de salida
         g2.setFont(new Font("Arial", Font.BOLD, 18));
         g2.setColor(Color.GRAY);
         String pista = "Pulsa ENTER para salir";

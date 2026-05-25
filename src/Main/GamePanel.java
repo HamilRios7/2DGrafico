@@ -122,9 +122,9 @@ public class GamePanel extends JPanel implements Runnable {
 
  public PantallaHallOfFame pantallaHallOfFame = new PantallaHallOfFame(this);
 
-    // ════════════════════════════════════════════════════════════════════════
+
     // ENTIDADES
-    // ════════════════════════════════════════════════════════════════════════
+
 
     /**
      * Entidad del jugador: movimiento, animación, combate y vida.
@@ -472,7 +472,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.dispose();
 
-        // ── Escalar y centrar el buffer sobre la pantalla real ────────────────
         if (pantallaCompleta) {
             anchoReal = Main.gd.getDisplayMode().getWidth();
             altoReal  = Main.gd.getDisplayMode().getHeight();

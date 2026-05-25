@@ -1,8 +1,6 @@
 package Main;
 
 /**
- * CRONÓMETRO DE PARTIDA
- * ─────────────────────────────────────────────────────────────────
  * Mide el tiempo que el jugador tarda en completar el juego.
  *
  * Funciona igual que un cronómetro de móvil:
@@ -13,16 +11,9 @@ package Main;
  *
  * Usa System.nanoTime() igual que el game loop de GamePanel.run(),
  * que es el reloj más preciso disponible en Java.
- *
- * NIVEL DAM: esta clase aplica encapsulación (private/public),
- * tipos primitivos (long, boolean) y conversión de unidades.
- * ─────────────────────────────────────────────────────────────────
  */
 public class CronometroPartida {
 
-    // ── Campos privados ───────────────────────────────────────────────────
-    // Son private porque solo esta clase debe modificarlos directamente.
-    // El resto del proyecto los consulta a través de los métodos públicos.
 
     /**
      * Instante exacto (en nanosegundos) en que arrancó o se reanudó
@@ -45,7 +36,6 @@ public class CronometroPartida {
      * true  → contando
      * false → parado o pausado
      *
-     * Mismo tipo que los flags de tu proyecto (jugadorTurno, ispeleaFinalizada...)
      */
     private boolean contando;
 
@@ -56,7 +46,7 @@ public class CronometroPartida {
     private long resultadoFinalMs = -1;
 
 
-    // ── Métodos públicos ──────────────────────────────────────────────────
+
 
     /**
      * Arranca el cronómetro desde cero.
@@ -74,7 +64,7 @@ public class CronometroPartida {
 
     /**
      * Pausa el cronómetro.
-     * Llamar al entrar a pauseState1, pauseState2 o pauseState3.
+     * Llamar al entrar a pauseState1, pauseState2 o pauseState3 y en opciones.
      *
      * Guarda los milisegundos transcurridos hasta ahora en
      * milisegundosAcumulados para no perderlos al reanudar.
@@ -129,7 +119,7 @@ public class CronometroPartida {
     }
 
 
-    // ── Métodos de consulta (getters) ─────────────────────────────────────
+    // (getters)
 
     /**
      * Devuelve el tiempo transcurrido en milisegundos SIN detener el cronómetro.
@@ -157,24 +147,21 @@ public class CronometroPartida {
 
     /**
      * Indica si el cronómetro está contando en este momento.
-     * Usar en GamePanel.update() para decidir si pausar o reanudar.
      *
      * @return true si está contando, false si está parado
      */
     public boolean estaContando() { return contando; }
 
 
-    // ── Método privado auxiliar ───────────────────────────────────────────
+
 
     /**
      * Calcula los milisegundos transcurridos desde el último arranque
      * o reanudación del cronómetro.
      *
      * Conversión: 1 milisegundo = 1.000.000 nanosegundos
-     * Por eso dividimos entre 1_000_000L (la L indica que es long,
-     * necesario porque los nanosegundos son números enormes).
+     * Por eso dividimos entre 1_000_000
      *
-     * Es private porque solo lo usa esta clase internamente.
      *
      * @return milisegundos desde el último arranque/reanudación
      */
