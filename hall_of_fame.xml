@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jugadores>
+    
+  <jugador>
+        
+    <nombre>Hamil</nombre>
+        
+    <tiempo>30509</tiempo>
+        
+    <tiempoFormato>00:30.509</tiempoFormato>
+        
+    <fecha>26/05/2026 09:04:52</fecha>
+      
+  </jugador>
+  
+  <jugador>
+    <nombre>negro</nombre>
+    <tiempo>26241</tiempo>
+    <tiempoFormato>00:26.241</tiempoFormato>
+    <fecha>26/05/2026 10:46:05</fecha>
+  </jugador>
+</jugadores>

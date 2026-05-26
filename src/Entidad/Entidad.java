@@ -133,7 +133,7 @@ public class Entidad {
         gp.isSituacionPelea = false;
     }
 
-    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(5,  92, enemigo); }
+    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(100,  92, enemigo); }
     public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaqueJugador(10, 68, enemigo); }
     public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaqueJugador(16, 40, enemigo); }
 

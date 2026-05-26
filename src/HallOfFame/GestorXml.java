@@ -63,34 +63,38 @@ public class GestorXml {
             if (archivo.exists()) {
                 // El archivo ya existe → lo cambiamos y reutilizamos
 
-                //Se lee el XML , se contruye el abol DOM y dpcumento ahora apunta a arbol
+                //Se lee el XML , se contruye el arbol DOM y dpcumento ahora apunta a arbol
                 documento = constructor.parse(archivo);
                 //Pillamos el nodo raiz del XML (en nuestro caso <jugadores>) para luego añadirle hijos (<jugador>)
-                raiz      = documento.getDocumentElement();
+                raiz  = documento.getDocumentElement();
             } else {
                 // Primera vez → creamos el documento desde cero
 
                 //Creamos un documento vacio, no hay XML cargado , empezamos vacios
                 documento = constructor.newDocument();
 
-                //Crea un elemento XML llamado jugadores que es el raiz, aun no esta en el documento
+                //Crea un elemento XML llamando jugadores que es el raiz, aun no esta en el documento
                 raiz      = documento.createElement("jugadores");
 
                 //Añadimos el elemento como raíz del documento.
                 documento.appendChild(raiz);
             }
 
-            // Buscar si ya existe una entrada con ese nombre
+            // Busca de la lista jugadores , los modulos jugador
             NodeList jugadores       = documento.getElementsByTagName("jugador");
             Element  entradaExistente = null;
             long     tiempoExistente  = Long.MAX_VALUE;
 
             for (int i = 0; i < jugadores.getLength(); i++) {
                 Element jugador = (Element) jugadores.item(i);
+
+                //Esto obtiene lo que hay dentro del xml en el nodo jugador , si es q existe alguno
                 String nombreGuardado = jugador
                         .getElementsByTagName("nombre").item(0)
                         .getTextContent().trim();
 
+                // si el nombre se encuentra en el registro, guardamos el nombre jugador
+                //pillamos el tiempo y le colocamos el guardado si existe
                 if (nombreGuardado.equals(registro.getNombre())) {
                     entradaExistente = jugador;
                     tiempoExistente  = Long.parseLong(
@@ -100,9 +104,17 @@ public class GestorXml {
                 }
             }
 
+            //Si ha pillado en entrada existene el elemento jugador
             if (entradaExistente != null) {
-                if (registro.getTiempoMs() < tiempoExistente) {
+
+                //Comparamos tiempo de la ultima partida que se guardo en el registro
+                // , con el que el jugador tenia ya guardado en el XML
+                if (registro.getTiempoMs() <    tiempoExistente) {
                     // Tiempo nuevo es mejor → actualizar la entrada existente
+
+                    //a partir del nodo jugador que hemos guardado en el for
+                    //seleccionamos de ese nodo , el primer tiempo que aparezca en los subelementos de
+                    //ese nodo
                     entradaExistente.getElementsByTagName("tiempo").item(0)
                             .setTextContent(String.valueOf(registro.getTiempoMs()));
                     entradaExistente.getElementsByTagName("tiempoFormato").item(0)
@@ -121,37 +133,62 @@ public class GestorXml {
                     return;
                 }
             } else {
-                // Jugador nuevo → añadir nodo al final
+                // Si es jugador nuevo , entonces nueva entrada jugador
+
+                //Creamos el nodo jugador
                 Element nodoJugador = documento.createElement("jugador");
 
+                //Creamos el nodo nombre
                 Element nodoNombre = documento.createElement("nombre");
+
+                //Le ponemos al nodo el nombre que tenemos guardado del registro
                 nodoNombre.setTextContent(registro.getNombre());
+
+                //Hacemos que el nodo nombre se anide en nodo jugador
                 nodoJugador.appendChild(nodoNombre);
 
                 Element nodoTiempo = documento.createElement("tiempo");
+
+                //Metemos el tiempo sin formatear , pero primero lo pasamos a String
                 nodoTiempo.setTextContent(String.valueOf(registro.getTiempoMs()));
+
+
                 nodoJugador.appendChild(nodoTiempo);
 
                 Element nodoFormato = documento.createElement("tiempoFormato");
+
+                //metemos el tiempoFormateado del metodo registro que ya lo da en string
                 nodoFormato.setTextContent(registro.getTiempoFormateado());
                 nodoJugador.appendChild(nodoFormato);
 
-                // fecha y hora de la partida
+                //fecha y hora de la partida se actualiza con un formato String
                 Element nodoFecha = documento.createElement("fecha");
                 nodoFecha.setTextContent(
                         LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
                 );
+
                 nodoJugador.appendChild(nodoFecha);
 
+                //metemos el nodo del jugador en la raiz
                 raiz.appendChild(nodoJugador);
                 System.out.println("[GestorXml] Nuevo jugador guardado: "
                         + registro.getNombre() + " — " + registro.getTiempoFormateado());
             }
 
-            // Escribir el documento actualizado en disco
+            // Escribir el documento o lo que tenemos en memoria actualizado en disco
             Transformer transformador = TransformerFactory.newInstance().newTransformer();
+
+            //Esto nos permite la indentacion ,es decir, organizar el XML para que no salga en una sola linea
             transformador.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            //Esto nos permite crear dos espacios para separar cada nivel
+            //El enlace pilla la propiedad especifica del XML Apache
+            //Identificamos quien define la propiedad ,pillamos el nombre real de la propiedad y seleccionamos
             transformador.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+           //Convierte el DOM XML en texto XML y lo escribe en el archivo.
+            //Toma el XML en la memoria y lo guarda formateado en archivo, en disco.
+            //Memoria significa que el programa lo guarda , no esta en ningun archivo
             transformador.transform(new DOMSource(documento), new StreamResult(archivo));
 
         }catch (ParserConfigurationException ex) {
@@ -179,7 +216,7 @@ public class GestorXml {
         List<RegistroJugador> lista = new ArrayList<>();
         File archivo = new File(RUTA_ARCHIVO);
 
-        if (!archivo.exists()) return lista; // sin archivo → lista vacía
+        if (!archivo.exists()) return lista; // si no llega a existir aun, entonces simplemente le damos la lista vacía
 
         try {
             //Este crea la fabrica para construir XML,y configura como se leera, es decir , prepara el entorno
@@ -189,10 +226,13 @@ public class GestorXml {
 
             //Lee el archivo XML, lo convierte en un arbol DOM en memoria (DOM: convierte el archivo XML rn objetos java organizados en arbol
             //El DOM sirve para leer XML facilmente, modificar en memoria, crear nuevos nodos , eliminar elementos y navegar como un arbol)
-            Document               documento   = constructor.parse(archivo);
+            Document   documento   = constructor.parse(archivo);
 
+
+            //Pillamos todos los nodos jugador como si fuera una lista
             NodeList jugadores = documento.getElementsByTagName("jugador");
             for (int i = 0; i < jugadores.getLength(); i++) {
+                //pillamos el primer elemento jugador
                 Element jugador = (Element) jugadores.item(i);
                 String nombre = jugador
                         .getElementsByTagName("nombre").item(0)
@@ -209,10 +249,14 @@ public class GestorXml {
                     fecha="—";
                 }
 
+
+                //COmo una fila de tabla de base de datos , guardamos cada parte de jugador en variables y estas
+                //la añadimos en listas (Una fila lista completa=Un jugador)
                 lista.add(new RegistroJugador(nombre, tiempo, fecha));
 
             }
 
+            //al llamo a collections, digo que estos objetos son comparables, por lo tanto llamo a su compareTo que tiene
             Collections.sort(lista); // usa compareTo → menor tiempo primero
 
         } catch (ParserConfigurationException ex) {

@@ -12,6 +12,11 @@ package HallOfFame;
  * Implementa Comparable para que Collections.sort() pueda ordenar
  * una lista de registros de menor a mayor tiempo automáticamente.
  */
+
+//esta manera de escribir la interfaz quiere referirse
+// Todos los objetos de esta clase tienen un método compareTo
+
+    //Comparable y compareTo() definen la forma natural en la que los objetos de una clase se comparan y se ordenan entre sí.
 public class RegistroJugador implements Comparable<RegistroJugador> {
 
 
@@ -80,6 +85,8 @@ public class RegistroJugador implements Comparable<RegistroJugador> {
      * Necesario para que Collections.sort() en GestorXml.cargarOrdenados()
      * ordene automáticamente sin escribir el algoritmo.
      */
+
+    //le enseño a este objeto , como debe comparse con otro mismo objeto
     @Override
     public int compareTo(RegistroJugador otro) {
         return Long.compare(this.tiempoMs, otro.tiempoMs);
