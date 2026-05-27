@@ -26,7 +26,8 @@ public class Obj_PocionFuerza  extends SuperObject {
     }
     @Override
     public void usar(GamePanel gp) {
-        gp.jugador.strenght += 5;
+        int strenght= gp.jugador.getStrenght() + 5;
+        gp.jugador.setStrenght(strenght);
         gp.fuerzaActiva = true;
     }
 }

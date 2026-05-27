@@ -7,69 +7,66 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
- * Gestor de tiles y fondos del juego.
+ * Gestor de fondos del juego.
  *
  * Se encarga de cargar todas las imágenes de fondo desde los recursos
- * del proyecto y de dibujarlas en pantalla por capas (parallax)
- * para cada escena del juego.
+ * del proyecto y de dibujarlas en pantalla por capas para cada escena del juego.
  *
  *
- * El fondo está compuesto por varias capas PNG superpuestas en orden,
- * lo que crea un efecto de profundidad visual sin necesidad de un motor
- * de tiles tradicional
+ * El fondo está compuesto por varias capas PNG superpuestas en orden
  */
-public class TileManager {
+public class FondosManager {
 
     /** Referencia al panel principal para acceder a las dimensiones de pantalla. */
     GamePanel gp;
 
     /**
      * Array de capas de fondo para la escena 1 (exterior del castillo).
-     * Cada índice corresponde a una capa PNG distinta, ordenadas de atrás hacia adelante.
      */
-    Fondo1[] fondos1;
+    Fondo[] fondos1;
 
     /**
      * Array de capas de fondo para la escena 2 (interior / sala del samurái).
-     * Mismo concepto que #fondos1 pero con menos capas.
      */
-    Fondo2[] fondos2;
+    Fondo[] fondos2;
 
     /**
      * Array de capas de fondo para la escena 2 (interior / sala del samurái).
-     * Mismo concepto que #fondos1 pero con menos capas.
      */
-    Fondo3[] fondos3;
+    Fondo[] fondos3;
 
 
-    // ════════════════════════════════════════════════════════════════════════
-    // CONSTRUCTOR
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ---- CONSTRUCTOR ------
+
 
     /**
-     * Inicializa el gestor de tiles, reserva los arrays de capas y
+     * Inicializa el gestor de fondos, reserva los arrays de capas y
      * carga todas las imágenes de fondo desde los recursos.
      *
      * @param gp panel principal del juego
      */
-    public TileManager(GamePanel gp) {
+    public FondosManager(GamePanel gp) {
         this.gp = gp;
 
         // Reservamos 15 slots para las capas de la escena 1
-        fondos1 = new Fondo1[15];
+        fondos1 = new Fondo[15];
         for (int i = 0; i < fondos1.length; i++) {
-            fondos1[i] = new Fondo1();
+            //Debemos iniciar cada posicion , las inicializamos como Fondo
+            fondos1[i] = new Fondo();
         }
 
         // Reservamos 5 slots para las capas de la escena 2
-        fondos2 = new Fondo2[5];
+        fondos2 = new Fondo[5];
         for (int i = 0; i < fondos2.length; i++) {
-            fondos2[i] = new Fondo2();
+            //Debemos iniciar cada posicion , las inicializamos como Fondo
+            fondos2[i] = new Fondo();
         }
 
-        fondos3 = new Fondo3[5];
+        fondos3 = new Fondo[5];
         for (int i = 0; i < fondos3.length; i++) {
-            fondos3[i] = new Fondo3();
+            //Debemos iniciar cada posicion , las inicializamos como Fondo
+            fondos3[i] = new Fondo();
         }
 
         // Cargamos todas las imágenes al iniciar (solo una vez en memoria)
@@ -82,7 +79,7 @@ public class TileManager {
 
     /**
      * Carga desde el classpath todas las imágenes PNG de fondo
-     * para ambas escenas del juego.
+     * para todas escenas del juego.
      *
      * Las imágenes de la escena 1 ( fondo/f1/) van de capa_0 a capa_11,
      * más el elemento decorativo del castillete y la franja de suelo/escritura.
@@ -90,12 +87,12 @@ public class TileManager {
      * Las imágenes de la escena 2 ( fondo/f2/) son cuatro capas
      * (plan_0, plan_2, plan_3 y fondoEscritura).
      *
-     * Se usa  getClassLoader().getResourceAsStream() para garantizar
-     * compatibilidad tanto al ejecutar desde el IDE como desde un JAR empaquetado.
+     . Las imágenes de la escena 3 ( fondo/f3/) son cuatro capas
+     * (plan_0,plan_1, plan_2, plan_3 y fondoEscritura).
      */
     public void getTileImage1() {
         try {
-            // ── Capas de la escena 1 (exterior / cielo / terreno) ────────────
+            // ------ Capas de la escena 1  --------
             fondos1[0].imagen  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/capa_0.png"));
             fondos1[1].imagen  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/capa_1.png"));
             fondos1[2].imagen  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/capa_2.png"));
@@ -108,29 +105,22 @@ public class TileManager {
             fondos1[9].imagen  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/capa_9.png"));
             fondos1[10].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/capa_10.png"));
             fondos1[11].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/capa_11.png"));
+            fondos1[12].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/castillete.png"));  // Castillo
+            fondos1[13].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/fondoEscritura.png"));  //Franja de escritura juego
 
-            // Elemento decorativo: silueta del castillo al fondo derecho
-            fondos1[12].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/castillete.png"));
-
-            // Franja de suelo / texto decorativo en la parte inferior
-            fondos1[13].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f1/fondoEscritura.png"));
-
-            // ── Capas de la escena 2 (interior del castillo) ─────────────────
+            // ------ Capas de la escena 2  --------
             fondos2[0].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f2/plan_0.png"));
             fondos2[1].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f2/plan_2.png"));
             fondos2[2].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f2/plan_3.png"));
-
-            // Franja inferior de la escena 2 (mismo recurso que escena 1)
-            fondos2[3].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f2/fondoEscritura.png"));
+            fondos2[3].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f2/fondoEscritura.png"));// Franja  de escritura juego de la escena 2 (mismo recurso que escena 1)
 
 
-            // ── Capas de la escena 3 (interior del castillo) ─────────────────
+            // ------ Capas de la escena 3  --------
             fondos3[3].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_0.png"));
             fondos3[2].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_1.png"));
             fondos3[1].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_2.png"));
             fondos3[0].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/plan_3.png"));
-            // Franja inferior de la escena 2 (mismo recurso que escena 1)
-            fondos3[4].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/fondoEscritura.png"));
+            fondos3[4].imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream("fondo/f3/fondoEscritura.png")); // Franja  de escritura juego de la escena 3 (mismo recurso que escena 1 y 2)
 
 
         } catch (IOException e) {
@@ -140,15 +130,14 @@ public class TileManager {
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════════
+
     // RENDERIZADO
-    // ════════════════════════════════════════════════════════════════════════
 
     /**
      * Dibuja el fondo de la escena 1 (exterior del castillo) por capas.
      *
-     * El orden de dibujado va de la capa más lejana (índice 0, cielo)
-     * a la más cercana (suelo, decorados). Todas las capas principales
+     * El orden de dibujado va de la capa más lejana (índice 0)
+     * a la más cercana . Todas las capas principales
      * se estiran a lo ancho de la pantalla y se desplazan -210 px en Y
      * para encuadrar correctamente el arte dentro de la ventana de juego.
      *
@@ -157,13 +146,13 @@ public class TileManager {
      *
      *    fondos1[7] solo 70 px de alto (franja puntual, posiblemente niebla).
      *   fondos1[12] (castillete): posicionado en la esquina derecha con tamaño fijo.
-     *   fondos1[13] (escritura): se extiende más allá de los bordes para centrar la franja.
+     *   fondos1[13] (escritura): se extiende más allá de los bordes para centrar la franja al gusto.
      *
      *
-     * @param g contexto gráfico 2D del frame actual
+     * @param g contexto gráfico 2D , lo recibe de PaintComponent
      */
     public void draw1(Graphics2D g) {
-        // ── Capas de paisaje (cielo → terreno) ──────────────────────────────
+        // ------ Capas de paisaje  ------
         g.drawImage(fondos1[0].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos1[1].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos1[2].imagen,    0, -210, gp.pantallaAnchura, 700, null);
@@ -171,10 +160,7 @@ public class TileManager {
         g.drawImage(fondos1[4].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos1[5].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos1[6].imagen,    0, -210, gp.pantallaAnchura, 700, null);
-
-        // Capa puntual de poca altura (niebla / detalle de suelo)
         g.drawImage(fondos1[7].imagen,    0, -210, gp.pantallaAnchura,  70, null);
-
         g.drawImage(fondos1[8].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos1[9].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos1[10].imagen,   0, -210, gp.pantallaAnchura, 700, null);
@@ -183,7 +169,7 @@ public class TileManager {
         // Silueta del castillo: esquina derecha, tamaño y posición fijos
         g.drawImage(fondos1[12].imagen, 780, 180, 360, 275, null);
 
-        // Franja decorativa de suelo: se extiende más allá del borde izquierdo
+        //Franja de escritura juego: se extiende más allá del borde izquierdo
         // para que el recorte quede centrado visualmente
         g.drawImage(fondos1[13].imagen, -350, 490, 1800, 140, null);
     }
@@ -196,15 +182,15 @@ public class TileManager {
      * un escenario más sencillo.
      *
      *
-     * @param g contexto gráfico 2D del frame actual
+     * @param g contexto gráfico 2D de PaintComponent
      */
     public void draw2(Graphics2D g) {
-        // ── Capas de interior (fondo → primer plano) ─────────────────────────
+        // ------- Capas de interior -------
         g.drawImage(fondos2[0].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos2[1].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos2[2].imagen,    0, -210, gp.pantallaAnchura, 700, null);
 
-        // Franja decorativa de suelo (mismo recurso que escena 1)
+        //Franja de escritura juego
         g.drawImage(fondos2[3].imagen, -350, 490, 1800, 140, null);
     }
 
@@ -216,7 +202,7 @@ public class TileManager {
         g.drawImage(fondos3[2].imagen,    0, -210, gp.pantallaAnchura, 700, null);
         g.drawImage(fondos3[3].imagen,    0, -210, gp.pantallaAnchura, 700, null);
 
-        // Franja decorativa de suelo (mismo recurso que escena 1)
+        //Franja de escritura juego
         g.drawImage(fondos3[4].imagen, -350, 490, 1800, 140, null);
     }
 }

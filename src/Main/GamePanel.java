@@ -1,7 +1,7 @@
 package Main;
 
 import Entidad.*;
-import Fondo.TileManager;
+import Fondo.FondosManager;
 import HallOfFame.PantallaHallOfFame;
 import Objetos.Inventario;
 import Objetos.Obj_PocionVida;
@@ -79,7 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Gestor de tiles que dibuja el fondo/mapa de cada escena.
      */
-    TileManager fondoM = new TileManager(this);
+    FondosManager fondoM = new FondosManager(this);
 
     /**
      * Manejador de teclado que traduce las pulsaciones en flags de entrada.

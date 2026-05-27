@@ -4,18 +4,25 @@ import Main.GamePanel;
 
 import java.awt.*;
 
-public class campoPeleaInteraccion extends Entidad {
-    //clase que genera el area con el que puedes interactuar y entrar en combate
-    public int spawnX = 90;
-    public int spawnY = 60;
+/**
+ *Esta clase representa la hitbox de interaccion para entrar en modo combate contra samurai , solo esta antes de derrotar a samurai
+ */
+public class campoPeleaInteraccion {
+
+    //----Atributos----
+
+    //posiciones donde estara ubicada el rectangulo
+    private final int spawnX = 90;
+    private final int spawnY = 60;
     GamePanel gp;
+
+    //creamos el cuadro con el que podra interactuar
     public Rectangle area = new Rectangle(spawnX, spawnY, 3, 150);
 
-    public campoPeleaInteraccion(GamePanel gp) {
-        this.gp = gp;
+    //----Constructor----
+    public campoPeleaInteraccion(GamePanel gp) {this.gp=gp;}
 
-        nombre = "ZonaPelea";
-    }
+    //------Getter----
     public Rectangle getBorde() {
         return area;
     }

@@ -4,7 +4,7 @@ package Main;
 
 import Entidad.*;
 
-import static java.lang.Math.clamp;
+
 
 public class ColisionChecker {
     GamePanel gp;

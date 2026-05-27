@@ -1,149 +1,203 @@
 package Entidad;
 
 import Main.GamePanel;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
 /**
- * Clase base de la que heredan todas las entidades del juego (Jugador y Enemigos).
- * Contiene los atributos comunes, la lógica de ataque del jugador y los contadores
- * de animación compartidos.
+ * Clase base abstracta para todas las entidades del juego (Jugador y Enemigos).
+ *
+ * Contiene solo los atributos y comportamientos que son comunes a todas
+ * las entidades. Lo específico del jugador vive en Jugador; lo específico
+ * de los enemigos vive en Enemigo o en los enemigos en concreto.
  */
-public class Entidad {
+public abstract class Entidad {
 
-    /** Referencia al panel principal del juego, necesario para acceder al estado global */
-    public GamePanel gp;
+    //----Referencia al panel principal------
 
-    // Posiciones del jugador en cada escena
-    public int x1Jugador, y1Jugador; // Posición en escena 1
-    public int x2Jugador, y2Jugador; // Posición en escena 2
-    public int x3Jugador, y3Jugador; // Posición en escena 3
+    protected GamePanel gp;
 
-    /** Velocidad de movimiento de la entidad */
-    public int speed;
 
-    // ── Sprites del jugador ──────────────────────────────────────────────────
-    // Caminar derecha (8 frames) e izquierda (8 frames)
-    public BufferedImage lft1,lft2,lft3,lft4,lft5,lft6,lft7,lft8,
-            rgt1,rgt2,rgt3,rgt4,rgt5,rgt6,rgt7,rgt8;
+    // ---Velocidad y direccion hacia donde mira ----
 
-    // Idle derecha e izquierda (5 frames cada uno)
-    public BufferedImage quieto1JugaRight,quieto2JugaRight,quieto3JugaRight,
-            quieto4JugaRight,quieto5JugaRight,
-            quieto1JugaLeft,quieto2JugaLeft,quieto3JugaLeft,
-            quieto4JugaLeft,quieto5JugaLeft;
+    protected int speed;
+    protected String direction;
 
-    // Ataque (6 frames) y muerte (7 frames)
-    public BufferedImage ataJuga1,ataJuga2,ataJuga3,ataJuga4,ataJuga5,ataJuga6,
-            muerto_1,muerto_2,muerto_3,muerto_4,muerto_5,muerto_6,muerto_7;
+    // -----Identidad------
 
-    /** Dirección actual de la entidad: "right" o "left" */
-    public String direction;
-    public String nombre;
+    protected String nombre;
 
-    // ── Atributos de combate ─────────────────────────────────────────────────
+    // ---- Atributos de combate -----
 
-    /** Vida máxima de la entidad */
+    /** Vida máxima. */
     protected int maxLife;
 
-    /** Valor total de la barra de vida (maxLife * 10) */
-    public int barraVida;
+    /** Valor total de la barra de vida (maxLife * 10). */
+    protected int barraVida;
 
-    /** Vida actual */
-    public int life;
+    /** Vida actual que se actualiza segun acontecimientos. */
+    protected int life;
 
-    /** Nivel de la entidad */
-    public int level;
+    /** Fuerza base que se suma al daño final. */
+    protected int strenght;
 
-    /** Fuerza base que se suma al daño final */
-    public int strenght;
-
-    /** Porcentaje de fuerza que se aplica al daño */
-    public double fuerzaPorcentaje;
+    /** Fracción de fuerza que se aplica al daño. */
+    protected double fuerzaPorcentaje;
 
 
-    // ── Flags de combate del jugador ─────────────────────────────────────────
+    // ----- Flags de combate ------
 
-    /** true si el jugador falló su último ataque */
-    public boolean heFalladoJugador = false;
+    /** true si esta entidad falló su último ataque. */
+    protected boolean heFallado = false;
 
-    /** Daño que hizo el jugador en su último ataque */
-    public int dañoHechoJugador = 0;
+    /** Daño causado en el último ataque (0 si falló). */
+    protected int dañoHecho = 0;
 
-    /** true si el turno que acaba de ocurrir fue un ataque del jugador */
-    public boolean fuejugadorAtaque = false;
+    /** true si el turno que acaba de ocurrir fue un ataque de esta entidad. */
+    protected boolean fueAtaque = false;
 
     /**
-     * true si el jugador falló y hay un contrataque pendiente de ejecutar.
-     * Se marca aquí pero se ejecuta cuando el jugador pulsa Enter en KeyHandler,
-     * para respetar como funciona de UI por turnos.
+     * true si una entidad falló y hay un contrataque pendiente.
+     * Se ejecuta cuando el jugador pulsa Enter en KeyHandler.
      */
-    public boolean contrataquePendiente = false;
+    protected boolean contrataquePendiente = false;
 
 
-    // ── Contadores de animación ───────────────────────────────────────────────
+    // ------ Sprites comunes a todas las entidades (Jugador en este caso) -----
 
-    /** Contador de frames para la animación de movimiento */
-    public int moveCounter = 0;
-    /** Frame actual de la animación de movimiento (1-8) */
-    public int moveNum = 1;
+    // Caminar derecha / izquierda (8 frames cada uno)
+    protected BufferedImage lft1, lft2, lft3, lft4, lft5, lft6, lft7, lft8;
+    protected BufferedImage rgt1, rgt2, rgt3, rgt4, rgt5, rgt6, rgt7, rgt8;
 
-    /** Contador de frames para la animación de muerte */
-    public int muerteCounter = 0;
-    /** Frame actual de la animación de muerte (1-7) */
-    public int muerteNum = 1;
+    // Idle derecha / izquierda (5 frames cada uno)
+    protected BufferedImage idle1Right, idle2Right, idle3Right, idle4Right, idle5Right;
+    protected BufferedImage idle1Left,  idle2Left,  idle3Left,  idle4Left,  idle5Left;
 
-    /** Contador de frames para la animación de idle */
-    public int idleCounter = 0;
-    /** Frame actual de la animación de idle (1-5) */
-    public int idleNum = 1;
+    // Muerte (7 frames)
+    protected BufferedImage muerto1, muerto2, muerto3, muerto4,
+            muerto5, muerto6, muerto7;
 
-    /** Contador de frames para la animación de ataque */
-    public int atacarCounter = 0;
-    /** Frame actual de la animación de ataque (1-6) */
-    public int atacarNum = 1;
+    protected BufferedImage ataJuga1,ataJuga2,ataJuga3,ataJuga4,ataJuga5,ataJuga6;
+    // ----- Contadores de animación --------
+
+    protected int moveCounter  = 0;
+    protected int moveNum      = 1;
+
+    protected int muerteCounter = 0;
+    protected int muerteNum     = 1;
+
+    protected int idleCounter  = 0;
+    protected int idleNum      = 1;
+
+    protected int atacarCounter = 0;
+    protected int atacarNum     = 1;
+
     /**
-     * Contador que se incrementa cada vez que la animación de ataque completa un ciclo.
-     * Cuando llega a 1, significa que la animación terminó.
+     * Contador de ciclos completados de la animación de ataque.
+     * Cuando llega a 1 la animación ha terminado.
      */
-    int contadorMaxFrames = 0;
+    protected int contadorMaxFrames = 0;
 
 
-    /** Área sólida usada para detección de colisiones */
-    public Rectangle solidArea;
+    // -------- Colisiones --------
+
+    protected Rectangle solidArea;
 
 
+    //------- Combate -------
 
-    // ── Métodos de ataque del jugador ─────────────────────────────────────────
+    /**
+     * Aplica daño a ESTA entidad (reduce su propia vida).
+     * Nunca deja la vida por debajo de 0.
+     *
+     * @param dañoFinal puntos de daño a recibir
+     */
+    public void recibirDaño(int dañoFinal) {
+        life = Math.max(0, life - dañoFinal);
+    }
 
-    private void ejecutarAtaqueJugador(int ataque, int probabilidadAcierto, Enemigo enemigo) {
-        if (fuejugadorAtaque) return; // ← evita doble ejecución
-        fuejugadorAtaque = true;
-        int dañoFinal = (int)(ataque + (strenght * fuerzaPorcentaje));
+    /**
+     * Lógica central del ataque del jugador: calcula el daño, aplica
+     * probabilidad de acierto y actualiza los flags de combate.
+     *
+     * @param ataque              daño base del tipo de ataque
+     * @param probabilidadAcierto porcentaje de acierto (0–100)
+     * @param enemigo             objetivo que recibirá el daño
+     */
+    protected void ejecutarAtaque(int ataque, int probabilidadAcierto, Enemigo enemigo) {
+        // evita doble ejecución en el mismo turno
+        if (fueAtaque) return;
+
+        fueAtaque = true;
+
+        //Calculo sobre daño final a aplicar a una entidad si se acierta
+        int dañoFinal = (int) (ataque + (strenght * fuerzaPorcentaje));
+
         Random rand = new Random();
+
         if (rand.nextInt(100) < probabilidadAcierto) {
-            enemigo.recibirDaño(enemigo, dañoFinal);
-            heFalladoJugador = false;
-            dañoHechoJugador = dañoFinal;
+
+            //Aplicamos recibir daño para el enemigo a atacar
+            enemigo.recibirDaño(dañoFinal);
+
+            //Guardamos variables al acertar para mostrar
+            heFallado = false;
+            dañoHecho = dañoFinal;
         } else {
-            heFalladoJugador = true;
+            //Guardamos variables y contrataque nos sirve para Samurai
+            heFallado            = true;
+            dañoHecho            = 0;
             contrataquePendiente = true;
         }
+
+        //Para mostrar por pantalla la informacion del ataque
         gp.isSituacionPelea = false;
     }
 
-    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaqueJugador(100,  92, enemigo); }
-    public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaqueJugador(10, 68, enemigo); }
-    public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaqueJugador(16, 40, enemigo); }
+    /** Ataque seguro: daño bajo, acierto muy alto (92 %). */
+    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaque(100, 92, enemigo); }
 
-    public String getNombre() { return nombre; }
-    public int getLife() { return life; }
-    public void setLife(int life) { this.life = life; }
+    /** Ataque equilibrado: daño medio, acierto medio (68 %). */
+    public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaque(10,  68, enemigo); }
 
-    public void recibirDaño(Entidad jugador, int dañoFinal){
-        int jugadorVidaRestante = jugador.getLife() - dañoFinal;
-        if (jugadorVidaRestante < 0) jugadorVidaRestante = 0;
-        jugador.setLife(jugadorVidaRestante);
+    /** Ataque arriesgado: daño alto, acierto bajo (40 %). */
+    public void ataqueArriesgado(Enemigo enemigo)  { ejecutarAtaque(16,  40, enemigo); }
+
+
+    // ----- Getters / setters ------
+
+    public String getNombre()       { return nombre; }
+
+    public int  getLife()           { return life; }
+    public void setLife(int life)   { this.life = life; }
+    public int  getBarraVida()      { return barraVida; }
+
+
+    public boolean isHeFallado()            { return heFallado; }
+    public int     getDañoHecho()           { return dañoHecho; }
+    public boolean isFueAtaque()            { return fueAtaque; }
+    public boolean isContrataquePendiente() { return contrataquePendiente; }
+
+
+    public void setFueAtaque(boolean fueAtaque) {
+        this.fueAtaque = fueAtaque;
+    }
+
+    public void setContrataquePendiente(boolean contrataquePendiente) {
+        this.contrataquePendiente = contrataquePendiente;
+    }
+
+
+    public String getNombreEnemigo() {
+        return nombre;
+    }
+
+    public int getStrenght() {
+        return strenght;
+    }
+
+    public void setStrenght(int strenght) {
+        this.strenght = strenght;
     }
 }

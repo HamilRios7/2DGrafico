@@ -52,14 +52,14 @@ public class GestorXml {
             DocumentBuilderFactory fabrica = DocumentBuilderFactory.newInstance();
 
             //Creamos uno usando la fabrica, este es el que realmente contruye el arbol y lee xml
-            DocumentBuilder constructor    = fabrica.newDocumentBuilder();
+            DocumentBuilder constructor    = fabrica.newDocumentBuilder();  // aquí puede fallar lanzando ParserConfigurationException
 
             //Declaramos una variable que podrá guardar un XML cargado en memoria
             Document documento;
-            //Declaramos una variable que podrá guardar un elemento del XML
+            //Declaramos una variable que podrá guardar un elemento del XML, en este caso sera la raiz del XML, es decir , el nodo jugadores
             Element raiz;
 
-            File archivo = new File(RUTA_ARCHIVO);
+            File archivo = new File(RUTA_ARCHIVO); // aqui puede fallar java.io.IOException
             if (archivo.exists()) {
                 // El archivo ya existe → lo cambiamos y reutilizamos
 
@@ -68,7 +68,7 @@ public class GestorXml {
                 //Pillamos el nodo raiz del XML (en nuestro caso <jugadores>) para luego añadirle hijos (<jugador>)
                 raiz  = documento.getDocumentElement();
             } else {
-                // Primera vez → creamos el documento desde cero
+                // Primera vez -> creamos el documento desde cero
 
                 //Creamos un documento vacio, no hay XML cargado , empezamos vacios
                 documento = constructor.newDocument();
@@ -80,7 +80,7 @@ public class GestorXml {
                 documento.appendChild(raiz);
             }
 
-            // Busca de la lista jugadores , los modulos jugador
+            //Busca de la lista jugadores , los modulos jugador
             NodeList jugadores       = documento.getElementsByTagName("jugador");
             Element  entradaExistente = null;
             long     tiempoExistente  = Long.MAX_VALUE;
@@ -93,7 +93,7 @@ public class GestorXml {
                         .getElementsByTagName("nombre").item(0)
                         .getTextContent().trim();
 
-                // si el nombre se encuentra en el registro, guardamos el nombre jugador
+                // si el nombre se encuentra en el registro, guardamos el nombre jugador en element
                 //pillamos el tiempo y le colocamos el guardado si existe
                 if (nombreGuardado.equals(registro.getNombre())) {
                     entradaExistente = jugador;
@@ -189,15 +189,20 @@ public class GestorXml {
            //Convierte el DOM XML en texto XML y lo escribe en el archivo.
             //Toma el XML en la memoria y lo guarda formateado en archivo, en disco.
             //Memoria significa que el programa lo guarda , no esta en ningun archivo
-            transformador.transform(new DOMSource(documento), new StreamResult(archivo));
+            transformador.transform(new DOMSource(documento), new StreamResult(archivo));  // aquí puede fallar lanzando TransformerException
 
         }catch (ParserConfigurationException ex) {
+            //Suele ocurrir cuando la configuración del DocumentBuilderFactory es incorrecta o problemas internas del parse
         System.err.println("[GestorXml] Error al crear el parser XML: " + ex.getMessage());
          } catch (org.xml.sax.SAXException ex) {
+            //Por error al leer o interpretar el XML (xml mal formados o estructura incorrecta)
         System.err.println("[GestorXml] Error al parsear el XML existente: " + ex.getMessage());
          } catch (java.io.IOException ex) {
+            //el archivo no existe, no tiene permisos o ruta incorrecta. No podria llegar a ser por
+            //archivo inexistente , ya que nos aseguramos de crearlo si no existe
         System.err.println("[GestorXml] Error de lectura/escritura del archivo: " + ex.getMessage());
          } catch (TransformerException ex) {
+            //error al guardar  o escribir el archivo, es decir, al convertir el DOM a XML y escribirlo en disco ( transformarlo)
         System.err.println("[GestorXml] Error al escribir el XML actualizado: " + ex.getMessage());
          }
     }
@@ -262,11 +267,16 @@ public class GestorXml {
         } catch (ParserConfigurationException ex) {
             System.err.println("[GestorXml] Error al crear el parser XML: " + ex.getMessage());
         } catch (org.xml.sax.SAXException ex) {
+            //Por error al leer o interpretar el XML (xml mal formados o estructura incorrecta)
             System.err.println("[GestorXml] Error al parsear el archivo: " + ex.getMessage());
         } catch (java.io.IOException ex) {
+
+            //el archivo no existe, no tiene permisos o ruta incorrecta. No podria llegar a ser por
+            //archivo inexistente , ya que nos aseguramos de crearlo si no existe
             System.err.println("[GestorXml] Error al leer el archivo: " + ex.getMessage());
         }
 
+        //devolvemos esta lista completa ordenada de registros de jugadores , que se usara para mostrar en pantalla
         return lista;
     }
 }

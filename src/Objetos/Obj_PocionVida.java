@@ -28,6 +28,7 @@ public class Obj_PocionVida  extends  SuperObject{
     @Override
     public void usar(GamePanel gp) {
         // Cura siempre la mitad de la vida máxima, sin pasarse del tope
-        gp.jugador.life = Math.min(gp.jugador.life + (gp.jugador.barraVida / 2), gp.jugador.barraVida);
+        int vida =Math.min(gp.jugador.getLife() + (gp.jugador.getBarraVida() / 2), gp.jugador.getBarraVida());
+        gp.jugador.setLife(vida);
     }
 }

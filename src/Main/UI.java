@@ -218,8 +218,8 @@ public class UI {
         int corazonX = 28; // posición X del icono de corazón
         int corazonY = 518;
 
-        double hpBarValue    = gp.jugador.life * baseUnit;
-        double maxHpBarValue = gp.jugador.barraVida * baseUnit;
+        double hpBarValue    = gp.jugador.getLife() * baseUnit;
+        double maxHpBarValue = gp.jugador.getBarraVida() * baseUnit;
 
         // Fondo oscuro (vida perdida)
         g2.setColor(Color.DARK_GRAY);
@@ -259,8 +259,8 @@ public class UI {
             int barraY = 255;
 
 
-            double hpBarValue = gp.enemigoActual.getLifeEnemigo() * baseUnit;
-            double maxHpBarValue = gp.enemigoActual.barraVidaEnemigo * baseUnit;
+            double hpBarValue = gp.enemigoActual.getLife() * baseUnit;
+            double maxHpBarValue = gp.enemigoActual.getBarraVida() * baseUnit;
 
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
@@ -280,8 +280,8 @@ public class UI {
             int barraY = 105;
 
 
-            double hpBarValue = gp.enemigoActual.getLifeEnemigo() * baseUnit;
-            double maxHpBarValue = gp.enemigoActual.barraVidaEnemigo * baseUnit;
+            double hpBarValue = gp.enemigoActual.getLife() * baseUnit;
+            double maxHpBarValue = gp.enemigoActual.getBarraVida() * baseUnit;
 
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(barraX, barraY, (int) maxHpBarValue, 15);
@@ -692,32 +692,32 @@ public class UI {
             }
         }
 
-        if (gp.jugador.fuejugadorAtaque) {
+        if (gp.jugador.isFueAtaque()) {
             // ── Resultado del ataque del jugador ──
-            if (gp.jugador.heFalladoJugador && gp.enemigoActual instanceof samuraiErrante) {
+            if (gp.jugador.isHeFallado() && gp.enemigoActual instanceof samuraiErrante) {
                 g2.drawString(
                         "El heroe ha fallado el ataque , el enemigo ha usado contrataque",
                         x + 50, y + 40);
             } else {
                 g2.drawString(
                         "El heroe ha acertado el ataque ha hecho "
-                                + gp.jugador.dañoHechoJugador + " puntos de daño",
+                                + gp.jugador.getDañoHecho() + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
-                        "y ha dejado a "+ enemigo.getNombreEnemigo() + " con " + enemigo.getLifeEnemigo(),
+                        "y ha dejado a "+ enemigo.getNombreEnemigo() + " con " + enemigo.getLife(),
                         x + 50, y + 60);
             }
             g2.drawString("Continuar", x + 50, y + 90);
             if (comandoNum2 == 1) g2.drawString(">", x + 30, y + 90);
 
-        } else if (enemigo.fueEnemigoAtaque) {
+        } else if (enemigo.isFueAtaque()) {
             // ── Resultado del ataque del enemigo ──
-            if (enemigo.haFalladoEnemigo) {
+            if (enemigo.isHeFallado()) {
                 g2.drawString("El "+ enemigo.getNombreEnemigo() + " ha fallado el ataque", x + 50, y + 40);
-            } else if(!enemigo.haFalladoEnemigo && enemigo instanceof Gigante &&  gp.gigante.fueStun== true){
+            } else if(!enemigo.isHeFallado() && enemigo instanceof Gigante &&  gp.gigante.fueStun== true){
                 g2.drawString(
                         "El "+ enemigo.getNombreEnemigo() + " ha acertado el ataque , ha hecho "
-                                + enemigo.dañoHechoEnemigo + " puntos de daño",
+                                + enemigo.getDañoHecho() + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
                         "y ha dejado al heroe con " + gp.jugador.getLife() +" . Ha stuneado al heroe",
@@ -725,7 +725,7 @@ public class UI {
             }else{
                 g2.drawString(
                         "El "+ enemigo.getNombreEnemigo() + " ha acertado el ataque , ha hecho "
-                                + enemigo.dañoHechoEnemigo + " puntos de daño",
+                                + enemigo.getDañoHecho()  + " puntos de daño",
                         x + 50, y + 40);
                 g2.drawString(
                         "y ha dejado al heroe con " + gp.jugador.getLife(),

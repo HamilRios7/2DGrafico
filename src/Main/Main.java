@@ -19,8 +19,7 @@ public class Main {
         frame.setTitle("El Viaje del Héroe");
 
         try {
-            Image icono = new ImageIcon(Main.class.getClassLoader()
-                    .getResource("iconoJuego/icono.png")).getImage();
+            Image icono = new ImageIcon(Main.class.getClassLoader().getResource("iconoJuego/icono.png")).getImage();
             frame.setIconImage(icono);
         } catch (Exception e) {
             System.out.println("No se pudo cargar el icono: " + e.getMessage());

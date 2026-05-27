@@ -196,12 +196,12 @@ public class KeyHandler implements KeyListener {
                 Enemigo enemigo = gp.enemigoActual;
 
                 // Guardamos flags antes de resetearlos
-                boolean eraAtaqueJugador = gp.jugador.fuejugadorAtaque;
-                boolean hayContrataque   = gp.jugador.contrataquePendiente;
+                boolean eraAtaqueJugador = gp.jugador.isFueAtaque();
+                boolean hayContrataque   = gp.jugador.isContrataquePendiente();
 
                 // Resetear flags de turno para el siguiente ciclo
-                gp.jugador.fuejugadorAtaque  = false;
-                enemigo.fueEnemigoAtaque     = false;
+                gp.jugador.setFueAtaque(false);
+                enemigo.setFueAtaque(false);
                 gp.isSituacionPelea          = true;
 
                 if (eraAtaqueJugador) {
@@ -210,7 +210,7 @@ public class KeyHandler implements KeyListener {
                         // El jugador falló → el enemigo contrataca.
                         // contratacar() está definido en Enemigo base (no-op por defecto),
                         // cada subclase puede sobreescribirlo si lo necesita.
-                        gp.jugador.contrataquePendiente = false;
+                        gp.jugador.setContrataquePendiente(false);
                         enemigo.contratacar();
                         gp.jugadorTurno        = false;
                         enemigo.enemigoYaAtaco  = false;
@@ -225,9 +225,9 @@ public class KeyHandler implements KeyListener {
                 } else {
                     // ── Fue el turno del enemigo (o habilidad especial) ───────
                     if (enemigo.seHaMostradoPantalla) {
-                        // El jugador confirmó la pantalla de habilidad única
+                        // El jugador confirmó la pantalla de habilidad única , colocamos todo para que empiece su turno el enemigo despues de habilidad
                         enemigo.seHaMostradoPantalla = false;
-                        enemigo.fueEnemigoAtaque     = false;
+                        enemigo.setFueAtaque(false);
                         gp.jugadorTurno              = false;
                         enemigo.enemigoYaAtaco        = false;
                         enemigo.estoyAtacando         = false;
@@ -236,7 +236,7 @@ public class KeyHandler implements KeyListener {
                     } else if (enemigo.fueContrataque()) {
                         // Venimos del contrataque → el enemigo hace su turno normal
                         enemigo.resetContrataque();
-                        enemigo.fueEnemigoAtaque  = false;
+                        enemigo.setFueAtaque(false);
                         gp.jugadorTurno           = false;
                         enemigo.enemigoYaAtaco     = false;
                         enemigo.estoyAtacando      = false;

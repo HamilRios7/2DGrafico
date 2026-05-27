@@ -18,10 +18,11 @@ import static java.lang.Math.clamp;
  * controlado por el jugador a través de  KeyHandler.
  *
  *
- * El jugador tiene dos "instancias" de posición según la escena activa:
+ * El jugador tiene tres "instancias" de posición según la escena activa:
  *
- *    x1Jugador / y1Jugador — escena 1 (exterior, scroll lateral).
- *    x2Jugador / y2Jugador — escena 2 y combate (interior del castillo).
+ *    x1Jugador / y1Jugador — escena 1 (exterior).
+ *    x2Jugador / y2Jugador — escena 2 y combate en este (interior del castillo).
+ *    x3Jugador / y3Jugador — escena 3 y combate en este (piso final del castillo).
  *
  */
 public class Jugador extends Entidad {
@@ -29,12 +30,10 @@ public class Jugador extends Entidad {
     /** Manejador de teclado para leer el input del jugador cada frame. */
     KeyHandler keyH;
 
-    /** Ancho en píxeles con el que se dibuja el sprite del jugador en la escena 1. */
-    int playerWidth = 130;
 
-    // ════════════════════════════════════════════════════════════════════════
-    // FLAGS DE PROXIMIDAD (detección de zonas de interés)
-    // ════════════════════════════════════════════════════════════════════════
+
+    // -----Flags de la proximidad (detección de zonas de interaccion)-----
+
 
     /** true cuando el jugador está lo bastante cerca de la puerta del castillo. */
     public boolean cercaPuerta = false;
@@ -42,21 +41,32 @@ public class Jugador extends Entidad {
     /**  true cuando el jugador está cerca de la zona de inicio de combate. */
     public boolean cercaPelea = false;
 
-    /** true cuando el jugador está cerca del acceso al siguiente piso. */
+    /** true cuando el jugador está cerca del acceso al siguiente piso final. */
     public boolean cercaIrPiso3 = false;
 
 
-    /** true cuando el jugador está cerca del acceso al siguiente piso. */
+    /** true cuando el jugador está cerca de inicio a la pelea final. */
     public boolean cercaPeleaFinal = false;
 
 
-    /** true cuando el jugador está cerca del acceso al siguiente piso. */
+    /** true cuando el jugador está cerca del acceso a la pantalla de felicitacion. */
     public boolean cercaCongratulations = false;
 
+    // Posición en la escena 1 (exterior)
+    int x1Jugador ;
+    int y1Jugador ;
 
-    // ════════════════════════════════════════════════════════════════════════
-    // FLAGS DE ESTADO DE ANIMACIÓN
-    // ════════════════════════════════════════════════════════════════════════
+    // Posición en la escena 2 / combate (interior)
+    int x2Jugador;
+    int y2Jugador ;
+
+    // Posición en la escena 3 / combate final (interior)
+    int x3Jugador ;
+    int y3Jugador ;
+
+
+    // ----- Flags control combate y animacion -----
+
 
     /**
      *  true mientras la animación de ataque está en curso.
@@ -64,34 +74,34 @@ public class Jugador extends Entidad {
      */
     public boolean estoyAtacando = false;
 
-    /** true cuando la vida del jugador llega a 0 y empieza la animación de muerte. */
+    /** true cuando la vida del jugador llega a 0 y empieza la animación de muerte . */
     public boolean heMuerto = false;
 
     /** true cuando el último frame de la animación de muerte ha sido mostrado. */
     public boolean isAnimacionMuerteTerminada = false;
 
-    // ════════════════════════════════════════════════════════════════════════
-    // COMBATE
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ----- COMBATE ------
+
 
     /**
      * Tipo de ataque seleccionado por el jugador en el menú de combate.
      *
-     *   0 – Ataque débil (seguro)</li>
-     *   1 – Ataque equilibrado</li>
-     *   2 – Ataque fuerte (arriesgado)</li>
-     *   -1 – Sin ataque pendiente</li>
+     *   0 – Ataque débil (seguro)
+     *   1 – Ataque equilibrado
+     *   2 – Ataque fuerte (arriesgado)
+     *   -1 – Sin ataque pendiente
      *
      */
     public int ataqueElegido = -1;
 
-    // ════════════════════════════════════════════════════════════════════════
-    // CONSTRUCTOR
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ----- CONSTRUCTOR ------
+
 
     /**
      * Crea el jugador, inicializa su área de colisión, sus valores por defecto
-     * y carga todos los sprites desde los recursos del proyecto.
+     * y carga todos los sprites desde los metodos de esta clase
      *
      * @param gp   panel principal del juego
      * @param keyH manejador de teclado
@@ -107,9 +117,9 @@ public class Jugador extends Entidad {
         getPlayerImage();
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // INICIALIZACIÓN
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ----- INICIALIZACIÓN -------
+
 
     /**
      * Establece los valores iniciales del jugador al comenzar una nueva partida.
@@ -132,6 +142,8 @@ public class Jugador extends Entidad {
         y3Jugador = 64;
 
         speed     = 5;
+
+        //direccion a la que aparece mirando el jugador
         direction = "right";
 
         // ── Atributos de combate ──
@@ -143,16 +155,20 @@ public class Jugador extends Entidad {
     }
 
     /**
-     * Carga desde el classpath todos los sprites del jugador:
+     * Carga a las variables BufferedImage  todos los sprites del jugador:
      * caminar a la derecha e izquierda (8 frames cada uno), ataque (6 frames),
      * idle derecha e izquierda (5 frames cada uno) y muerte (7 frames).
      *
-     * Se usa  getClassLoader().getResourceAsStream() para compatibilidad
-     * tanto al ejecutar desde el IDE como desde un JAR empaquetado.</p>
      */
     public void getPlayerImage() {
         try {
-            // ── Animación caminar → derecha ──────────────────────────────────
+
+
+            //getResourceAsStream busca un archivo dentro de tu proyecto y lo abre como un flujo de datos para poder  leerlo.
+            // getClass().getClassLoader() sirve para acceder a archivos dentro del proyecto, en este caso, res
+            // ImageIO.read(...) lee el objeto y lo convierte en BufferedImage
+
+            // ----- Animación caminar -> derecha ------
             rgt1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/right_1.png"));
             rgt2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/right_2.png"));
             rgt3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/right_3.png"));
@@ -162,7 +178,7 @@ public class Jugador extends Entidad {
             rgt7 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/right_7.png"));
             rgt8 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/right_8.png"));
 
-            // ── Animación caminar → izquierda ────────────────────────────────
+            // ------ Animación caminar -> izquierda -------
             lft1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/left_1.png"));
             lft2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/left_2.png"));
             lft3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/left_3.png"));
@@ -172,7 +188,7 @@ public class Jugador extends Entidad {
             lft7 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/left_7.png"));
             lft8 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/left_8.png"));
 
-            // ── Animación de ataque (6 frames) ──────────────────────────────
+            // -------Animación de ataque (6 frames)------
             ataJuga1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/atacar_1.png"));
             ataJuga2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/atacar_2.png"));
             ataJuga3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/atacar_3.png"));
@@ -180,28 +196,28 @@ public class Jugador extends Entidad {
             ataJuga5 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/atacar_5.png"));
             ataJuga6 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/atacar_6.png"));
 
-            // ── Animación idle → mirando a la derecha (5 frames) ────────────
-            quieto1JugaRight = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_1Jg.png"));
-            quieto2JugaRight = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_2Jg.png"));
-            quieto3JugaRight = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_3Jg.png"));
-            quieto4JugaRight = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_4Jg.png"));
-            quieto5JugaRight = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_5Jg.png"));
+            // ------- Animación idle → mirando a la derecha (5 frames) -------
+            idle1Right= ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_1Jg.png"));
+            idle2Right = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_2Jg.png"));
+            idle3Right = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_3Jg.png"));
+            idle4Right= ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_4Jg.png"));
+            idle5Right  = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_5Jg.png"));
 
-            // ── Animación idle → mirando a la izquierda (5 frames) ──────────
-            quieto1JugaLeft = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_1JgLeft.png"));
-            quieto2JugaLeft = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_2JgLeft.png"));
-            quieto3JugaLeft = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_3JgLeft.png"));
-            quieto4JugaLeft = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_4JgLeft.png"));
-            quieto5JugaLeft = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_5JgLeft.png"));
+            // ------ Animación idle → mirando a la izquierda (5 frames) ------
+            idle1Left= ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_1JgLeft.png"));
+            idle2Left = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_2JgLeft.png"));
+            idle3Left = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_3JgLeft.png"));
+            idle4Left= ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_4JgLeft.png"));
+            idle5Left= ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/quieto_5JgLeft.png"));
 
-            // ── Animación de muerte (7 frames, no en bucle) ─────────────────
-            muerto_1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_1.png"));
-            muerto_2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_2.png"));
-            muerto_3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_3.png"));
-            muerto_4 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_4.png"));
-            muerto_5 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_5.png"));
-            muerto_6 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_6.png"));
-            muerto_7 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_7.png"));
+            // -------- Animación de muerte (7 frames, no en bucle) -------
+            muerto1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_1.png"));
+            muerto2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_2.png"));
+            muerto3 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_3.png"));
+            muerto4 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_4.png"));
+            muerto5 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_5.png"));
+            muerto6 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_6.png"));
+            muerto7 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("jugador/muerte_7.png"));
 
         } catch (IOException e) {
             System.err.println("[Jugador] Error cargando sprites del jugador:");
@@ -209,51 +225,54 @@ public class Jugador extends Entidad {
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ACTUALIZACIÓN DE LÓGICA (llamada cada frame desde GamePanel)
-    // ════════════════════════════════════════════════════════════════════════
+
+    // -----  Update de escenas (es llamado cada frame por GamePanel) ------
+
 
     /**
      * Lógica de actualización del jugador en la escena 1 (exterior).
      *
      * Mueve al jugador horizontalmente según el input de teclado,
-     * lo mantiene dentro de los límites de pantalla con {@code clamp}
+     * lo mantiene dentro de los límites de pantalla con  clamp
      * y selecciona la animación correcta (movimiento o idle).
-     *
      */
     public void update1() {
+
+        //es true si el jugador está pulsando alguna de las teclas de movimiento horizontal
         boolean moviendo = keyH.rightPressed || keyH.leftPressed;
 
-        if (gp.gameState == gp.escenaState1) {
+        //para que en combate no puedas moverte
             if (moviendo) {
+
+                //si es presionado derecha , la velocidad por frame se le suma a la posicion del jugador
                 if (keyH.rightPressed) {
                     direction   = "right";
                     x1Jugador  += speed;
                 }
+                //si es presionado izquierda , la velocidad por frame se le resta a la posicion del jugador
                 if (keyH.leftPressed) {
                     direction   = "left";
                     x1Jugador  -= speed;
                 }
 
-
-                System.out.println("ME SIGO MOVIENDO : "+x1Jugador);
                 // Evita que el jugador salga de los bordes de la pantalla
+                //clamp fuerza un valor a estar dentro de un rango, si sale del minimo -> coloca minimo , si pasa maximo -> coloca maximo
                 x1Jugador = clamp(x1Jugador, -54, gp.pantallaAnchura - 70);
 
+                //iniciamos la animacion movimiento al moviendo=true
                 animacionMoviendome();
             } else {
                 animacionQuieto();
             }
-        }
     }
 
     /**
-     * Lógica de actualización del jugador en la escena 2 y durante el combate.
+     * Lógica de actualización del jugador en la escena 2 y combate.
      *
      * Si el jugador ha muerto, delega en  #animacionMuerte() y corta
      * el resto de la lógica. En la escena 2 aplica movimiento con velocidad 6
      * (ligeramente mayor que en escena 1) y sus propios límites de pantalla.
-     * En el estado de pelea solo actualiza la animación idle.
+     * En el estado de pelea solo se actualiza la animación idle.
      *
      */
     public void update2() {
@@ -266,19 +285,23 @@ public class Jugador extends Entidad {
         }
 
         if (gp.gameState == gp.escenaState2) {
+
             if (moviendo) {
+
                 if (keyH.rightPressed) {
                     direction   = "right";
                     x2Jugador  += 6;
-                } else if (keyH.leftPressed) {
+                }
+                if (keyH.leftPressed) {
                     direction   = "left";
                     x2Jugador  -= 6;
                 }
 
                 if (!gp.samuraiErrante.heMuertoEnemigo){
-                    // Límites de la escena 2 (distintos a los de escena 1 por el layout)
+                    // Límites de la escena 2 (distintos a los de escena 1 por el diseño y componentes de la escena)
                     x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 800);
-                }else if(gp.samuraiErrante.heMuertoEnemigo){
+                }
+                if(gp.samuraiErrante.heMuertoEnemigo){
                     x2Jugador = clamp(x2Jugador, -170, gp.pantallaAnchura - 195);
                 }
 
@@ -288,12 +311,24 @@ public class Jugador extends Entidad {
                 animacionQuieto();
             }
 
-        } else if (gp.gameState == gp.statePelea && !heMuerto) {
-            // Durante el combate el jugador está quieto esperando su turno
+        }
+
+        if (gp.gameState == gp.statePelea && !heMuerto) {
+            // Durante el combate el jugador está quieto esperando su turno , entonces hace animacion
             animacionQuieto();
         }
     }
 
+
+    /**
+     * Lógica de actualización del jugador en la escena 2 y combate.
+     *
+     * Si el jugador ha muerto, delega en  #animacionMuerte() y corta
+     * el resto de la lógica. En la escena 2 aplica movimiento con velocidad 6
+     * (ligeramente mayor que en escena 1) y sus propios límites de pantalla.
+     * En el estado de pelea solo se actualiza la animación idle.
+     *
+     */
     public void update3() {
         boolean moviendo = keyH.rightPressed || keyH.leftPressed;
 
@@ -303,12 +338,15 @@ public class Jugador extends Entidad {
             return;
         }
 
+
         if (gp.gameState == gp.escenaState3) {
             if (moviendo) {
                 if (keyH.rightPressed) {
                     direction = "right";
                     x3Jugador += 6;
-                } else if (keyH.leftPressed) {
+                }
+
+                if (keyH.leftPressed) {
                     direction = "left";
                     x3Jugador -= 6;
                 }
@@ -316,7 +354,8 @@ public class Jugador extends Entidad {
                 if (!gp.cofreAparecido){
                     // Límites de la escena 3 (distintos a los de escena 1 por el layout)
                     x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 800);
-                }else if(gp.cofreAparecido){
+                }
+                if(gp.cofreAparecido){
                     x3Jugador = clamp(x3Jugador, -170, gp.pantallaAnchura - 970);
                 }
                 animacionMoviendome();
@@ -330,9 +369,9 @@ public class Jugador extends Entidad {
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // RENDERIZADO (llamado cada frame desde GamePanel)
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ----- DRAW ----- (llamado cada frame desde GamePanel)
+
 
     /**
      * Dibuja el jugador en la escena 1 con su animación de movimiento o idle.
@@ -347,7 +386,7 @@ public class Jugador extends Entidad {
         } else {
             image = (BufferedImage) dibujarQuieto();
         }
-        gd2.drawImage(image, x1Jugador, y1Jugador, playerWidth, playerWidth, null);
+        gd2.drawImage(image, x1Jugador, y1Jugador, 130,130, null);
     }
 
     /**
@@ -355,11 +394,11 @@ public class Jugador extends Entidad {
      *
      * Selecciona el sprite según el estado actual:
      *
-     *   Escena 2 con movimiento → animación de caminar.</li>
-     *   Escena 2 quieto → animación idle.</li>
-     *   Combate atacando → animación de ataque.</li>
-     *   Combate quieto (vivo) → animación idle.</li>
-     *   Muerto → animación de muerte (no en bucle).</li>
+     *   Escena 2 con movimiento -> animación de caminar.
+     *   Escena 2 quieto -> animación idle.
+     *   Combate atacando -> animación de ataque.
+     *   Combate quieto (vivo) -> animación idle.
+     *   Muerto -> animación de muerte (no en bucle).
      *
      *
      * @param gd2 contexto gráfico 2D del frame actual
@@ -368,8 +407,11 @@ public class Jugador extends Entidad {
         boolean moviendo = keyH.rightPressed || keyH.leftPressed;
         BufferedImage image = null;
 
-        if (gp.gameState == gp.escenaState2 || gp.gameState== gp.pauseState2) {
+        //si estamos en escena 2 o en pausa de escena 2, se dibuja el sprite de movimiento o idle según el input del jugador
+        //al estar en pause, nunca se podra mover entonces sera un idle el dibujo sin update
+        if (gp.gameState == gp.escenaState2 || gp.gameState== gp.pauseState2 ) {
             if(moviendo){
+                //cargo en image que esta inicializado
                 image=(BufferedImage)dibujarMoviendome();
             }else {
                 image=(BufferedImage) dibujarQuieto();
@@ -388,10 +430,27 @@ public class Jugador extends Entidad {
         gd2.drawImage(image, x2Jugador, y2Jugador, 400, 400, null);
     }
 
+    /**
+     * Dibuja el jugador en la escena 3 y durante el combate.
+     *
+     * Selecciona el sprite según el estado actual:
+     *
+     *   Escena 3 con movimiento -> animación de caminar.
+     *   Escena 3 quieto -> animación idle.
+     *   Combate atacando -> animación de ataque.
+     *   Combate quieto (vivo) -> animación idle.
+     *   Muerto -> animación de muerte (no en bucle).
+     *
+     *
+     * @param gd2 contexto gráfico 2D del frame actual
+     */
     public void draw3(Graphics2D gd2) {
         boolean moviendo = keyH.rightPressed || keyH.leftPressed;
         BufferedImage image = null;
 
+
+        //si estamos en escena 3 o en pausa de escena 3, se dibuja el sprite de movimiento o idle según el input del jugador
+        //al estar en pause, nunca se podra mover entonces sera un idle el dibujo sin update
         if (gp.gameState == gp.escenaState3 || gp.gameState== gp.pauseState3) {
             if(moviendo){
                 image=(BufferedImage)dibujarMoviendome();
@@ -408,17 +467,17 @@ public class Jugador extends Entidad {
             image = (BufferedImage) dibujarMuerte();
         }
 
-        // En la escena 2 y combate el sprite se dibuja más grande (400×400)
+        // En la escena 3 y combate el sprite se dibuja más grande (400×400)
         gd2.drawImage(image, x3Jugador, y3Jugador, 400, 400, null);
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // CONTROLADORES DE ANIMACIÓN
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ------ CONTROLADORES DE ANIMACIÓN ------
+
 
     /**
      * Avanza el contador de la animación de movimiento.
-     * Cambia de fotograma cada 10 frames lógicos; cicla entre 1 y 8.
+     * Cambia de fotograma cada 10 frames ; cicla entre sprite 1  y 8.
      */
     public void animacionMoviendome() {
         moveCounter++;
@@ -431,7 +490,7 @@ public class Jugador extends Entidad {
 
     /**
      * Avanza el contador de la animación idle (en reposo).
-     * Cambia de fotograma cada 10 frames lógicos; cicla entre 1 y 5.
+     * Cambia de fotograma cada 10 frames; cicla entre sprite 1 y  sprite 5.
      */
     public void animacionQuieto() {
         idleCounter++;
@@ -444,7 +503,7 @@ public class Jugador extends Entidad {
 
     /**
      * Avanza el contador de la animación de ataque.
-     * Cambia de fotograma cada 6 frames lógicos; cicla entre 1 y 6.
+     * Cambia de fotograma cada 6 frames; cicla entre sprite  1 y  sprite 6.
      * Al completar un ciclo completo incrementa  contadorMaxFrames,
      * que sirve como señal de que la animación ha terminado.
      */
@@ -465,24 +524,27 @@ public class Jugador extends Entidad {
 
     /**
      * Avanza el contador de la animación de muerte.
-     * Cambia de fotograma cada 14 frames lógicos; se detiene en el frame 7
-     * (no es cíclica, el último frame queda congelado).
+     * Cambia de fotograma cada 14 frames ; se detiene en el sprite 7
+     * (no es bucle, el último frame queda congelado).
      */
     public void animacionMuerte() {
         muerteCounter++;
         if (muerteCounter > 14) {
             muerteNum++;
             muerteCounter = 0;
+            if(atacarNum==4){
+                gp.playSE(8);
+            }
             if (muerteNum > 7) muerteNum = 7; // congela en el último frame
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // SELECCIÓN DE SPRITE SEGÚN FRAME ACTUAL
-    // ════════════════════════════════════════════════════════════════════════
+
+    // -----  Seleccion de Sprite segun numero animacion -----
+
 
     /**
-     * Devuelve el fotograma de idle correspondiente a  idleNum
+     * Devuelve el sprite de idle correspondiente a  idleNum
      * y a la dirección actual del jugador.
      *
      * @return sprite idle actual, o  null si  idleNum está fuera de rango
@@ -491,25 +553,25 @@ public class Jugador extends Entidad {
         BufferedImage image = null;
         switch (direction) {
             case "right":
-                if (idleNum == 1) image = quieto1JugaRight;
-                if (idleNum == 2) image = quieto2JugaRight;
-                if (idleNum == 3) image = quieto3JugaRight;
-                if (idleNum == 4) image = quieto4JugaRight;
-                if (idleNum == 5) image = quieto5JugaRight;
+                if (idleNum == 1) image = idle1Right;
+                if (idleNum == 2) image = idle2Right;
+                if (idleNum == 3) image = idle3Right;
+                if (idleNum == 4) image = idle4Right;
+                if (idleNum == 5) image = idle5Right;
                 break;
             case "left":
-                if (idleNum == 1) image = quieto1JugaLeft;
-                if (idleNum == 2) image = quieto2JugaLeft;
-                if (idleNum == 3) image = quieto3JugaLeft;
-                if (idleNum == 4) image = quieto4JugaLeft;
-                if (idleNum == 5) image = quieto5JugaLeft;
+                if (idleNum == 1) image = idle1Left;
+                if (idleNum == 2) image = idle2Left;
+                if (idleNum == 3) image = idle3Left;
+                if (idleNum == 4) image = idle4Left;
+                if (idleNum == 5) image = idle5Left;
                 break;
         }
         return image;
     }
 
     /**
-     * Devuelve el fotograma de movimiento correspondiente a {@code moveNum}
+     * Devuelve el sprite de movimiento correspondiente a  moveNum
      * y a la dirección actual del jugador.
      *
      * @return sprite de caminar actual, o  null si  moveNum está fuera de rango
@@ -545,7 +607,7 @@ public class Jugador extends Entidad {
     }
 
     /**
-     * Devuelve el fotograma de ataque correspondiente a {@code atacarNum}.
+     * Devuelve el sprite  de ataque correspondiente a  atacarNum.
      *
      * @return sprite de ataque actual, o null si  atacarNum está fuera de rango
      */
@@ -563,7 +625,7 @@ public class Jugador extends Entidad {
     }
 
     /**
-     * Devuelve el fotograma de muerte correspondiente a muerteNum.
+     * Devuelve el sprite de muerte correspondiente a muerteNum.
      * El frame 7 queda congelado hasta que la escena cambie.
      *
      * @return sprite de muerte actual, o  null si  muerteNum está fuera de rango
@@ -571,25 +633,27 @@ public class Jugador extends Entidad {
     public Image dibujarMuerte() {
         BufferedImage image = null;
         switch (muerteNum) {
-            case 1: image = muerto_1; break;
-            case 2: image = muerto_2; break;
-            case 3: image = muerto_3; break;
-            case 4: image = muerto_4; break;
-            case 5: image = muerto_5; break;
-            case 6: image = muerto_6; break;
-            case 7: image = muerto_7; break;
+            case 1: image = muerto1; break;
+            case 2: image = muerto2; break;
+            case 3: image = muerto3; break;
+            case 4: image = muerto4; break;
+            case 5: image = muerto5; break;
+            case 6: image = muerto6; break;
+            case 7: image = muerto7; break;
         }
         return image;
     }
-    // ════════════════════════════════════════════════════════════════════════
+
+
+
     // COMBATE
-    // ════════════════════════════════════════════════════════════════════════
+
 
     /**
      * Inicia la secuencia de ataque del jugador.
      *
      * Solo tiene efecto si no hay ya un ataque en curso ( estoyAtacando == false).
-     * Guarda el tipo de ataque elegido en  #ataqueElegido sin ejecutarlo todavía,
+     * Guarda el tipo de ataque elegido en ataqueElegido sin ejecutarlo todavía,
      * de modo que el daño se calcula cuando la animación arranca en el siguiente frame,
      * evitando saltos visuales.
      *
@@ -605,7 +669,7 @@ public class Jugador extends Entidad {
     }
 
     /**
-     * Delega el ataque débil (seguro) en la implementación de  Entidad,
+     * A traves de herencia , llama al metodo de Entidad ataqueSeguro,
      * pasándole el enemigo activo del panel de juego como objetivo.
      */
     public void ataqueSeguro() {
@@ -613,7 +677,7 @@ public class Jugador extends Entidad {
     }
 
     /**
-     * Delega el ataque equilibrado en la implementación de  Entidad,
+     A traves de herencia , llama al metodo de Entidad ataqueEquilibrado,
      * pasándole el enemigo activo del panel de juego como objetivo.
      */
     public void ataqueEquilibrado() {
@@ -621,16 +685,16 @@ public class Jugador extends Entidad {
     }
 
     /**
-     * Delega el ataque fuerte (arriesgado) en la implementación de Entidad,
+     A traves de herencia , llama al metodo de Entidad ataqueArriesgado,
      * pasándole el enemigo activo del panel de juego como objetivo.
      */
     public void ataqueArriesgado() {
         super.ataqueArriesgado(gp.enemigoActual);
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // COMPROBACIONES DE FIN DE ANIMACIÓN
-    // ════════════════════════════════════════════════════════════════════════
+
+    // ------ COMPROBACIONES DE FIN DE ANIMACIÓN ----------
+
 
     /**
      * Indica si la animación de ataque ha completado al menos un ciclo completo.
@@ -650,9 +714,9 @@ public class Jugador extends Entidad {
         return muerteNum == 7;
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ÁREAS DE INTERACCIÓN (hitboxes de proximidad)
-    // ════════════════════════════════════════════════════════════════════════
+
+
+    // ÁREAS DE INTERACCIÓN (hitboxes de jugador )
 
     /**
      * Devuelve el hitbox frontal del jugador en la escena 1.
@@ -661,7 +725,10 @@ public class Jugador extends Entidad {
      * usada para detectar proximidad a puertas u objetos en el eje X.
      *
      *
+     *  Como solo usamos realmente el eje x, no importa la altura que tenga el rectangulo
+     *
      * @return rectángulo de detección en la escena 1
+     *
      */
     public Rectangle getBorde1() {
         return new Rectangle(x1Jugador, y1Jugador, 75, 1);
@@ -670,33 +737,56 @@ public class Jugador extends Entidad {
     /**
      * Devuelve el hitbox frontal del jugador en la escena 2.
      *
-     * Es una línea horizontal de 64 px de ancho y 1 px de alto,
+     * Es una línea horizontal de 70 px de ancho y 1 px de alto,
      * usada para detectar proximidad a zonas de pelea o escaleras.
      *
+     *  Como solo usamos realmente el eje x, no importa la altura que tenga el rectangulo
      *
      * @return rectángulo de detección en la escena 2
      */
     public Rectangle getBorde2() {
-        return new Rectangle(x2Jugador, y2Jugador, 64, 1);
+        return new Rectangle(x2Jugador, y2Jugador, 70, 1);
     }
 
+    /**
+     * Devuelve el hitbox frontal del jugador en la escena 2.
+     *
+     * Es una línea horizontal de 20 px de ancho y 1 px de alto,
+     * usada para detectar proximidad a zonas de pelea o escaleras.
+     *
+     *  Como solo usamos realmente el eje x, no importa la altura que tenga el rectangulo
+     *
+     * @return rectángulo de detección en la escena 3
+     */
     public Rectangle getBorde3() {
-        return new Rectangle(x3Jugador, y3Jugador, 10, 1);
+        return new Rectangle(x3Jugador, y3Jugador, 20, 1);
     }
 
+
+    //MOVIMIENTO ESTADOS
+
+    /**
+     * Mueve al jugador a la posición de inicio del combate en la escena 2 , dejamos que se quede viendo a la derecha aunque este mirando
+     * a la izquierda e interactue.
+     *
+     * @return rectángulo de detección en la escena 3
+     */
     public void moverPelea1(){
         gp.gameState = gp.statePelea;
-        moveNum = 1;
         direction = "right";
         cercaPuerta = false;
         x2Jugador = 130;
     }
 
+    /**
+     * Mueve al jugador a la posición de inicio del combate en la escena 3 ,  dejamos que se quede viendo a la derecha aunque este mirando
+     * a la izquierda e interactue.
+     * @return rectángulo de detección en la escena 3
+     */
     public void moverPelea2(){
         gp.gameState = gp.statePelea2;
-        moveNum = 1;
         direction = "right";
         cercaPuerta = false;
-        x2Jugador = 130;
+        x3Jugador = 130;
     }
 }

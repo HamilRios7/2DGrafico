@@ -6,219 +6,191 @@ import java.util.Random;
 
 /**
  * Clase base abstracta para todos los enemigos del juego.
- * Define la interfaz común que GamePanel y Actualizacion usan,
- * sin importar con qué enemigo concreto están trabajando.
+ *
+ * Hereda de Entidad los atributos comunes (life, maxLife, barraVida,
+ * strenght, fuerzaPorcentaje, nombre, contadores de animación, etc.) y
+ * añade únicamente lo que es exclusivo de los enemigos: sprites propios,
+ * flags de estado de combate del enemigo y los métodos abstractos que
+ * cada enemigo concreto debe implementar.
+ *
  */
 public abstract class Enemigo extends Entidad {
 
-    public Enemigo() {}
+    // Posición y tamaño del enemigo en pantalla
 
-    // ── Datos del enemigo ─────────────────────────────────────────────────────
+    /** Tamaño en píxeles con la que se dibuja el sprite del enemigo. */
+    public int enemyWidth;
 
-    String nombreEnemigo;
-    public int maxLifeEnemigo;
-    public int barraVidaEnemigo;
-    public int lifeEnemigo;
-    public int enemyWidht;
-    public int x1Enemigo, y1Enemigo;
+    /** Posición horizontal del enemigo en la escena. */
+    public int xEnemigo;
 
-    // ── Sprites compartidos (samurai y gigante los usan desde la subclase) ────
-
-    public BufferedImage quieto_1,quieto_2,quieto_3,quieto_4,quieto_5,
-            quieto_6,quieto_7,quieto_8,quieto_9,quieto_10,
-            ata1,ata2,ata3,ata4,ata5,ata6,ata7,
-            morir1,morir2,morir3;
-
-    public BufferedImage quieto_1Gig,quieto_2Gig,quieto_3Gig,quieto_4Gig,quieto_5Gig,quieto_6Gig,
-            ata1Gig,ata2Gig,ata3Gig,ata4Gig,ata5Gig,ata6Gig,ata7Gig,ata8Gig,ata9Gig,ata10Gig,ata11Gig,ata12Gig,ata13Gig,ata14Gig,
-            morir1Gig,morir2Gig,morir3Gig,morir4Gig,morir5Gig,morir6Gig,morir7Gig,morir8Gig,morir9Gig,morir10Gig,morir11Gig,morir12Gig,morir13Gig,morir14Gig,morir15Gig,morir16Gig;
-
-    // ── Flags de estado de combate ────────────────────────────────────────────
-    /** true cuando el enemigo ha ejecutado un contrataque este turno */
-    protected boolean fueContrataqueBase = false;  // ← añadir aquí
+    /** Posición vertical del enemigo en la escena. */
+    public int yEnemigo;
 
 
+    // ----- Sprites exclusivos de los enemigos ------
+    //    Cada subclase carga los suyos en getEnemyImage().
 
-    /** true si el enemigo falló su último ataque */
-    public boolean haFalladoEnemigo = false;
+    //    Se declaran aquí para que Entidad no los tenga (el jugador
+    //    tiene sus propios sprites declarados en Jugador).
 
-    /** Daño que hizo el enemigo en su último ataque */
-    public int dañoHechoEnemigo = 0;
+    //---- Samurai (idle 10 frames, ataque 7, muerte 3)---
+    protected BufferedImage quieto_1,  quieto_2,  quieto_3,  quieto_4,  quieto_5,
+            quieto_6,  quieto_7,  quieto_8,  quieto_9,  quieto_10;
+    protected BufferedImage ata1, ata2, ata3, ata4, ata5, ata6, ata7;
+    protected BufferedImage morir1, morir2, morir3;
 
-    /** true si el turno que acaba de ocurrir fue un ataque del enemigo */
-    public boolean fueEnemigoAtaque = false;
+    //---- Gigante (idle 6 frames, ataque 14, muerte 16)----
+    protected BufferedImage quieto_1Gig, quieto_2Gig, quieto_3Gig,
+            quieto_4Gig, quieto_5Gig, quieto_6Gig;
+    protected BufferedImage ata1Gig,  ata2Gig,  ata3Gig,  ata4Gig,  ata5Gig,
+            ata6Gig,  ata7Gig,  ata8Gig,  ata9Gig,  ata10Gig,
+            ata11Gig, ata12Gig, ata13Gig, ata14Gig;
+    protected BufferedImage morir1Gig,  morir2Gig,  morir3Gig,  morir4Gig,
+            morir5Gig,  morir6Gig,  morir7Gig,  morir8Gig,
+            morir9Gig,  morir10Gig, morir11Gig, morir12Gig,
+            morir13Gig, morir14Gig, morir15Gig, morir16Gig;
 
-    /** true cuando el enemigo ha llegado a 0 de vida y está muriendo */
-    public boolean heMuertoEnemigo = false;
 
-    /** true cuando la animación de muerte ha terminado completamente */
-    public boolean isAnimacionMuerteTerminadaEnemigo = false;
+    // ----- Flags de estado exclusivos de enemigos----
 
-    /**
-     * true mientras el enemigo está reproduciendo su animación de ataque.
-     * Unificado aquí para que Actualizacion no necesite saber el tipo concreto.
-     */
+    /** true mientras el enemigo está reproduciendo su animación de ataque. */
     public boolean estoyAtacando = false;
 
     /**
      * true cuando el enemigo ya ha tomado su decisión de ataque este turno.
-     * Evita que Actualizacion lo llame varias veces en el mismo turno.
+     * Consigue evitar que Actualizacion lo llame varias veces en el mismo turno.
      */
     public boolean enemigoYaAtaco = false;
 
+    /** true cuando la vida llega a 0 y empieza la animación de muerte. */
+    public boolean heMuertoEnemigo = false;
+
+    /** true cuando la animación de muerte ha terminado completamente. */
+    public boolean isAnimacionMuerteTerminadaEnemigo = false;
+
     /**
      * true cuando el enemigo acaba de activar su habilidad única.
-     * Se usa en drawInformacionBatalla() para mostrar la pantalla con prioridad.
+     * Se usa en drawInformacionBatalla() para mostrar la pantalla de habilidad con prioridad.
      */
     public boolean seHaMostradoPantalla = false;
 
     /**
-     * true cuando la habilidad única ya ha sido activada (solo se activa una vez).
+     * true cuando la habilidad única ya ha sido activada (solo una vez por combate).
      * Declarado aquí para que Actualizacion pueda comprobarlo sin conocer
      * el tipo concreto del enemigo.
      */
     public boolean isHabilidadActivada = false;
 
-    // ── Contadores de animación ───────────────────────────────────────────────
 
-    public int idleCounterEnemigo = 0;
-    public int idleNumEnemigo = 1;
+    // ---- Métodos abstractos que cada enemigo concreto debe implementar ----
 
-    public int atacarCounterEnemigo = 0;
-    public int atacarNumEnemigo = 1;
-
-    /** Contador de ciclos completados. Cuando llega a 1, la animación terminó. */
-    public int contadorMaxFramesEnemigo = 0;
-
-    public int muerteCounter = 0;
-    public int muerteNum = 1;
-
-    // ── Métodos abstractos que cada enemigo debe implementar ──────────────────
-
-    /** Actualiza la lógica del enemigo cada frame (idle, animaciones, etc.) */
+    /** Actualiza la lógica del enemigo cada frame (idle). */
     public abstract void updateEnemigo();
 
-    /** Dibuja el enemigo en pantalla según su estado actual */
+    /** Dibuja el enemigo en pantalla según su estado actual. */
     public abstract void drawEnemigo(Graphics2D g2d);
 
-    /** Avanza la animación de ataque del enemigo */
+    /** Hace la animación de ataque. */
     public abstract void animacionAtacar();
 
-    /** Avanza la animación de muerte del enemigo */
+    /** Hace la animación de muerte. */
     public abstract void animacionMuerte();
 
     /**
+     * Elige ataque.
      * Calcula y aplica el ataque del enemigo al jugador.
-     * Se llama solo cuando la animación de ataque ha terminado.
+     * Se llama cuando la animación de ataque ha terminado.
      */
     public abstract void actuar();
 
     /**
-     * Activa la habilidad única del enemigo (solo una vez por combate).
-     * Cada subclase define qué hace su habilidad.
+     * Activa la habilidad única (solo una vez por combate).
+     * Cada subclase define qué hace.
      */
     public abstract void activarHabilidadUnica();
 
-    /** @return true si la animación de ataque ha completado al menos un ciclo */
+    /** @return true si la animación de ataque ha completado al menos un ciclo. */
     public abstract boolean animacionAtaqueTerminada();
 
-    /** @return true si la animación de muerte ha llegado al último frame */
+    /** @return true si la animación de muerte ha llegado al último frame. */
     public abstract boolean animacionMuerteTerminada();
 
-    // ── Contrataque ───────────────────────────────────────────────────────────
+
+    // ----- Métodos con comportamiento por defecto-----
 
     /**
-     * Ejecuta el contrataque cuando el jugador falla un ataque.
-     * Por defecto no hace nada (enemigos como el Gigante no contratacán).
-     * Las subclases que quieran contrataque deben sobreescribir este método.
+     * Ejecuta el contrataque cuando el jugador falla.
+     * Por defecto no hace nada; las subclases que contratacan lo sobreescriben.
+     * Solo podria Samurai
      */
-    public void contratacar() {
+    public void contratacar() {}
 
-    }
+    /**
+     * Activa el stun del enemigo.
+     * Por defecto no hace nada; las subclases que stuneean lo sobreescriben.
+     * Solo podria Gigante
+     */
+    public void activarStun() {}
 
-    public void activarStun(){
+    /** @return true si el enemigo fue stuneado este turno , por defecto es false. */
+    public boolean fueStuneado()   { return false; }
 
-    }
+    /** Reinicia el flag de stun , es decir la coloca en false de nuevo directamente , en esta clase no hace nada. */
+    public void resetStun()        {}
 
-    // ── Lógica de ataque compartida ───────────────────────────────────────────
+    /** @return true si el enemigo ejecutó un contrataque este turno, por defecto false. */
+    public boolean fueContrataque() { return false; }
 
-    protected void ejecutarAtaqueEnemigo(Entidad jugador, int ataque, int probabilidadAcierto) {
-        fueEnemigoAtaque = true;
-        int dañoFinal = (int)(ataque + (strenght * fuerzaPorcentaje));
+    /** Reinicia el flag de contrataque , asi vuelve de nuevo a false una vez que lo hace , por defecto no hace nada. */
+    public void resetContrataque()  {}
+
+
+
+
+    // ------- Lógica de ataque del enemigo-------
+
+    /**
+     * Calcula y aplica el ataque del enemigo al jugador usando los atributos
+     * heredados de Entidad (strenght, fuerzaPorcentaje) y aplicandolo con un metodo de Entidad
+
+     * @param entidad          entidad objetivo (solo el jugador)
+     * @param ataque              daño base del tipo de ataque
+     * @param probabilidadAcierto porcentaje de acierto (0–100)
+     */
+    protected void ejecutarAtaqueEnemigo(Entidad entidad, int ataque, int probabilidadAcierto) {
+        //heredado de entidad
+        fueAtaque = true;
+
+        //calculamos daño , poniendo la fuerza y su fraccion mas importante que el daño base de ataque en todas las entidades
+        int dañoFinal = (int) (ataque + (strenght * fuerzaPorcentaje));
 
         Random rand = new Random();
+
+        //Si el numero generado es menor la probabilidad , entonces acertamos si es mayor, fallamos
+        //50<90 -> Acierto
+        // 95<90 -> Fallo
         if (rand.nextInt(100) < probabilidadAcierto) {
-            jugador.recibirDaño(jugador, dañoFinal);
-            dañoHechoEnemigo = dañoFinal;
-            haFalladoEnemigo = false;
+            //aplicamos daño al jugador usando el método recibirDaño() de Entidad
+            entidad.recibirDaño(dañoFinal);
+
+            //metemos el daño y si ha fallado en variables heredadas , que serviran para mostrar la informacion en pantalla
+            dañoHecho = dañoFinal;
+            heFallado = false;
         } else {
-            haFalladoEnemigo = true;
+            heFallado = true;
+            dañoHecho = 0;
         }
+
+        //Lo colocamos una vez que ejecuta el ataque en false para que pueda mostrar en pantalla informacion y no continue la logica de combate
         gp.isSituacionPelea = false;
     }
 
-    // ── Getters y setters ─────────────────────────────────────────────────────
 
-    public String getNombre()               { return nombre; }
-    public String getNombreEnemigo()        { return nombreEnemigo; }
-    public int getBarraVidaEnemigo()        { return barraVidaEnemigo; }
-    public int getLifeEnemigo()             { return lifeEnemigo; }
-    public void setLifeEnemigo(int v)       { this.lifeEnemigo = v; }
+    // ------Getters de enemigo -------
+    // Ya están definidos en Entidad
 
-    // ── Contrataque ───────────────────────────────────────────────────────────
-
-
-
-    // Samurai
-    public boolean fueContrataque() {
-        return false;
-    }
-
-    public void resetContrataque() {}
-
-    //Gigante
-    public boolean fueStuneado() {
-        return false;
-    }
-
-    public void resetStun() {}
-
-    public void recibirDaño(Enemigo enemigo, int dañoFinal) {
-        int vida = enemigo.getLifeEnemigo() - dañoFinal;
-        if (vida < 0) {vida = 0;}
-        enemigo.setLifeEnemigo(vida);
-    }
+    public int  getLife()       {return super.getLife(); }
+    public void setLife(int v)  { super.setLife(v); }
+    public int  getBarraVida()  { return super.getBarraVida(); }
 }
-//Antes de poner esto en marcha, necesitaos ser capaces de general a nuestro enemigo
-//Piensa que la clase madre completa es Entidad , entonces de esa tienen que heredar las demas
-
-// public int dropOro(){//Dropea entre 2 a 5 de oro si ha muerto.
-//int oro=0;
-// if(this.vida<=0){
-//   oro= (int) (Math.random() * (5 - 2 + 1)) + 2;
-// }
-// return oro;
-// }
-
-        //método para dropear una poción (NO es random)
-       /* public void dropPocino(Heroe heroe,Item pocion){
-            heroe.obtenerPocion(pocion);
-        }*/
-
-
-// public void mostrarDatos(){
-//      System.out.println("Nombre: "+nombre);
-//     super.mostrarDatos();
-// }
-
-
-//  public String getNombre() {
-// return nombre;
-// }
-
-// public void setNombre(String nombre) {
-//    this.nombre = nombre;
-// }
-
-
-
