@@ -5,7 +5,7 @@ package HallOfFame;
  * Representa una entrada del Hall of Fame: el nombre del jugador
  * y el tiempo que tardó en completar el juego , ademas de la fecha y hora de cuando se jugó.
  *
- * Es un modelo de datos puro — solo guarda información y ofrece
+ * Solo guarda información y ofrece
  * métodos para consultarla. No dibuja, no escribe archivos, no
  * escucha teclas.
  *
@@ -13,8 +13,8 @@ package HallOfFame;
  * una lista de registros de menor a mayor tiempo automáticamente.
  */
 
-//esta manera de escribir la interfaz quiere referirse
-// Todos los objetos de esta clase tienen un método compareTo
+//Esta manera de escribir la interfaz quiere referirse
+// a que todos los objetos de esta clase tienen un método compareTo
 
     //Comparable y compareTo() definen la forma natural en la que los objetos de una clase se comparan y se ordenan entre sí.
 public class RegistroJugador implements Comparable<RegistroJugador> {
@@ -35,7 +35,7 @@ public class RegistroJugador implements Comparable<RegistroJugador> {
     private final String fecha;
 
 
-    // ── Constructor ───────────────────────────────────────────────────────
+    //-------  Constructor  ---------
 
     /**
      * @param nombre   nombre del jugador (no nulo, no vacío)
@@ -48,14 +48,14 @@ public class RegistroJugador implements Comparable<RegistroJugador> {
     }
 
 
-    // ── Getters
+    // ----- Getters ------
 
     public String getNombre()   { return nombre; }
     public long   getTiempoMs() { return tiempoMs; }
     public String getFecha() { return fecha; }
 
 
-    // ── Formato legible del tiempo
+    // --------- Formato legible del tiempo ---------
 
     /**
      * Convierte milisegundos a formato MM:SS.mmm
@@ -74,11 +74,12 @@ public class RegistroJugador implements Comparable<RegistroJugador> {
         long milisegundos  = tiempoMs % 1000;
         long segundos      = totalSegundos % 60;
         long minutos       = totalSegundos / 60;
+        // este formato , permite mostrarlo con ceros a la izquierda si no se rellena el espacio completo
         return String.format("%02d:%02d.%03d", minutos, segundos, milisegundos);
     }
 
 
-    // ── Ordenación
+    // ------ Ordenación --------
 
     /**
      * Menor tiempo = mejor jugador = va primero en la lista.

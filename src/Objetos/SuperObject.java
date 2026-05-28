@@ -1,21 +1,30 @@
 package Objetos;
 
-
-import Main.GamePanel;
-import Main.UtilityTool;
-
 import java.awt.image.BufferedImage;
 
-public class SuperObject {
+public  abstract class SuperObject {
 
-    public BufferedImage imagen;
-    public String name;
-    public String descripcion = "";
+    protected BufferedImage imagen;
+    protected String name;
+    protected String descripcion = "";
 
-    UtilityTool uTool=new UtilityTool();
 
-    public void usar(GamePanel gp) {
-        // cada subclase sobreescribe esto
+
+
+
+    public  abstract void usar();
+
+
+    public BufferedImage getImagen() {
+        return imagen;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
     }
 }
 

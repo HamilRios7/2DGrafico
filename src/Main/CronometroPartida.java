@@ -5,7 +5,7 @@ package Main;
  *
  * Funciona igual que un cronómetro de móvil:
  *   - arrancar()  → empieza a contar desde cero
- *   - pausar()    → congela el conteo (ej: menú de pausa)
+ *   - pausar()    → congela el conteo (ej: menú de pausa )
  *   - reanudar()  → sigue contando desde donde pausó
  *   - detener()   → para y guarda el resultado final
  *
@@ -16,7 +16,7 @@ public class CronometroPartida {
 
 
     /**
-     * Instante exacto (en nanosegundos) en que arrancó o se reanudó
+     * Instante exacto  en que arrancó o se reanudó
      * el cronómetro. Se usa para calcular cuánto ha pasado desde entonces.
      *
      * Usamos long porque los nanosegundos son números muy grandes
@@ -58,6 +58,8 @@ public class CronometroPartida {
     public void arrancar() {
         milisegundosAcumulados = 0;        // reset del acumulado
         resultadoFinalMs       = -1;       // -1 = partida en curso
+
+        //le ponemos los nanosegundos que lleva el sistema contando en el momento que entramos en escena 1
         instanteInicioNanos    = System.nanoTime(); // marca el inicio
         contando               = true;
     }
@@ -67,7 +69,8 @@ public class CronometroPartida {
      * Llamar al entrar a pauseState1, pauseState2 o pauseState3 y en opciones.
      *
      * Guarda los milisegundos transcurridos hasta ahora en
-     * milisegundosAcumulados para no perderlos al reanudar.
+     * milisegundosAcumulados para no perderlos al reanudar, porque realmente el conometro nunca para aunque lo parezca en imagen,
+     * ya que el contador milisegundos del sistema nunca para hasta que cierre la ejecucion
      *
      * Si ya estaba parado no hace nada (evita sumar tiempo dos veces).
      */
@@ -119,14 +122,14 @@ public class CronometroPartida {
     }
 
 
-    // (getters)
+    // ------- (getters) -------
 
     /**
-     * Devuelve el tiempo transcurrido en milisegundos SIN detener el cronómetro.
+     * Devuelve el tiempo transcurrido en milisegundos sin detener el cronómetro.
      * Usar para mostrar el contador en el HUD durante la partida.
      *
-     * Si está contando  → acumulado + tiempo desde el último arranque/reanudación
-     * Si está parado    → solo el acumulado (el tiempo está congelado)
+     * Si está contando  -> acumulado + tiempo desde el último arranque/reanudación
+     * Si está parado    -> solo el acumulado (el tiempo está congelado)
      *
      * @return milisegundos transcurridos hasta ahora
      */

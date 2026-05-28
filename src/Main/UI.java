@@ -93,16 +93,16 @@ public class UI {
 
         // Obtenemos la imagen del corazón a partir del objeto de vida
         SuperObject vida = new Obj_Vida(gp);
-        corazon = vida.imagen;
+        corazon = vida.getImagen();
 
         SuperObject cofreTesoro = new Obj_CofreTesoro(gp);
-        cofre = cofreTesoro.imagen;
+        cofre = cofreTesoro.getImagen();
 
         SuperObject pocionFuerza = new Obj_PocionFuerza(gp);
-        fuerzaPoc = pocionFuerza.imagen;
+        fuerzaPoc = pocionFuerza.getImagen();
 
         SuperObject pocionVida = new Obj_PocionVida(gp);
-        vidaPoc = pocionVida.imagen;
+        vidaPoc = pocionVida.getImagen();
     }
 
     // ── Punto de entrada del renderizado ────────────────────────────────────
@@ -195,7 +195,7 @@ public class UI {
         }
 
         if (gp.objetoDropeado != null && (gp.gameState == gp.escenaState2 || gp.gameState == gp.escenaState3)) {
-            g2.drawImage(gp.objetoDropeado.imagen, gp.dropX, gp.dropY,
+            g2.drawImage(gp.objetoDropeado.getImagen(), gp.dropX, gp.dropY,
                     gp.tamañoMosaico, gp.tamañoMosaico, null);
         }
 
@@ -613,13 +613,13 @@ public class UI {
                 g2.fillRect(sx, sy, slotSize, slotSize);
             }
 
-            if (obj.imagen != null) {
-                g2.drawImage(obj.imagen, sx + 8, sy + 8, 48, 48, null);
+            if (obj.getImagen() != null) {
+                g2.drawImage(obj.getImagen(), sx + 8, sy + 8, 48, 48, null);
             }
 
             g2.setFont(g2.getFont().deriveFont(10F));
             g2.setColor(Color.WHITE);
-            g2.drawString(obj.name, sx, sy + slotSize + 12);
+            g2.drawString(obj.getName(), sx, sy + slotSize + 12);
         }
 
         // ── Descripción del objeto seleccionado ───────────────────────────────
@@ -636,12 +636,12 @@ public class UI {
             // Nombre del objeto
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 14F));
             g2.setColor(Color.YELLOW);
-            g2.drawString(objSeleccionado.name, x + 20, descY + 20);
+            g2.drawString(objSeleccionado.getName(), x + 20, descY + 20);
 
             // Descripción
             g2.setFont(g2.getFont().deriveFont(12F));
             g2.setColor(Color.WHITE);
-            g2.drawString(objSeleccionado.descripcion, x + 20, descY + 42);
+            g2.drawString(objSeleccionado.getDescripcion(), x + 20, descY + 42);
         }
 
         g2.setFont(g2.getFont().deriveFont(12F));

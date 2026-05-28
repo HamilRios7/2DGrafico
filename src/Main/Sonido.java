@@ -5,15 +5,34 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.net.URL;
 
+/**
+ * Clase encargada de la gestión del sonido del juego.
+ * Permite cargar efectos de sonido y música en memoria,
+ * reproducirlos, detenerlos y cambiar música de fondo.
+ */
 public class Sonido {
 
+    /**
+     * Array de clips de sonido precargados.
+     * Se usa tanto para música como para efectos de sonido.
+     */
     Clip[] clips = new Clip[30];
+
+    /**
+     * Música actualmente en reproducción.
+     */
     Clip currentMusic;
 
+    //----- CONSTRUCTOR ------
+    /**
+     * Constructor.
+     * Carga todos los sonidos desde los recursos del proyecto
+     * y los deja listos para reproducirse.
+     */
     public Sonido() {
         URL[] soundURL = new URL[30];
 
-        // ── Pon aquí todas tus URLs exactamente como las tenías ──
+
         soundURL[0]  = getClass().getClassLoader().getResource("sonido/BlueBoyAdventure.wav");
         soundURL[1]  = getClass().getClassLoader().getResource("sonido/musicoTitulo.wav");
         soundURL[2]  = getClass().getClassLoader().getResource("sonido/enemigo1.wav");
@@ -41,6 +60,13 @@ public class Sonido {
         }
     }
 
+
+    /**
+     * Reproduce música en bucle infinito.
+     * Si ya hay música sonando, la detiene primero.
+     *
+     * @param i índice del sonido a reproducir
+     */
     public void playMusic(int i) {
         if (currentMusic != null && currentMusic.isOpen()) {
             currentMusic.stop();
@@ -51,6 +77,10 @@ public class Sonido {
         currentMusic.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
+
+    /**
+     * Detiene la música actual si está reproduciéndose.
+     */
     public void stopMusic() {
         if (currentMusic != null) currentMusic.stop();
     }

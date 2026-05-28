@@ -5,8 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
- * PANTALLA DE INTRODUCIR NOMBRE
- * ─────────────────────────────────────────────────────────────────
+ *
  * Muestra una ventana emergente donde el jugador escribe su nombre
  * antes de empezar la partida.
  *
@@ -16,14 +15,10 @@ import java.awt.event.ActionListener;
  * La ventana es MODAL, lo que significa que bloquea el juego
  * hasta que el jugador confirme su nombre.
  *
- * NIVEL DAM: aplica componentes Swing básicos (JDialog, JPanel,
- * JLabel, JTextField, JButton), layouts (GridBagLayout) y
- * eventos (ActionListener).
- * ─────────────────────────────────────────────────────────────────
  */
 public class PantallaIntroducirNombre {
 
-    // ── Campos privados ───────────────────────────────────────────────────
+    // -------- Campos privados ---------
 
     /**
      * Nombre que el jugador ha escrito y confirmado.

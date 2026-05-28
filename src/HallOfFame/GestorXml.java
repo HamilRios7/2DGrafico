@@ -48,15 +48,15 @@ public class GestorXml {
      */
     public static void guardar(RegistroJugador registro) {
         try {
-            //Este crea la fabrica para construir XML,y configura como se leera, es decir , prepara el entorno
+            //Este crea la fabrica para construir analizadores XML,y configura como se leera
             DocumentBuilderFactory fabrica = DocumentBuilderFactory.newInstance();
 
-            //Creamos uno usando la fabrica, este es el que realmente contruye el arbol y lee xml
+            //Creamos un Document Builder  usando la fabrica, este es el que realmente contruye y lee
             DocumentBuilder constructor    = fabrica.newDocumentBuilder();  // aquí puede fallar lanzando ParserConfigurationException
 
-            //Declaramos una variable que podrá guardar un XML cargado en memoria
+            //Declaramos una variable que almacenara un XML cargado en memoria
             Document documento;
-            //Declaramos una variable que podrá guardar un elemento del XML, en este caso sera la raiz del XML, es decir , el nodo jugadores
+            //Declaramos una variable que represeneta un elemento del XML, en este caso sera la raiz del XML, es decir , el nodo jugadores
             Element raiz;
 
             File archivo = new File(RUTA_ARCHIVO); // aqui puede fallar java.io.IOException
@@ -70,7 +70,7 @@ public class GestorXml {
             } else {
                 // Primera vez -> creamos el documento desde cero
 
-                //Creamos un documento vacio, no hay XML cargado , empezamos vacios
+                //Creamos un documento DOM vacio en memoria
                 documento = constructor.newDocument();
 
                 //Crea un elemento XML llamando jugadores que es el raiz, aun no esta en el documento
@@ -175,7 +175,7 @@ public class GestorXml {
                         + registro.getNombre() + " — " + registro.getTiempoFormateado());
             }
 
-            // Escribir el documento o lo que tenemos en memoria actualizado en disco
+            // Se encarga de construir el arbol DOM , en texto XML y escribirlo en disco
             Transformer transformador = TransformerFactory.newInstance().newTransformer();
 
             //Esto nos permite la indentacion ,es decir, organizar el XML para que no salga en una sola linea
@@ -186,7 +186,10 @@ public class GestorXml {
             //Identificamos quien define la propiedad ,pillamos el nombre real de la propiedad y seleccionamos
             transformador.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-           //Convierte el DOM XML en texto XML y lo escribe en el archivo.
+            // Convierte el documento DOM almacenado en memoria en texto XML
+            // lo escribe en el archivo indicado.
+            //DOMSource ->XML en memoria      StreamResult ->destino donde se guarda
+
             //Toma el XML en la memoria y lo guarda formateado en archivo, en disco.
             //Memoria significa que el programa lo guarda , no esta en ningun archivo
             transformador.transform(new DOMSource(documento), new StreamResult(archivo));  // aquí puede fallar lanzando TransformerException
@@ -224,9 +227,9 @@ public class GestorXml {
         if (!archivo.exists()) return lista; // si no llega a existir aun, entonces simplemente le damos la lista vacía
 
         try {
-            //Este crea la fabrica para construir XML,y configura como se leera, es decir , prepara el entorno
+            //Este crea la fabrica para construir analizadores XML,y configura como se leera
             DocumentBuilderFactory fabrica    = DocumentBuilderFactory.newInstance();
-            //Creamos uno usando la fabrica, este es el que realmente contruye el arbol y lee xml
+            //Creamos un Document Builder  usando la fabrica, este es el que realmente contruye y lee
             DocumentBuilder        constructor = fabrica.newDocumentBuilder();
 
             //Lee el archivo XML, lo convierte en un arbol DOM en memoria (DOM: convierte el archivo XML rn objetos java organizados en arbol
@@ -261,7 +264,7 @@ public class GestorXml {
 
             }
 
-            //al llamo a collections, digo que estos objetos son comparables, por lo tanto llamo a su compareTo que tiene
+            //al llamar a collections y haber enseñado a esos objetos compararse entre si, es decir , implemente interface comparable, por lo tanto llamo a su compareTo que fue enseñado por Comparable
             Collections.sort(lista); // usa compareTo → menor tiempo primero
 
         } catch (ParserConfigurationException ex) {

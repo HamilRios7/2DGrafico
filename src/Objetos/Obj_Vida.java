@@ -17,11 +17,14 @@ public class Obj_Vida  extends  SuperObject{
 
         try {
             imagen= ImageIO.read(getClass().getClassLoader().getResourceAsStream("objetos/corazon.png"));
-            uTool.scaleImage(imagen,gp.tamañoMosaico, gp.tamañoMosaico);
+
 
 
         }catch (IOException e){
+            System.out.println("Imagen de vida no encontrada : ");
             e.printStackTrace();
         }
     }
+
+    public void usar(){}
 }

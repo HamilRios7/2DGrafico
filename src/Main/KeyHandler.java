@@ -133,7 +133,7 @@ public class KeyHandler implements KeyListener {
                 if (code == KeyEvent.VK_ENTER) {
                     if (!gp.inventario.objetos.isEmpty()) {
                         SuperObject obj = gp.inventario.objetos.get(gp.inventarioSlot);
-                        obj.usar(gp);
+                        obj.usar();
                         gp.inventario.eliminarObjeto(gp.inventarioSlot);
                         gp.inventarioSlot = 0;
                     }

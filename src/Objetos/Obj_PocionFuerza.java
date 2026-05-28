@@ -17,15 +17,14 @@ public class Obj_PocionFuerza  extends SuperObject {
 
         try {
             imagen= ImageIO.read(getClass().getClassLoader().getResourceAsStream("objetos/pocionfuerza.png"));
-            uTool.scaleImage(imagen,gp.tamañoMosaico, gp.tamañoMosaico);
-
 
         }catch (IOException e){
+            System.out.println("Imagen de pocion no encontrada : ");
             e.printStackTrace();
         }
     }
     @Override
-    public void usar(GamePanel gp) {
+    public void usar() {
         int strenght= gp.jugador.getStrenght() + 5;
         gp.jugador.setStrenght(strenght);
         gp.fuerzaActiva = true;
