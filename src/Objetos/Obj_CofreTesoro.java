@@ -4,26 +4,23 @@ import Main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
+
+
 /**
- * Objeto que representa un cofre del juego.
+ * Objeto decorativo que representa un cofre.
+ *
+ * Este cofre no es interactivo, únicamente se dibuja en el mapa
+ * como elemento visual.
  */
 public class Obj_CofreTesoro  extends SuperObject{
-
-    /**
-     * Referencia al GamePanel para acceder al estado del juego.
-     */
-    GamePanel gp;
-
 
 
     /**
      * Constructor del cofre.
-     *
-     * @param gp referencia al GamePanel principal
      */
-    public Obj_CofreTesoro (GamePanel gp) {
+    public Obj_CofreTesoro () {
 
-        this.gp = gp;
+
         name="Cofre";
         try {
             imagen= ImageIO.read(getClass().getClassLoader().getResourceAsStream("objetos/cofre.png"));
@@ -35,5 +32,11 @@ public class Obj_CofreTesoro  extends SuperObject{
 
     }
 
+    /**
+     * Este objeto no tiene uso.
+     *
+     * Se implementa vacío porque la clase padre lo requiere,
+     * pero no realiza ninguna acción.
+     */
     public void usar(){}
 }

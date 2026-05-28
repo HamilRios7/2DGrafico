@@ -301,6 +301,10 @@ public class Actualizacion {
             if (gp.keyH.ePressed && gp.ispeleaFinalizada) {
                 //cambiamos la pantalla a la de felicitaciones
                 gp.jugador.cercaCongratulations = false;
+                //al terminar la pelea , colocamos que el juego ha terminado para mostrar mensaje de salir en pantalla de hall of fame
+                gp.juegoTerminado = true;
+
+                //al terminar la pelea , colocamos que el juego ha terminado para mostrar mensaje de salir en pantalla de hall of fame
                 gp.gameState = gp.congratulationsState;
             }
         } else {
@@ -315,15 +319,11 @@ public class Actualizacion {
     public void actualizacionRecogerDrop() {
         if (gp.objetoDropeado == null) return;
 
-        int jugadorX;
+        int jugadorX=0;
 
         //calculamos donde se va a colocar en cada escena
         if (gp.gameState == gp.escenaState2) {
             jugadorX = gp.jugador.x2Jugador + 200; // centro del sprite 400px
-        } else if (gp.gameState == gp.escenaState3) {
-            jugadorX = gp.jugador.x3Jugador + 200;
-        } else {
-            return;
         }
 
 

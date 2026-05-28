@@ -117,9 +117,18 @@ public class PantallaHallOfFame {
         }
 
         //---- Instrucción de salida----
-        g2.setFont(new Font("Arial", Font.BOLD, 18));
-        g2.setColor(Color.GRAY);
-        String pista = "Pulsa ENTER para salir";
-        g2.drawString(pista, centroX - g2.getFontMetrics().stringWidth(pista) / 2, gp.pantallaAltura - 30);
+        if (gp.juegoTerminado) {
+            //Si el juego termina , salimos con enter
+            g2.setFont(new Font("Arial", Font.BOLD, 18));
+            g2.setColor(Color.GRAY);
+            String pista = "Pulsa ENTER para salir";
+            g2.drawString(pista, centroX - g2.getFontMetrics().stringWidth(pista) / 2, gp.pantallaAltura - 30);
+        }else {
+            //Si es false ,es porque lo hemos llamado al comenzar el juego
+            g2.setFont(new Font("Arial", Font.BOLD, 18));
+            g2.setColor(Color.GRAY);
+            String pista = "Pulsa ESC para salir";
+            g2.drawString(pista, centroX - g2.getFontMetrics().stringWidth(pista) / 2, gp.pantallaAltura - 30);
+        }
     }
 }

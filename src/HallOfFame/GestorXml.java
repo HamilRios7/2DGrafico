@@ -89,9 +89,7 @@ public class GestorXml {
                 Element jugador = (Element) jugadores.item(i);
 
                 //Esto obtiene lo que hay dentro del xml en el nodo jugador , si es q existe alguno
-                String nombreGuardado = jugador
-                        .getElementsByTagName("nombre").item(0)
-                        .getTextContent().trim();
+                String nombreGuardado = jugador.getElementsByTagName("nombre").item(0).getTextContent().trim();
 
                 // si el nombre se encuentra en el registro, guardamos el nombre jugador en element
                 //pillamos el tiempo y le colocamos el guardado si existe
@@ -121,15 +119,10 @@ public class GestorXml {
                             .setTextContent(registro.getTiempoFormateado());
 
                     // actualizar también la fecha al mejorar
-                    entradaExistente.getElementsByTagName("fecha").item(0)
-                            .setTextContent(
-                                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
-                            );
-                    System.out.println("[GestorXml] Tiempo mejorado: "
-                            + registro.getNombre() + " — " + registro.getTiempoFormateado());
+                    entradaExistente.getElementsByTagName("fecha").item(0).setTextContent(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+
                 } else {
                     // Tiempo nuevo es peor → no guardar nada
-                    System.out.println("[GestorXml] Tiempo no mejorado, no se guarda.");
                     return;
                 }
             } else {
@@ -163,16 +156,13 @@ public class GestorXml {
 
                 //fecha y hora de la partida se actualiza con un formato String
                 Element nodoFecha = documento.createElement("fecha");
-                nodoFecha.setTextContent(
-                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
-                );
+                nodoFecha.setTextContent(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
 
                 nodoJugador.appendChild(nodoFecha);
 
                 //metemos el nodo del jugador en la raiz
                 raiz.appendChild(nodoJugador);
-                System.out.println("[GestorXml] Nuevo jugador guardado: "
-                        + registro.getNombre() + " — " + registro.getTiempoFormateado());
+
             }
 
             // Se encarga de construir el arbol DOM , en texto XML y escribirlo en disco

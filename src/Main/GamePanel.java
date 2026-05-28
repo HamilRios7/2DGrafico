@@ -219,7 +219,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int inventarioSlot = 0;
 
 
-    // ----- FLAGS DE COMBATE --------
+    // ----- FLAGS  Y VARIABLES COMBATE E INTERACCION --------
 
 
     /**
@@ -270,6 +270,21 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public boolean fuerzaActiva = false;
 
+    //----- -------- FLAG ACTUAR --------
+
+    /**
+     * true cuando en el menu le das a enter en Hall of Fame
+     * false cuando no le has dado , o una vez mostrado le das a ESC
+     */
+    public boolean mostrarHallofFame =false;
+
+    /**
+     * true cuando interactuas con cofre  para llegar a congratulationsState
+     * false el resto del juego antes de eso
+     */
+    public boolean juegoTerminado=false;
+
+     //--------- Registro nombre sin sobreescribir-----
     /**
      * En caso de que no pongamos nombre en PantalaIntroducirNombre , se asignará automaticamente este
      */
@@ -433,7 +448,6 @@ public class GamePanel extends JPanel implements Runnable {
             jugador.update3();
             enemigoActual.updateEnemigo();
             at.actualizacionEmpezarPeleaFinal();
-            at.actualizacionRecogerDrop();
             at.actualizacionMostrarEscenaCongratulations();
 
 
