@@ -215,3 +215,4 @@ Organización del diagrama por paquetes :
 
 - Morado = Paquete HallOfFame -> RegistroJugador, GestorXml, PantallaHallOfFame
 
+<img src="ImagenUML.png"/></imagen>
