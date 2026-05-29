@@ -24,9 +24,7 @@ public class Main {
 
 
         // Obtener el dispositivo gráfico principal (pantalla actual)
-        gd = GraphicsEnvironment
-                .getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice();
+        gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
         // Crear la ventana principal del juego
         JFrame frame = new JFrame();

@@ -156,7 +156,7 @@ public abstract class Entidad {
     }
 
     /** Ataque seguro: daño bajo, acierto muy alto (92 %). */
-    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaque(100, 92, enemigo); }
+    public void ataqueSeguro(Enemigo enemigo)      { ejecutarAtaque(5, 92, enemigo); }
 
     /** Ataque equilibrado: daño medio, acierto medio (68 %). */
     public void ataqueEquilibrado(Enemigo enemigo) { ejecutarAtaque(10,  68, enemigo); }
